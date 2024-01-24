@@ -1,10 +1,11 @@
 package handler
 
 import (
+	"connected/api/models"
+	"connected/storage"
 	"fmt"
+
 	"github.com/gin-gonic/gin"
-	"test/api/models"
-	"test/storage"
 )
 
 type Handler struct {

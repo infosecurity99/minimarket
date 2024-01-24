@@ -1,17 +1,17 @@
 package storage
 
+import "connected/api/models"
+
 type IStorage interface {
 	Close()
-	User() IUserStorage
+	Branch() IBranchStorage
 }
 
 //  for  user interface
-type IUserStorage interface {
-	/*Create(models.CreateUser) (string, error)
-	GetByID(models.PrimaryKey) (models.User, error)
-	GetList(models.GetListRequest) (models.UsersResponse, error)
-	Update(models.UpdateUser) (string, error)
+type IBranchStorage interface {
+	Create(models.CreateBranch) (string, error)
+	GetByID(models.PrimaryKey) (models.Branch, error)
+	GetList(models.GetListRequest) (models.BranchResponse, error)
+	Update(models.UpdateBranch) (string, error)
 	Delete(models.PrimaryKey) error
-	GetPassword(id string) (string, error)
-	UpdatePassword(password models.UpdateUserPassword) error*/
 }

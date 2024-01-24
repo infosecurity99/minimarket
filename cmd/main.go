@@ -1,10 +1,10 @@
 package main
 
 import (
+	"connected/api"
+	"connected/config"
+	"connected/storage/postgres"
 	"log"
-	"test/api"
-	"test/config"
-	"test/storage/postgres"
 )
 
 func main() {

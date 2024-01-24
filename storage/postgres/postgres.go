@@ -1,10 +1,10 @@
 package postgres
 
 import (
+	"connected/config"
+	"connected/storage"
 	"database/sql"
 	"fmt"
-	"test/config"
-	"test/storage"
 
 	_ "github.com/lib/pq"
 )
@@ -30,9 +30,8 @@ func (s Store) Close() {
 	s.DB.Close()
 }
 
-/*
-func (s Store) User() storage.IUserStorage {
-	newUser := NewUserRepo(s.DB)
+func (s Store) Branch() storage.IBranchStorage {
+	newBranch := NewBranchRepo(s.DB)
 
-	return newUser
-}*/
+	return newBranch
+}

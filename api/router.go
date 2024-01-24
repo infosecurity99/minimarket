@@ -1,7 +1,7 @@
 package api
 
 import (
-	"test/storage"
+	"connected/storage"
 
 	"github.com/gin-gonic/gin"
 )
