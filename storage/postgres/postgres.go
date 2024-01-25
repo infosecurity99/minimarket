@@ -35,3 +35,26 @@ func (s Store) Branch() storage.IBranchStorage {
 
 	return newBranch
 }
+
+func (s Store) Sale() storage.ISaleStorage {
+	newBranch := NewSaleRepo(s.DB)
+
+	return newBranch
+}
+func (s Store) Transaction() storage.ITransaction {
+	newTransaction := NewTransactionRepo(s.DB)
+
+	return newTransaction
+}
+
+func (s Store) Staff() storage.IStaff {
+	newStaff := NewStaffRepo(s.DB)
+
+	return newStaff
+}
+
+func (s Store) Staff_Tarif() storage.IStaff_Tarif {
+	newStaff_Tarif := NewStaff_Tarif(s.DB)
+
+	return newStaff_Tarif
+}

@@ -4,6 +4,7 @@ CREATE TABLE branch (
   id UUID PRIMARY KEY,
   name VARCHAR(30),
   address VARCHAR(30)
+  create_at TIMESTAMP
 );
 
 /*sale*/
@@ -16,6 +17,7 @@ CREATE TABLE sale (
   price INT,
   status_type  status_enum,
   clientname VARCHAR(30)
+    create_at TIMESTAMP
 );
 create type payment_type_enum as enum ( 'shopassistant', 'cashier');
 
@@ -28,6 +30,7 @@ CREATE TABLE transaction (
   sourcetype source_type_enum,
   amount INT,
   description VARCHAR(30)
+    create_at TIMESTAMP
 );
 
 create type tarnsaction_type_enum as enum ( );
@@ -46,6 +49,7 @@ CREATE TABLE staff (
   birthdate INT,
   login VARCHAR(30),
   password VARCHAR(30)
+  create_at TIMESTAMP
 );
 
 create type type_stuf_enum as enum ( 'withdraw'  ,'topup');
@@ -57,5 +61,6 @@ CREATE TABLE staff_tarif (
   tarif_type tarif_type_enum,
   amount_for_cashe INT,
   amount_for_card INT
+  create_at TIMESTAMP
 );
 create type tarif_type_enum as enum ( 'percent'  ,'fixed');
