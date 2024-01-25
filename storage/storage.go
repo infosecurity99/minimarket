@@ -50,9 +50,9 @@ type IStaff interface {
 
 //staff_tarif
 type IStaff_Tarif interface {
-	CreateStaff_Tarif(models.CreateStaff_Tarif) (string, error)
-	GetByIdStaff_Tarif(models.PrimaryKey) (models.Staff_Tarif, error)
-	GetListStaff_Tarif(models.GetListRequest) (models.Staff_Tarif_Repo, error)
-	UpdateStaff_Tarif(models.UpdateStaff_Tarif) (string, error)
-	DeleteStaff_Tarif(models.PrimaryKey) error
+	CreateStaff_Tarifs(models.CreateStaff_Tarif) (string, error)
+	GetByIdStaff_Tarifs(models.PrimaryKey) (models.Staff_Tarif, error)
+	GetListStaff_Tarifs(models.GetListRequest) (models.Staff_Tarif_Repo, error)
+	UpdateStaff_Tarifs(models.UpdateStaff_Tarif) (string, error)
+	DeleteStaff_Tarifs(models.PrimaryKey) error
 }

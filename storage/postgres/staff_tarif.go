@@ -17,30 +17,26 @@ func NewStaff_Tarif(db *sql.DB) storage.IStaff_Tarif {
 }
 
 //create stafftarif
-func (s staftarifRepo) CreateStaff_Tarif(models.CreateStaff_Tarif) (string, error) {
+func (s *staftarifRepo) CreateStaff_Tarifs(models.CreateStaff_Tarif) (string, error) {
 	return "", nil
 }
 
 //getbyid  staftarif
-
-func (s staftarifRepo) GetByIdStaff_Tarif(models.PrimaryKey) (models.Staff_Tarif, error) {
+func (s *staftarifRepo) GetByIdStaff_Tarifs(models.PrimaryKey) (models.Staff_Tarif, error) {
 	return models.Staff_Tarif{}, nil
 }
 
 //get list
-
-func (s staftarifRepo) GetListStaff_Tarif(models.GetListRequest) (models.Staff_Tarif_Repo, error) {
+func (s *staftarifRepo) GetListStaff_Tarifs(models.GetListRequest) (models.Staff_Tarif_Repo, error) {
 	return models.Staff_Tarif_Repo{}, nil
 }
 
 //update list
-
-func (s staffRepo) UpdateStaff_Tarif(models.Staff_Tarif) (string, error) {
+func (s *staftarifRepo) UpdateStaff_Tarifs(models.UpdateStaff_Tarif) (string, error) {
 	return "", nil
 }
 
 //delete staf tarif
-
-func (s staffRepo) DeleteStaff_Tarif(models.PrimaryKey) error {
+func (s *staftarifRepo) DeleteStaff_Tarifs(models.PrimaryKey) error {
 	return nil
 }
