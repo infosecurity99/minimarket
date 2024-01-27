@@ -26,5 +26,25 @@ func New(store storage.IStorage) *gin.Engine {
 	r.PUT("/staff_tarif/:id", h.UpdateStaff_Tarif)
 	r.DELETE("/staff_tarif/:id", h.DeleteStaff_Tarif)
 
+	//sale
+	r.POST("/sale", h.CreateSale)
+	r.GET("/sale/:id", h.GetByIDSales)
+	r.GET("/sales", h.GetListSales)
+	r.PUT("/sale/:id", h.UpdateSales)
+	r.DELETE("/sale/:id", h.DeleteSales)
+
+	//transaction
+	r.POST("/transaction", h.CreateTransaction)
+	r.GET("/transaction/:id", h.GetByIdTransaction)
+	r.GET("/transactions", h.GetListTransaction)
+	r.PUT("/transaction/:id", h.UpdateTransaction)
+	r.DELETE("/transaction/:id", h.DeleteTransaction)
+
+	//staff
+	r.POST("/staff", h.CreateStaff)
+	r.GET("/staff/:id", h.GetByIdStaff)
+	r.GET("/staffs", h.GetListStaff)
+	r.PUT("/staff/:id", h.UpdateStaff)
+	r.DELETE("/staff/:id", h.DeleteStaff)
 	return r
 }

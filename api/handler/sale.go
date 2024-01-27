@@ -13,7 +13,7 @@ func (h Handler) GetByIDSales(c *gin.Context) {
 }
 
 //getlist saler  handler
-func (h Handler) GetByIdSales(c *gin.Context) {
+func (h Handler) GetListSales(c *gin.Context) {
 
 }
 
@@ -23,6 +23,6 @@ func (h Handler) UpdateSales(c *gin.Context) {
 }
 
 //delete sale handler
-func (h Handler) DeleteSales() {
+func (h Handler) DeleteSales(c*gin.Context) {
 
 }
