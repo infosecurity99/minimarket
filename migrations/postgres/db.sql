@@ -64,3 +64,57 @@ CREATE TABLE staff_tarif (
 create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 create type tarif_type_enum as enum ( 'percent'  ,'fixed');
+
+
+
+
+
+
+
+
+/*storage*/
+CREATE TABLE storage (
+  id UUID PRIMARY KEY,
+  product_id UUID REFERENCES product(id),
+  branch_id UUID REFERENCES branch(id),
+  count INT
+);
+
+/*product*/
+CREATE TABLE product (
+  id UUID PRIMARY KEY,
+  name VARCHAR(30),
+  price INT,
+  barcode VARCHAR(30),
+  category_id UUID REFERENCES category(id)
+);
+
+/*category*/
+CREATE TABLE category (
+  id UUID PRIMARY KEY,
+  name VARCHAR(30),
+  parent_id UUID
+);
+
+/*storage transaction*/
+CREATE TABLE storage_transaction (
+  id UUID PRIMARY KEY,
+  branch_id UUID REFERENCES branch(id),
+  staff_id UUID REFERENCES staff(id),
+  product_id UUID REFERENCES product(id),
+  transaction_type storage_transaction_type_enum,
+  price INT,
+  quantity INT
+);
+
+
+CREATE TYPE storage_transaction_type_enum AS ENUM ('minus', 'plus');
+/*basket*/
+
+CREATE TABLE basket (
+  sale_id UUID REFERENCES sale(id),
+  product_id UUID REFERENCES product(id),
+  quantity INT,
+  price INT
+);
+
