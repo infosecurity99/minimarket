@@ -1,10 +1,11 @@
 package postgres
 
 import (
-	"connected/config"
-	"connected/storage"
 	"database/sql"
 	"fmt"
+
+	"connected/config"
+	"connected/storage"
 
 	_ "github.com/lib/pq"
 )
@@ -57,4 +58,22 @@ func (s Store) Staff_Tarif() storage.IStaff_Tarif {
 	newStaff_Tarif := NewStaff_Tarif(s.DB)
 
 	return newStaff_Tarif
+}
+
+func (s Store) Category() storage.ICategory {
+	newCategory := NewCategoryRepo(s.DB)
+
+	return newCategory
+}
+
+func (s Store) Product() storage.IProduct {
+	newProduct := NewProductRepo(s.DB)
+
+	return newProduct
+}
+
+func (s Store) Basket() storage.IBasket {
+	newBasket := NewBasketRepo(s.DB)
+
+	return newBasket
 }

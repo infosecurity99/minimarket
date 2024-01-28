@@ -23,6 +23,7 @@ type CreateTransaction struct {
 }
 
 type UpdateTransaction struct {
+	ID          string    `json:"id"`
 	Sale_id     string    `json:"sale_id"`
 	Staff_id    string    `json:"staff_id"`
 	Amount      string    `json:"amount"`

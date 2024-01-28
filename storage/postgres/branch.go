@@ -3,6 +3,7 @@ package postgres
 import (
 	"connected/api/models"
 	"connected/storage"
+
 	"database/sql"
 	"fmt"
 	"time"
@@ -20,98 +21,87 @@ func NewBranchRepo(db *sql.DB) storage.IBranchStorage {
 	}
 }
 
-//create  branch
-
+// create branch
 func (b *branchRepo) Create(createBranch models.CreateBranch) (string, error) {
 	uid := uuid.New()
-	create_at := time.Now()
-	if _, err := b.db.Exec(`insert into 
-			branch values ($1, $2, $3, $4)
-			`,
+	createAt := time.Now()
+	if _, err := b.db.Exec(`
+		INSERT INTO branch VALUES ($1, $2, $3, $4)
+		`,
 		uid,
 		createBranch.Name,
 		createBranch.Address,
-		create_at,
+		createAt,
 	); err != nil {
-		fmt.Println("error while inserting data", err.Error())
 		return "", err
 	}
 
 	return uid.String(), nil
 }
 
-//getbyid branch
-
+// getbyid branch
 func (b *branchRepo) GetByID(pKey models.PrimaryKey) (models.Branch, error) {
 	branch := models.Branch{}
 
 	query := `
-		select id, name, address, create_at from branch where id = $1 
-`
+		SELECT id, name, address, create_at FROM branch WHERE id = $1
+	`
 	if err := b.db.QueryRow(query, pKey.ID).Scan(
 		&branch.ID,
 		&branch.Name,
 		&branch.Address,
 		&branch.Create_at,
 	); err != nil {
-		fmt.Println("error while scanning user", err.Error())
 		return models.Branch{}, err
 	}
 
 	return branch, nil
 }
 
-//getlistbranch
-
+// getlistbranch
 func (b *branchRepo) GetList(request models.GetListRequest) (models.BranchResponse, error) {
 	var (
-		branches          = []models.Branch{}
-		count             = 0
-		countQuery, query string
-		page              = request.Page
-		offset            = (page - 1) * request.Limit
-		search            = request.Search
+		branches []models.Branch
+		count    int
 	)
 
-	countQuery = `
-		SELECT count(1) from branch  `
+	countQuery := `
+		SELECT COUNT(1) FROM branch`
 
-	if search != "" {
-		countQuery += fmt.Sprintf(` and (name ilike '%%%s%%' )`, search)
+	query := `
+		SELECT id, name, address, create_at FROM branch`
+
+	// Common logic for adding search condition to queries
+	addSearchCondition := func(baseQuery string) string {
+		if request.Search != "" {
+			return fmt.Sprintf("%s AND (name ILIKE '%%%s%%')", baseQuery, request.Search)
+		}
+		return baseQuery
 	}
+
+	countQuery = addSearchCondition(countQuery)
 
 	if err := b.db.QueryRow(countQuery).Scan(&count); err != nil {
-		fmt.Println("error while scanning count of branch", err.Error())
 		return models.BranchResponse{}, err
 	}
 
-	query = `
-		select id, name, address, create_at
-			FROM branch
-			    `
+	query = addSearchCondition(query) + ` LIMIT $1 OFFSET $2`
 
-	if search != "" {
-		query += fmt.Sprintf(` and (name ilike '%%%s%%' ) `, search)
-	}
-
-	query += ` LIMIT $1 OFFSET $2`
-
-	rows, err := b.db.Query(query, request.Limit, offset)
+	rows, err := b.db.Query(query, request.Limit, (request.Page-1)*request.Limit)
 	if err != nil {
-		fmt.Println("error while query rows", err.Error())
 		return models.BranchResponse{}, err
 	}
+	defer rows.Close()
 
 	for rows.Next() {
 		branch := models.Branch{}
 
-		if err = rows.Scan(
+		if err := rows.Scan(
 			&branch.ID,
 			&branch.Name,
 			&branch.Address,
 			&branch.Create_at,
 		); err != nil {
-			fmt.Println("error while scanning row", err.Error())
 			return models.BranchResponse{}, err
 		}
 
@@ -124,31 +114,28 @@ func (b *branchRepo) GetList(request models.GetListRequest) (models.BranchRespon
 	}, nil
 }
 
-//updatebranch
-
+// updatebranch
 func (b *branchRepo) Update(request models.UpdateBranch) (string, error) {
 	query := `
-		update branch 
-			set name = $1, address = $2, ctreate_at = $3
-				where id = $4`
+		UPDATE branch
+		SET name = $1, address = $2
+		WHERE id = $3
+	`
 
-	if _, err := b.db.Exec(query, request.Name, request.Address, request.Create_at, request.ID); err != nil {
-		fmt.Println("error while updating branch data", err.Error())
+	if _, err := b.db.Exec(query, request.Name, request.Address, request.ID); err != nil {
 		return "", err
 	}
 
 	return request.ID, nil
 }
 
-//delete branch
-
+// delete branch
 func (b *branchRepo) Delete(request models.PrimaryKey) error {
 	query := `
-		delete from branch
-			where id = $1
-`
+		DELETE FROM branch
+		WHERE id = $1
+	`
 	if _, err := b.db.Exec(query, request.ID); err != nil {
-		fmt.Println("error while deleting branch by id", err.Error())
 		return err
 	}
 

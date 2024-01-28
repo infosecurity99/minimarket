@@ -26,6 +26,13 @@ func New(store storage.IStorage) *gin.Engine {
 	r.PUT("/staff_tarif/:id", h.UpdateStaff_Tarif)
 	r.DELETE("/staff_tarif/:id", h.DeleteStaff_Tarif)
 
+	//staf
+	r.POST("/staff", h.CreateStaff)
+	r.GET("/staff/:id", h.GetByIdStaff)
+	r.GET("/staffs", h.GetListStaff)
+	r.PUT("/staff/:id", h.UpdateStaff)
+	r.DELETE("/staff/:id", h.DeleteStaff)
+
 	//sale
 	r.POST("/sale", h.CreateSale)
 	r.GET("/sale/:id", h.GetByIDSales)
@@ -33,18 +40,26 @@ func New(store storage.IStorage) *gin.Engine {
 	r.PUT("/sale/:id", h.UpdateSales)
 	r.DELETE("/sale/:id", h.DeleteSales)
 
-	//transaction
-	r.POST("/transaction", h.CreateTransaction)
-	r.GET("/transaction/:id", h.GetByIdTransaction)
-	r.GET("/transactions", h.GetListTransaction)
-	r.PUT("/transaction/:id", h.UpdateTransaction)
-	r.DELETE("/transaction/:id", h.DeleteTransaction)
+	//category
+	r.POST("/category", h.CreateCategory)
+	r.GET("/category/:id", h.GetByIDCategory)
+	r.GET("/categories", h.GetListCategory)
+	r.PUT("/category/:id", h.UpdateCategory)
+	r.DELETE("/category/:id", h.DeleteCategory)
 
-	//staff
-	r.POST("/staff", h.CreateStaff)
-	r.GET("/staff/:id", h.GetByIdStaff)
-	r.GET("/staffs", h.GetListStaff)
-	r.PUT("/staff/:id", h.UpdateStaff)
-	r.DELETE("/staff/:id", h.DeleteStaff)
+	//product
+	r.POST("/product", h.CreateProduct)
+	r.GET("/product/:id", h.GetByIDProduct)
+	r.GET("/products", h.GetListProduct)
+	r.PUT("/product/:id", h.UpdateProduct)
+	r.DELETE("/product/:id", h.DeleteProduct)
+
+	//basket
+	r.POST("/basket", h.CreateBasket)
+	r.GET("/basket/:id", h.GetByIDBasket)
+	r.GET("/baskets", h.GetListBasket)
+	r.PUT("/basket/:id", h.UpdateBasket)
+	r.DELETE("/basket/:id", h.DeleteBasket)
+
 	return r
 }
