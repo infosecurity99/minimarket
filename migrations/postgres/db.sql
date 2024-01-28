@@ -70,7 +70,7 @@ create type tarif_type_enum as enum ( 'percent'  ,'fixed');
 
 
 
-
+/**/
 
 /*storage*/
 CREATE TABLE storage (
