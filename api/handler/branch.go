@@ -1,16 +1,28 @@
 package handler
 
 import (
-	"connected/api/models"
 	"errors"
 	"net/http"
 	"strconv"
+
+	"connected/api/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
-//create branch
+// CreateBranch godoc
+// @Router       /branch [POST]
+// @Summary      Creates a new branch
+// @Description  create a new branch
+// @Tags         branch
+// @Accept       json
+// @Produce      json
+// @Param        basket body models.CreateBranch false "branch"
+// @Success      201  {object}  models.Branch
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h Handler) CreateBranch(c *gin.Context) {
 	createBranch := models.CreateBranch{}
 
@@ -36,7 +48,16 @@ func (h Handler) CreateBranch(c *gin.Context) {
 	handleResponse(c, "", http.StatusCreated, branch)
 }
 
-//get by id  branch
+// GetByID retrieves branch information by ID.
+// @Summary Get branch by ID
+// @Tags branch
+// @Accept json
+// @Produce json
+// @Param id path string true "Branch ID"
+// @Success 200 {object} models.Branch
+// @Failure 400 {string} models.Response
+// @Failure 500 {string} models.Response
+// @Router /branch/{id} [get]
 func (h Handler) GetByID(c *gin.Context) {
 	var err error
 
@@ -53,7 +74,18 @@ func (h Handler) GetByID(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, branch)
 }
 
-//getlist branch
+// GetList returns a list of branches.
+// @Summary Get a list of branches
+// @Tags branch
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number" default(1)
+// @Param limit query int false "Number of items per page" default(10)
+// @Param search query string false "Search query"
+// @Success 200 {object} models.Branch
+// @Failure 400 {string} models.Response
+// @Failure 500 {string} models.Response
+// @Router /branchs [get]
 func (h Handler) GetList(c *gin.Context) {
 	var (
 		page, limit int
@@ -70,7 +102,6 @@ func (h Handler) GetList(c *gin.Context) {
 
 	limitStr := c.DefaultQuery("limit", "10")
 	limit, err = strconv.Atoi(limitStr)
-
 	if err != nil {
 		handleResponse(c, "error while parsing limit", http.StatusBadRequest, err.Error())
 		return
@@ -91,7 +122,19 @@ func (h Handler) GetList(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, resp)
 }
 
-//create branch
+// UpdateBranch godoc
+// @Router       /branch/{id} [PUT]
+// @Summary      Update branch
+// @Description  update branch
+// @Tags         branch
+// @Accept       json
+// @Produce      json
+// @Param 		 id path string true "branch"
+// @Param        user body models.UpdateBranch true "branch"
+// @Success      200  {object}  models.Branch
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h Handler) UpdateBranch(c *gin.Context) {
 	updateBranch := models.UpdateBranch{}
 
@@ -110,7 +153,7 @@ func (h Handler) UpdateBranch(c *gin.Context) {
 
 	pKey, err := h.storage.Branch().Update(updateBranch)
 	if err != nil {
-		handleResponse(c, "error while updating user", http.StatusInternalServerError, err.Error())
+		handleResponse(c, "error while updating branch", http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -125,7 +168,16 @@ func (h Handler) UpdateBranch(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, branch)
 }
 
-//delete branch
+// Delete deletes branch by ID.
+// @Summary Delete branch by ID
+// @Tags branch
+// @Accept json
+// @Produce json
+// @Param id path string true "Branch ID"
+// @Success 200 {string} models.Response
+// @Failure 400 {string} models.Response
+// @Failure 500 {string} models.Response
+// @Router /branch/{id} [delete]
 func (h Handler) Delete(c *gin.Context) {
 	uid := c.Param("id")
 	id, err := uuid.Parse(uid)

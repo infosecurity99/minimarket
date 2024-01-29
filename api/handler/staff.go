@@ -1,16 +1,27 @@
 package handler
 
 import (
-	"connected/api/models"
 	"errors"
 	"net/http"
 	"strconv"
 
+	"connected/api/models"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
-//create staff
+// CreateStaff godoc
+// @Router       /staff [POST]
+// @Summary      Creates a new staff
+// @Description  create a new staff
+// @Tags         staff
+// @Accept       json
+// @Produce      json
+// @Param        basket body models.CreateStaff false "staff"
+// @Success      201  {object}  models.Staff
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h Handler) CreateStaff(c *gin.Context) {
 	createStaff := models.CreateStaff{}
 
@@ -36,7 +47,16 @@ func (h Handler) CreateStaff(c *gin.Context) {
 	handleResponse(c, "", http.StatusCreated, staff)
 }
 
-//get by id  staff
+// GetByIdStaff retrieves staff information by ID.
+// @Summary Get staff by ID
+// @Tags staff
+// @Accept json
+// @Produce json
+// @Param id path string true "Staff ID"
+// @Success 200 {object} models.Staff
+// @Failure 400 {string} models.Response
+// @Failure 500 {string} models.Response
+// @Router /staff/{id} [get]
 func (h Handler) GetByIdStaff(c *gin.Context) {
 	var err error
 
@@ -53,7 +73,18 @@ func (h Handler) GetByIdStaff(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, staff)
 }
 
-//getlist staff
+// GetListStaff returns a list of staff.
+// @Summary Get a list of staff
+// @Tags staff
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number" default(1)
+// @Param limit query int false "Number of items per page" default(10)
+// @Param search query string false "Search query"
+// @Success 200 {object} models.Staff
+// @Failure 400 {string} models.Response
+// @Failure 500 {string} models.Response
+// @Router /staffs [get]
 func (h Handler) GetListStaff(c *gin.Context) {
 	var (
 		page, limit int
@@ -70,7 +101,6 @@ func (h Handler) GetListStaff(c *gin.Context) {
 
 	limitStr := c.DefaultQuery("limit", "10")
 	limit, err = strconv.Atoi(limitStr)
-
 	if err != nil {
 		handleResponse(c, "error while parsing limit", http.StatusBadRequest, err.Error())
 		return
@@ -91,7 +121,19 @@ func (h Handler) GetListStaff(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, resp)
 }
 
-//create staff
+// UpdateStaff godoc
+// @Router       /staff/{id} [PUT]
+// @Summary      Update staff
+// @Description  update staff
+// @Tags         staff
+// @Accept       json
+// @Produce      json
+// @Param 		 id path string true "staff"
+// @Param        user body models.UpdateStaff true "staff"
+// @Success      200  {object}  models.Staff
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h Handler) UpdateStaff(c *gin.Context) {
 	updateStaff := models.UpdateStaff{}
 
@@ -125,7 +167,16 @@ func (h Handler) UpdateStaff(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, branch)
 }
 
-//delete staff
+// DeleteStaff deletes staff information by ID.
+// @Summary Delete staff by ID
+// @Tags staff
+// @Accept json
+// @Produce json
+// @Param id path string true "Staff ID"
+// @Success 200 {string} models.Response
+// @Failure 400 {string} models.Response
+// @Failure 500 {string} models.Response
+// @Router /staff/{id} [delete]
 func (h Handler) DeleteStaff(c *gin.Context) {
 	uid := c.Param("id")
 	id, err := uuid.Parse(uid)

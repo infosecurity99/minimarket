@@ -1,16 +1,28 @@
 package handler
 
 import (
-	"connected/api/models"
 	"errors"
 	"net/http"
 	"strconv"
+
+	"connected/api/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
-//create sale  handler
+// CreateSale godoc
+// @Router       /sale [POST]
+// @Summary      Creates a new sale
+// @Description  create a new sale
+// @Tags         sale
+// @Accept       json
+// @Produce      json
+// @Param        basket body models.CreateSale false "sale"
+// @Success      201  {object}  models.Sale
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h Handler) CreateSale(c *gin.Context) {
 	createSale := models.CreateSale{}
 
@@ -25,19 +37,27 @@ func (h Handler) CreateSale(c *gin.Context) {
 		return
 	}
 
-	branch, err := h.storage.Sale().GetByIdSales(models.PrimaryKey{
+	sale, err := h.storage.Sale().GetByIdSales(models.PrimaryKey{
 		ID: pKey,
 	})
 	if err != nil {
-		handleResponse(c, "error while getting branch by id", http.StatusInternalServerError, err)
+		handleResponse(c, "error while getting sale by id", http.StatusInternalServerError, err)
 		return
 	}
 
-	handleResponse(c, "", http.StatusCreated, branch)
+	handleResponse(c, "", http.StatusCreated, sale)
 }
 
-//getbyid ale handler
-
+// GetByIDSales retrieves sale information by ID.
+// @Summary Get sale by ID
+// @Tags sale
+// @Accept json
+// @Produce json
+// @Param id path string true "Sale ID"
+// @Success 200 {object} models.Sale
+// @Failure 400 {string} models.Response
+// @Failure 500 {string} models.Response
+// @Router /sale/{id} [get]
 func (h Handler) GetByIDSales(c *gin.Context) {
 	var err error
 
@@ -54,7 +74,18 @@ func (h Handler) GetByIDSales(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, sale)
 }
 
-//getlist saler  handler
+// GetListSales returns a list of sales.
+// @Summary Get a list of sales
+// @Tags sale
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number" default(1)
+// @Param limit query int false "Number of items per page" default(10)
+// @Param search query string false "Search query"
+// @Success 200 {object} models.Sale
+// @Failure 400 {string} models.Response
+// @Failure 500 {string} models.Response
+// @Router /sales [get]
 func (h Handler) GetListSales(c *gin.Context) {
 	var (
 		page, limit int
@@ -71,7 +102,6 @@ func (h Handler) GetListSales(c *gin.Context) {
 
 	limitStr := c.DefaultQuery("limit", "10")
 	limit, err = strconv.Atoi(limitStr)
-
 	if err != nil {
 		handleResponse(c, "error while parsing limit", http.StatusBadRequest, err.Error())
 		return
@@ -92,7 +122,19 @@ func (h Handler) GetListSales(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, resp)
 }
 
-//update slae handler
+// UpdateSales godoc
+// @Router       /sale/{id} [PUT]
+// @Summary      Update sale
+// @Description  update sale
+// @Tags         sale
+// @Accept       json
+// @Produce      json
+// @Param 		 id path string true "sale"
+// @Param        user body models.UpdateSale true "sale"
+// @Success      200  {object}  models.Sale
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h Handler) UpdateSales(c *gin.Context) {
 	updateSale := models.UpdateSale{}
 
@@ -111,7 +153,7 @@ func (h Handler) UpdateSales(c *gin.Context) {
 
 	pKey, err := h.storage.Sale().UpdateSales(updateSale)
 	if err != nil {
-		handleResponse(c, "error while updating staff", http.StatusInternalServerError, err.Error())
+		handleResponse(c, "error while updating sale", http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -126,7 +168,16 @@ func (h Handler) UpdateSales(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, sales)
 }
 
-//delete sale handler
+// DeleteSales deletes sale by ID.
+// @Summary Delete sale by ID
+// @Tags sale
+// @Accept json
+// @Produce json
+// @Param id path string true "Sale ID"
+// @Success 200 {string} string models.Response
+// @Failure 400 {string} string models.Response
+// @Failure 500 {string} string models.Response
+// @Router /sale/{id} [delete]
 func (h Handler) DeleteSales(c *gin.Context) {
 	uid := c.Param("id")
 	id, err := uuid.Parse(uid)

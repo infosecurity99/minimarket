@@ -11,7 +11,18 @@ import (
 	"github.com/google/uuid"
 )
 
-// create CreateStaff_Tarif
+// CreateStaff_Tarif godoc
+// @Router       /staff_tarif [POST]
+// @Summary      Creates a new staff_tarif
+// @Description  create a new staff_tarif
+// @Tags         staff_tarif
+// @Accept       json
+// @Produce      json
+// @Param        basket body models.CreateStaff_Tarif false "staff_tarif"
+// @Success      201  {object}  models.Staff_Tarif
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h Handler) CreateStaff_Tarif(c *gin.Context) {
 	createStaffTarif := models.CreateStaff_Tarif{}
 
@@ -26,7 +37,7 @@ func (h Handler) CreateStaff_Tarif(c *gin.Context) {
 		return
 	}
 
-	satfftarif, err := h.storage.Staff_Tarif().GetByIdStaff_Tarifs(models.PrimaryKey{
+	staffTarif, err := h.storage.Staff_Tarif().GetByIdStaff_Tarifs(models.PrimaryKey{
 		ID: pKey,
 	})
 	if err != nil {
@@ -34,16 +45,25 @@ func (h Handler) CreateStaff_Tarif(c *gin.Context) {
 		return
 	}
 
-	handleResponse(c, "", http.StatusCreated, satfftarif)
+	handleResponse(c, "", http.StatusCreated, staffTarif)
 }
 
-// get by id  CreateStaff_Tarif
+// GetByIdStaff_Tarif retrieves staff tarif information by ID.
+// @Summary Get staff tarif by ID
+// @Tags staff_tarif
+// @Accept json
+// @Produce json
+// @Param id path string true "Staff_Tarif ID"
+// @Success 200 {object} models.Staff_Tarif
+// @Failure 400 {string} models.Response
+// @Failure 500 {string} models.Response
+// @Router /staff_tarif/{id} [get]
 func (h Handler) GetByIdStaff_Tarif(c *gin.Context) {
 	var err error
 
 	uid := c.Param("id")
 
-	staftarif2, err := h.storage.Staff_Tarif().GetByIdStaff_Tarifs(models.PrimaryKey{
+	staffTarif, err := h.storage.Staff_Tarif().GetByIdStaff_Tarifs(models.PrimaryKey{
 		ID: uid,
 	})
 	if err != nil {
@@ -51,10 +71,21 @@ func (h Handler) GetByIdStaff_Tarif(c *gin.Context) {
 		return
 	}
 
-	handleResponse(c, "", http.StatusOK, staftarif2)
+	handleResponse(c, "", http.StatusOK, staffTarif)
 }
 
-// getlist CreateStaff_Tarif
+// GetListStaff_Tarif returns a list of staff tarifs.
+// @Summary Get a list of staff tarifs
+// @Tags staff_tarif
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number" default(1)
+// @Param limit query int false "Number of items per page" default(10)
+// @Param search query string false "Search query"
+// @Success 200 {object} models.Staff_Tarif
+// @Failure 400 {string} models.Response
+// @Failure 500 {string} models.Response
+// @Router /staff_tarifs [get]
 func (h Handler) GetListStaff_Tarif(c *gin.Context) {
 	var (
 		page, limit int
@@ -71,7 +102,6 @@ func (h Handler) GetListStaff_Tarif(c *gin.Context) {
 
 	limitStr := c.DefaultQuery("limit", "10")
 	limit, err = strconv.Atoi(limitStr)
-
 	if err != nil {
 		handleResponse(c, "error while parsing limit", http.StatusBadRequest, err.Error())
 		return
@@ -92,9 +122,21 @@ func (h Handler) GetListStaff_Tarif(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, resp)
 }
 
-// create CreateStaff_Tarif
+// UpdateStaff_Tarif godoc
+// @Router       /staff_tarif/{id} [PUT]
+// @Summary      Update staff_tarif
+// @Description  update staff_tarif
+// @Tags         staff_tarif
+// @Accept       json
+// @Produce      json
+// @Param 		 id path string true "staff_tarif"
+// @Param        user body models.UpdateStaff_Tarif true "staff_tarif"
+// @Success      200  {object}  models.Staff_Tarif
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h Handler) UpdateStaff_Tarif(c *gin.Context) {
-	updatestafTarif := models.UpdateStaff_Tarif{}
+	updateStaffTarif := models.UpdateStaff_Tarif{}
 
 	uid := c.Param("id")
 	if uid == "" {
@@ -102,31 +144,40 @@ func (h Handler) UpdateStaff_Tarif(c *gin.Context) {
 		return
 	}
 
-	updatestafTarif.ID = uid
+	updateStaffTarif.ID = uid
 
-	if err := c.ShouldBindJSON(&updatestafTarif); err != nil {
+	if err := c.ShouldBindJSON(&updateStaffTarif); err != nil {
 		handleResponse(c, "error while reading body", http.StatusBadRequest, err.Error())
 		return
 	}
 
-	pKey, err := h.storage.Staff_Tarif().UpdateStaff_Tarifs(updatestafTarif)
+	pKey, err := h.storage.Staff_Tarif().UpdateStaff_Tarifs(updateStaffTarif)
 	if err != nil {
-		handleResponse(c, "error while updating user", http.StatusInternalServerError, err.Error())
+		handleResponse(c, "error while updating stafftarif", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	branch, err := h.storage.Staff_Tarif().GetByIdStaff_Tarifs(models.PrimaryKey{
+	staffTarif, err := h.storage.Staff_Tarif().GetByIdStaff_Tarifs(models.PrimaryKey{
 		ID: pKey,
 	})
 	if err != nil {
-		handleResponse(c, "error while getting branch by id", http.StatusInternalServerError, err)
+		handleResponse(c, "error while getting stafftarif by id", http.StatusInternalServerError, err)
 		return
 	}
 
-	handleResponse(c, "", http.StatusOK, branch)
+	handleResponse(c, "", http.StatusOK, staffTarif)
 }
 
-// delete CreateStaff_Tarif
+// DeleteStaff_Tarif deletes staff tarif information by ID.
+// @Summary Delete staff tarif by ID
+// @Tags staff_tarif
+// @Accept json
+// @Produce json
+// @Param id path string true "Staff_Tarif ID"
+// @Success 200 {string} models.Response
+// @Failure 400 {string} models.Response
+// @Failure 500 {string} models.Response
+// @Router /staff_tarif/{id} [delete]
 func (h Handler) DeleteStaff_Tarif(c *gin.Context) {
 	uid := c.Param("id")
 	id, err := uuid.Parse(uid)
@@ -138,7 +189,7 @@ func (h Handler) DeleteStaff_Tarif(c *gin.Context) {
 	if err = h.storage.Staff_Tarif().DeleteStaff_Tarifs(models.PrimaryKey{
 		ID: id.String(),
 	}); err != nil {
-		handleResponse(c, "error while deleting staf tarif by id", http.StatusInternalServerError, err.Error())
+		handleResponse(c, "error while deleting stafftarif by id", http.StatusInternalServerError, err.Error())
 		return
 	}
 

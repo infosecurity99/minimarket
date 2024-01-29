@@ -61,5 +61,26 @@ func New(store storage.IStorage) *gin.Engine {
 	r.PUT("/basket/:id", h.UpdateBasket)
 	r.DELETE("/basket/:id", h.DeleteBasket)
 
+	//storage
+	r.POST("/storage", h.CreateStorages)
+	r.GET("/storage/:id", h.GetByIdSorages)
+	r.GET("/storages", h.GetListStorages)
+	r.PUT("/storage/:id", h.UpdateSorages)
+	r.DELETE("/storage/:id", h.DeleteStorages)
+
+	//transaction
+	r.POST("/transaction", h.CreateTransaction)
+	r.GET("/transaction/:id", h.GetByIdTransaction)
+	r.GET("/transactions", h.GetListTransaction)
+	r.PUT("/transaction/:id", h.UpdateTransaction)
+	r.DELETE("/transaction/:id", h.DeleteTransaction)
+
+	//transactionstorage
+	r.POST("/transaction_storage", h.CreateTransactionStorage)
+	r.GET("/transaction_storage/:id", h.GetByIdTranasactionStorage)
+	r.GET("/transaction_storages", h.GetListTransactionStorage)
+	r.PUT("/transaction_storage/:id", h.UpdateTransactionStorage)
+	r.DELETE("/transaction_storage/:id", h.DeleteTransactionStorage)
+
 	return r
 }

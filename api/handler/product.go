@@ -2,15 +2,26 @@ package handler
 
 import (
 	"connected/api/models"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
 	"errors"
 	"net/http"
 	"strconv"
-
-	"github.com/gin-gonic/gin"
 )
 
+// CreateProduct godoc
+// @Router       /product [POST]
+// @Summary      Creates a new product
+// @Description  create a new product
+// @Tags         product
+// @Accept       json
+// @Produce      json
+// @Param        basket body models.CreateProduct false "product"
+// @Success      201  {object}  models.Product
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h Handler) CreateProduct(c *gin.Context) {
 	createProduct := models.CreateProduct{}
 
@@ -36,6 +47,16 @@ func (h Handler) CreateProduct(c *gin.Context) {
 	handleResponse(c, "", http.StatusCreated, product)
 }
 
+// GetByIDProduct retrieves product information by ID.
+// @Summary Get product by ID
+// @Tags product
+// @Accept json
+// @Produce json
+// @Param id path string true "Product ID"
+// @Success 200 {object} models.Product
+// @Failure 400 {string} string "Bad Request"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /product/{id} [get]
 func (h Handler) GetByIDProduct(c *gin.Context) {
 	var err error
 
@@ -52,6 +73,18 @@ func (h Handler) GetByIDProduct(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, product)
 }
 
+// GetListProduct returns a list of products.
+// @Summary Get a list of products
+// @Tags product
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number" default(1)
+// @Param limit query int false "Number of items per page" default(10)
+// @Param search query string false "Search query"
+// @Success 200 {object} models.Product
+// @Failure 400 {string} string "Bad Request"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /products [get]
 func (h Handler) GetListProduct(c *gin.Context) {
 	var (
 		page, limit int
@@ -68,7 +101,6 @@ func (h Handler) GetListProduct(c *gin.Context) {
 
 	limitStr := c.DefaultQuery("limit", "10")
 	limit, err = strconv.Atoi(limitStr)
-
 	if err != nil {
 		handleResponse(c, "error while parsing limit", http.StatusBadRequest, err.Error())
 		return
@@ -89,6 +121,19 @@ func (h Handler) GetListProduct(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, resp)
 }
 
+// UpdateProduct godoc
+// @Router       /product/{id} [PUT]
+// @Summary      Update product
+// @Description  update product
+// @Tags         product
+// @Accept       json
+// @Produce      json
+// @Param 		 id path string true "product"
+// @Param        user body models.UpdateProduct true "product"
+// @Success      200  {object}  models.Product
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h Handler) UpdateProduct(c *gin.Context) {
 	updateProduct := models.UpdateProduct{}
 
@@ -122,6 +167,16 @@ func (h Handler) UpdateProduct(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, product)
 }
 
+// DeleteProduct deletes product by ID.
+// @Summary Delete product by ID
+// @Tags product
+// @Accept json
+// @Produce json
+// @Param id path string true "Product ID"
+// @Success 200 {string} string "Data successfully deleted"
+// @Failure 400 {string} string "Bad Request"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /product/{id} [delete]
 func (h Handler) DeleteProduct(c *gin.Context) {
 	uid := c.Param("id")
 	id, err := uuid.Parse(uid)

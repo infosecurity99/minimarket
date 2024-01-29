@@ -10,7 +10,18 @@ import (
 	"github.com/google/uuid"
 )
 
-// create transaction
+// CreateTransaction godoc
+// @Router       /transaction [POST]
+// @Summary      Creates a new storage
+// @Description  create a new storage
+// @Tags         transaction
+// @Accept       json
+// @Produce      json
+// @Param        basket body models.CreateTransaction false "transaction"
+// @Success      201  {object}  models.Transaction
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h Handler) CreateTransaction(c *gin.Context) {
 	createTransaction := models.CreateTransaction{}
 
@@ -36,7 +47,16 @@ func (h Handler) CreateTransaction(c *gin.Context) {
 	handleResponse(c, "", http.StatusCreated, transaction)
 }
 
-// get by id  transaction
+// GetByIdTransaction retrieves transaction information by ID.
+// @Summary Get transaction by ID
+// @Tags transaction
+// @Accept json
+// @Produce json
+// @Param id path string true "Transaction ID"
+// @Success 200 {object} models.Transaction
+// @Failure 400 {string} string "Bad Request"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /transaction/{id} [get]
 func (h Handler) GetByIdTransaction(c *gin.Context) {
 	var err error
 
@@ -53,7 +73,17 @@ func (h Handler) GetByIdTransaction(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, transaction)
 }
 
-// getlist transaction
+// GetListTransaction returns a list of transactions.
+// @Summary Get a list of transactions
+// @Tags transaction
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number" default(1)
+// @Param limit query int false "Number of items per page" default(10)
+// @Success 200 {object} models.Transaction
+// @Failure 400 {string} string "Bad Request"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /transactions [get]
 func (h Handler) GetListTransaction(c *gin.Context) {
 	var (
 		page, limit int
@@ -98,7 +128,19 @@ func (h Handler) GetListTransaction(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, resp)
 }
 
-// create transaction
+// UpdateTransaction godoc
+// @Router       /transaction/{id} [PUT]
+// @Summary      Update transaction
+// @Description  update transaction
+// @Tags         storage
+// @Accept       json
+// @Produce      json
+// @Param 		 id path string true "transaction"
+// @Param        user body models.UpdateTransaction true "transaction"
+// @Success      200  {object}  models.Transaction
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h Handler) UpdateTransaction(c *gin.Context) {
 	updateTransaction := models.UpdateTransaction{}
 
@@ -130,7 +172,16 @@ func (h Handler) UpdateTransaction(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, transaction)
 }
 
-// delete transaction
+// DeleteTransaction deletes transaction information by ID.
+// @Summary Delete transaction by ID
+// @Tags transaction
+// @Accept json
+// @Produce json
+// @Param id path string true "transaction"
+// @Success 200 {string} string "Data deleted successfully"
+// @Failure 400 {string} string "Bad Request"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /transaction/{id} [delete]
 func (h Handler) DeleteTransaction(c *gin.Context) {
 	uid := c.Param("id")
 	id, err := uuid.Parse(uid)

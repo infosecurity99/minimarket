@@ -1,14 +1,14 @@
 package handler
 
 import (
-	"connected/api/models"
-	"github.com/google/uuid"
-
 	"errors"
 	"net/http"
 	"strconv"
 
+	"connected/api/models"
+
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 // CreateBasket godoc
@@ -27,13 +27,13 @@ func (h Handler) CreateBasket(c *gin.Context) {
 	createBasket := models.CreateBasket{}
 
 	if err := c.ShouldBindJSON(&createBasket); err != nil {
-		handleResponse(c, "error while reading body from client", http.StatusBadRequest, err)
+		handleResponse(c, "Error: Failed to parse request body JSON", http.StatusBadRequest, err)
 		return
 	}
 
 	pKey, err := h.storage.Basket().CreateBasket(createBasket)
 	if err != nil {
-		handleResponse(c, "error while creating basket", http.StatusInternalServerError, err)
+		handleResponse(c, "Error: Failed to create basket", http.StatusInternalServerError, err)
 		return
 	}
 
@@ -41,7 +41,7 @@ func (h Handler) CreateBasket(c *gin.Context) {
 		ID: pKey,
 	})
 	if err != nil {
-		handleResponse(c, "error while getting basket by id", http.StatusInternalServerError, err)
+		handleResponse(c, "Error: Failed to find basket by ID", http.StatusInternalServerError, err)
 		return
 	}
 
@@ -49,7 +49,6 @@ func (h Handler) CreateBasket(c *gin.Context) {
 }
 
 // GetByIDBasket godoc
-// @Router       /basket/{id} [GET]
 // @Summary      Gets basket
 // @Description  get basket by ID
 // @Tags         basket
@@ -60,6 +59,7 @@ func (h Handler) CreateBasket(c *gin.Context) {
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
 // @Failure      500  {object}  models.Response
+// @Router /basket/{id} [get]
 func (h Handler) GetByIDBasket(c *gin.Context) {
 	var err error
 
@@ -69,27 +69,26 @@ func (h Handler) GetByIDBasket(c *gin.Context) {
 		ID: uid,
 	})
 	if err != nil {
-		handleResponse(c, "error while getting basket by id", http.StatusInternalServerError, err)
+		handleResponse(c, "Error: Failed to find basket by ID", http.StatusInternalServerError, err)
 		return
 	}
 
 	handleResponse(c, "", http.StatusOK, basket)
 }
 
-// GetListBasket godoc
-// @Router       /baskets [GET]
-// @Summary      Get basket list
-// @Description  get basket list
-// @Tags         basket
-// @Accept       json
-// @Produce      json
-// @Param        page query string false "page"
-// @Param 		 limit query string false "limit"
-// @Param 		 search query string false "search"
-// @Success      200  {object}  models.BasketResponse
-// @Failure      400  {object}  models.Response
-// @Failure      404  {object}  models.Response
-// @Failure      500  {object}  models.Response
+// GetListBasket gets a list of baskets.
+// @Summary Get a list of baskets
+// @Tags basket
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number" default(1)
+// @Param limit query int false "Number of items per page" default(10)
+// @Param search query string false "Search term"
+// @Success 200 {object} models.BasketResponse
+// @Failure 400 {object} models.Response
+// @Failure 404 {object} models.Response
+// @Failure 500 {object} models.Response
+// @Router /baskets [get]
 func (h Handler) GetListBasket(c *gin.Context) {
 	var (
 		page, limit int
@@ -100,15 +99,24 @@ func (h Handler) GetListBasket(c *gin.Context) {
 	pageStr := c.DefaultQuery("page", "1")
 	page, err = strconv.Atoi(pageStr)
 	if err != nil {
-		handleResponse(c, "error while parsing page", http.StatusBadRequest, err.Error())
+		handleResponse(c, "Error: Failed to parse page parameter", http.StatusBadRequest, err)
+		return
+	}
+
+	if page < 1 {
+		handleResponse(c, "Error: Invalid page number", http.StatusBadRequest, nil)
 		return
 	}
 
 	limitStr := c.DefaultQuery("limit", "10")
 	limit, err = strconv.Atoi(limitStr)
-
 	if err != nil {
-		handleResponse(c, "error while parsing limit", http.StatusBadRequest, err.Error())
+		handleResponse(c, "Error: Failed to parse limit parameter", http.StatusBadRequest, err)
+		return
+	}
+
+	if limit < 1 {
+		handleResponse(c, "Error: Invalid limit value", http.StatusBadRequest, nil)
 		return
 	}
 
@@ -120,7 +128,7 @@ func (h Handler) GetListBasket(c *gin.Context) {
 		Search: search,
 	})
 	if err != nil {
-		handleResponse(c, "error while getting basket", http.StatusInternalServerError, err)
+		handleResponse(c, "Error: Failed to get basket list", http.StatusInternalServerError, err)
 		return
 	}
 
@@ -135,7 +143,7 @@ func (h Handler) GetListBasket(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param 		 id path string true "basket"
-// @Param        user body models.UpdateBasket true "user"
+// @Param        user body models.UpdateBasket true "basket"
 // @Success      200  {object}  models.Basket
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
@@ -145,20 +153,20 @@ func (h Handler) UpdateBasket(c *gin.Context) {
 
 	uid := c.Param("id")
 	if uid == "" {
-		handleResponse(c, "invalid uuid", http.StatusBadRequest, errors.New("invalid uuid"))
+		handleResponse(c, "Error: Invalid UUID", http.StatusBadRequest, errors.New("UUID is not valid"))
 		return
 	}
 
 	updateBasket.ID = uid
 
 	if err := c.ShouldBindJSON(&updateBasket); err != nil {
-		handleResponse(c, "error while reading body from client", http.StatusBadRequest, err)
+		handleResponse(c, "Error: Failed to parse request body JSON", http.StatusBadRequest, err)
 		return
 	}
 
 	pKey, err := h.storage.Basket().UpdateBasket(updateBasket)
 	if err != nil {
-		handleResponse(c, "error while updating basket", http.StatusInternalServerError, err)
+		handleResponse(c, "Error: Failed to update basket", http.StatusInternalServerError, err)
 		return
 	}
 
@@ -166,39 +174,38 @@ func (h Handler) UpdateBasket(c *gin.Context) {
 		ID: pKey,
 	})
 	if err != nil {
-		handleResponse(c, "error while getting basket by id", http.StatusInternalServerError, err)
+		handleResponse(c, "Error: Failed to find basket by ID", http.StatusInternalServerError, err)
 		return
 	}
 
 	handleResponse(c, "", http.StatusOK, basket)
 }
 
-// DeleteBasket godoc
-// @Router       /basket/{id} [DELETE]
-// @Summary      Delete basket
-// @Description  delete basket
-// @Tags         basket
-// @Accept       json
-// @Produce      json
-// @Param 		 id path string true "basket_id"
-// @Success      200  {object}  models.Response
-// @Failure      400  {object}  models.Response
-// @Failure      404  {object}  models.Response
-// @Failure      500  {object}  models.Response
+// DeleteBasket deletes basket by ID.
+// @Summary Delete basket by ID
+// @Tags basket
+// @Accept json
+// @Produce json
+// @Param id path string true "Basket ID"
+// @Success 200 {string} string "Data deleted successfully"
+// @Failure 400 {object} models.Response
+// @Failure 404 {object} models.Response
+// @Failure 500 {object} models.Response
+// @Router /basket/{id} [delete]
 func (h Handler) DeleteBasket(c *gin.Context) {
 	uid := c.Param("id")
 	id, err := uuid.Parse(uid)
 	if err != nil {
-		handleResponse(c, "uuid is not valid", http.StatusBadRequest, err.Error())
+		handleResponse(c, "Error: Invalid UUID", http.StatusBadRequest, err)
 		return
 	}
 
 	if err = h.storage.Basket().DeleteBasket(models.PrimaryKey{
 		ID: id.String(),
 	}); err != nil {
-		handleResponse(c, "error while deleting basket by id", http.StatusInternalServerError, err.Error())
+		handleResponse(c, "Error: Failed to delete basket by ID", http.StatusInternalServerError, err)
 		return
 	}
 
-	handleResponse(c, "", http.StatusOK, "data successfully deleted")
+	handleResponse(c, "", http.StatusOK, "Data deleted successfully")
 }
