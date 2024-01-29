@@ -33,7 +33,7 @@ type UpdateSale struct {
 	Create_at        time.Time `json:"ctreate_at"`
 }
 
-type SaleRepo struct {
+type SaleRepos struct {
 	Sales []Sale `json:"sales"`
 	Count int    `json:"count"`
 }

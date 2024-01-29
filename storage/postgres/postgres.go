@@ -77,3 +77,16 @@ func (s Store) Basket() storage.IBasket {
 
 	return newBasket
 }
+
+func (s Store) Storag() storage.IStorag {
+	newStorages:= NewStorRepo(s.DB)
+
+	return newStorages
+}
+
+
+func (s Store) TransactionStorage() storage.ITransactionStorage {
+	newTransactionStorage:=NewTransactioStoragenRepo(s.DB)
+
+	return newTransactionStorage
+}

@@ -48,24 +48,139 @@ func (s *saleRepo) CreateSales(createSale models.CreateSale) (string, error) {
 
 //getby id
 
-func (s *saleRepo) GetByIdSales(models.PrimaryKey) (models.Sale, error) {
-	return models.Sale{}, nil
+func (s *saleRepo) GetByIdSales(pKey models.PrimaryKey) (models.Sale, error) {
+	sale := models.Sale{}
+
+	query := `
+           SELECT id, sale_id, product_id, quantity, price, create_at
+           FROM basket
+           WHERE id = $1
+           `
+
+	if err := s.db.QueryRow(query, pKey.ID).Scan(
+		&sale.ID,
+		&sale.Branch_id,
+		&sale.Shopassistant_id,
+		&sale.Cashier_id,
+		&sale.Price,
+		&sale.Payment_type,
+		&sale.Price,
+		&sale.Status_type,
+		&sale.Clientname,
+		&sale.Create_at,
+	); err != nil {
+		fmt.Println("error while scanning sale", err.Error())
+	}
+
+	return sale, nil
 }
 
 //get list
 
-func (s *saleRepo) GetListSales(models.GetListRequest) (models.SaleRepo, error) {
-	return models.SaleRepo{}, nil
+func (s *saleRepo) GetListSales(request models.GetListRequest) (models.SaleRepos, error) {
+	var (
+		sales  = []models.Sale{}
+		count  = 0
+		query  string
+		page   = request.Page
+		offset = (page - 1) * request.Limit
+		search = request.Search
+	)
+
+	countQuery := `
+                SELECT COUNT(1) FROM sale
+                `
+
+	if search != "" {
+		countQuery += fmt.Sprintf(` AND (clientname ILIKE '%%%s%%')`, search)
+	}
+
+	if err := s.db.QueryRow(countQuery).Scan(&count); err != nil {
+		fmt.Println("error while scanning count of sale", err.Error())
+		return models.SaleRepos{}, err
+	}
+
+	query = `
+             SELECT id, branch_id, shopassistant_id, cashier_id,
+			  payment_type, price, status_type, clientname, create_at
+             FROM basket
+             `
+
+	if search != "" {
+		query += fmt.Sprintf(` AND (clientname ILIKE '%%%s%%') `, search)
+	}
+
+	query += ` LIMIT $1 OFFSET $2`
+
+	rows, err := s.db.Query(query, request.Limit, offset)
+	if err != nil {
+		fmt.Println("error while querying rows", err.Error())
+		return models.SaleRepos{}, err
+	}
+
+	for rows.Next() {
+		sale := models.Sale{}
+
+		if err = rows.Scan(
+			&sale.ID,
+			&sale.Branch_id,
+			&sale.Shopassistant_id,
+			&sale.Cashier_id,
+			&sale.Price,
+			&sale.Payment_type,
+			&sale.Price,
+			&sale.Status_type,
+			&sale.Clientname,
+			&sale.Create_at,
+		); err != nil {
+			fmt.Println("error while scanning row", err.Error())
+			return models.SaleRepos{}, nil
+		}
+
+		sales = append(sales, sale)
+	}
+
+	return models.SaleRepos{
+		Sales: sales,
+		Count: count,
+	}, nil
 }
 
 // update for sale
 
-func (s *saleRepo) UpdateSales(models.UpdateSale) (string, error) {
-	return "", nil
+func (s *saleRepo) UpdateSales(updates models.UpdateSale) (string, error) {
+	query := `
+	update transaction
+	   set sale_id = $1, staff_id = $2, amount = $3, description = $4
+		  where id = $5`
+
+	if _, err := s.db.Exec(query,
+
+		updates.Branch_id,
+		updates.Shopassistant_id,
+		updates.Cashier_id,
+		updates.Price,
+		updates.Clientname,
+		updates.Create_at,
+		updates.ID); err != nil {
+		fmt.Println("error while updating transaction data", err.Error())
+		return "", err
+	}
+
+	return updates.ID, nil
 }
 
 //delete for sale
 
-func (s *saleRepo) DeleteSales(models.PrimaryKey) error {
+func (s *saleRepo) DeleteSales(pKey models.PrimaryKey) error {
+	query := `
+          delete from sale
+             where id = $1
+    `
+	if _, err := s.db.Exec(query, pKey.ID); err != nil {
+		fmt.Println("error while deleting slaes  by id", err.Error())
+		return err
+	}
+
 	return nil
 }

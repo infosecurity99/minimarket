@@ -12,6 +12,8 @@ type IStorage interface {
 	Category() ICategory
 	Product() IProduct
 	Basket() IBasket
+	Storag() IStorag
+	TransactionStorage() ITransactionStorage
 }
 
 // for  branch interface
@@ -27,7 +29,7 @@ type IBranchStorage interface {
 type ISaleStorage interface {
 	CreateSales(models.CreateSale) (string, error)
 	GetByIdSales(models.PrimaryKey) (models.Sale, error)
-	GetListSales(models.GetListRequest) (models.SaleRepo, error)
+	GetListSales(models.GetListRequest) (models.SaleRepos, error)
 	UpdateSales(models.UpdateSale) (string, error)
 	DeleteSales(models.PrimaryKey) error
 }
@@ -85,4 +87,23 @@ type IBasket interface {
 	GetListBasket(models.GetListRequest) (models.BasketResponse, error)
 	UpdateBasket(models.UpdateBasket) (string, error)
 	DeleteBasket(models.PrimaryKey) error
+}
+
+// storage intarface
+type IStorag interface {
+	CreateStorages(models.CreateStorage) (string, error)
+	GetByIdStorages(models.PrimaryKey) (models.Storage, error)
+	GetListStorages(models.GetListRequest) (models.StorageRepos, error)
+	UpdateStorages(models.UpdateStorage) (string, error)
+	DeleteStorages(models.PrimaryKey) error
+}
+
+//transaction  intarface
+
+type ITransactionStorage interface {
+	CreateTransactionStorage(models.CreateTransactionStorage) (string, error)
+	GetByIdTranasactionStorage(models.PrimaryKey) (models.TransactionStorage, error)
+	GetListTransactionStorage(models.GetListRequest) (models.TransactionStorageResponse, error)
+	UpdateTransactionStorage(models.UpdateTransactionStorage) (string, error)
+	DeleteTransactionStorage(models.PrimaryKey) error
 }
