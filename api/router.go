@@ -1,10 +1,13 @@
 package api
 
 import (
+	_ "connected/api/docs"
 	"connected/api/handler"
 	"connected/storage"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func New(store storage.IStorage) *gin.Engine {
@@ -82,5 +85,6 @@ func New(store storage.IStorage) *gin.Engine {
 	r.PUT("/transaction_storage/:id", h.UpdateTransactionStorage)
 	r.DELETE("/transaction_storage/:id", h.DeleteTransactionStorage)
 
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	return r
 }
