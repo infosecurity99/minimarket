@@ -1,20 +1,22 @@
 package postgres
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 	"time"
 
 	"connected/api/models"
 	"connected/storage"
+
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type transactionRepo struct {
-	db *sql.DB
+	db *pgxpool.Pool
 }
 
-func NewTransactionRepo(db *sql.DB) storage.ITransaction {
+func NewTransactionRepo(db *pgxpool.Pool) storage.ITransaction {
 	return &transactionRepo{
 		db: db,
 	}
@@ -24,7 +26,7 @@ func NewTransactionRepo(db *sql.DB) storage.ITransaction {
 func (t *transactionRepo) CreateTransaction(createTransaction models.CreateTransaction) (string, error) {
 	uid := uuid.New()
 	create_ats := time.Now()
-	if _, err := t.db.Exec(`insert into
+	if _, err := t.db.Exec(context.Background(), `insert into
           transaction values ($1, $2, $3, $4, $5, $6, $7, $8)
           `,
 		uid,
@@ -51,7 +53,7 @@ func (t *transactionRepo) GetByIdTransaction(pKey models.PrimaryKey) (models.Tra
 	query := `
        select id, sale_id, staff_id, transaction_type_enum, source_type_enum, amount, description, create_at from transaction where id = $1
 `
-	if err := t.db.QueryRow(query, pKey.ID).Scan(
+	if err := t.db.QueryRow(context.Background(), query, pKey.ID).Scan(
 		&transaction.ID,
 		&transaction.Sale_id,
 		&transaction.Staff_id,
@@ -86,7 +88,7 @@ func (t *transactionRepo) GetListTransaction(request models.GetListRequest) (mod
 		countQuery += fmt.Sprintf(` and (description ilike '%%%s%%' )`, search)
 	}
 
-	if err := t.db.QueryRow(countQuery).Scan(&count); err != nil {
+	if err := t.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
 		fmt.Println("error while scanning count of transactions", err.Error())
 		return models.TransactionRepo{}, err
 	}
@@ -102,7 +104,7 @@ func (t *transactionRepo) GetListTransaction(request models.GetListRequest) (mod
 
 	query += ` LIMIT $1 OFFSET $2`
 
-	rows, err := t.db.Query(query, request.Limit, offset)
+	rows, err := t.db.Query(context.Background(), query, request.Limit, offset)
 	if err != nil {
 		fmt.Println("error while query rows", err.Error())
 		return models.TransactionRepo{}, err
@@ -141,7 +143,7 @@ func (t *transactionRepo) UpdateTransaction(updateTransaction models.UpdateTrans
              set sale_id = $1, staff_id = $2, amount = $3, description = $4
                 where id = $5`
 
-	if _, err := t.db.Exec(query,
+	if _, err := t.db.Exec(context.Background(), query,
 		updateTransaction.Sale_id,
 		updateTransaction.Staff_id,
 		updateTransaction.Amount,
@@ -160,7 +162,7 @@ func (t *transactionRepo) DeleteTransaction(pKey models.PrimaryKey) error {
           delete from transaction
              where id = $1
     `
-	if _, err := t.db.Exec(query, pKey.ID); err != nil {
+	if _, err := t.db.Exec(context.Background(), query, pKey.ID); err != nil {
 		fmt.Println("error while deleting transaction by id", err.Error())
 		return err
 	}

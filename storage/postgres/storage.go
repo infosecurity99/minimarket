@@ -3,28 +3,29 @@ package postgres
 import (
 	"connected/api/models"
 	"connected/storage"
-	"database/sql"
+	"context"
 	"fmt"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type storageRepo struct {
-	db *sql.DB
+	db *pgxpool.Pool
 }
 
-func NewStorRepo(db *sql.DB) storage.IStorag {
+func NewStorRepo(db *pgxpool.Pool) storage.IStorag {
 	return &storageRepo{
 		db: db,
 	}
 }
 
-//Create storage
+// Create storage
 func (s *storageRepo) CreateStorages(request models.CreateStorage) (string, error) {
 	uid := uuid.New()
 	createAt := time.Now()
-	if _, err := s.db.Exec(`
+	if _, err := s.db.Exec(context.Background(), `
 		INSERT INTO storge VALUES ($1, $2, $3, $4)
 		`,
 		uid,
@@ -38,14 +39,14 @@ func (s *storageRepo) CreateStorages(request models.CreateStorage) (string, erro
 	return uid.String(), nil
 }
 
-//getbyid storage
+// getbyid storage
 func (s *storageRepo) GetByIdStorages(pKey models.PrimaryKey) (models.Storage, error) {
 	stoges := models.Storage{}
 
 	query := `
 		SELECT id,product_id,branch_id, create_at FROM storage WHERE id = $1
 	`
-	if err := s.db.QueryRow(query, pKey.ID).Scan(
+	if err := s.db.QueryRow(context.Background(), query, pKey.ID).Scan(
 		&stoges.ID,
 		&stoges.Product_id,
 		&stoges.Branch_id,
@@ -57,7 +58,7 @@ func (s *storageRepo) GetByIdStorages(pKey models.PrimaryKey) (models.Storage, e
 	return stoges, nil
 }
 
-//getlist storage
+// getlist storage
 func (s *storageRepo) GetListStorages(reuqest models.GetListRequest) (models.StorageRepos, error) {
 	var (
 		storages []models.Storage
@@ -70,7 +71,6 @@ func (s *storageRepo) GetListStorages(reuqest models.GetListRequest) (models.Sto
 	query := `
 		SELECT id,product_id,branch_id, create_at FROM   storage `
 
-
 	addSearchCondition := func(baseQuery string) string {
 		if reuqest.Search != "" {
 			return fmt.Sprintf("%s AND (product_id ILIKE '%%%s%%')", baseQuery, reuqest.Search)
@@ -80,13 +80,13 @@ func (s *storageRepo) GetListStorages(reuqest models.GetListRequest) (models.Sto
 
 	countQuery = addSearchCondition(countQuery)
 
-	if err := s.db.QueryRow(countQuery).Scan(&count); err != nil {
+	if err := s.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
 		return models.StorageRepos{}, err
 	}
 
 	query = addSearchCondition(query) + ` LIMIT $1 OFFSET $2`
 
-	rows, err := s.db.Query(query, reuqest.Limit, (reuqest.Page-1)*reuqest.Limit)
+	rows, err := s.db.Query(context.Background(), query, reuqest.Limit, (reuqest.Page-1)*reuqest.Limit)
 	if err != nil {
 		return models.StorageRepos{}, err
 	}
@@ -113,7 +113,7 @@ func (s *storageRepo) GetListStorages(reuqest models.GetListRequest) (models.Sto
 	}, nil
 }
 
-//update  storage
+// update  storage
 func (s *storageRepo) UpdateStorages(request models.UpdateStorage) (string, error) {
 	query := `
 	UPDATE storage
@@ -121,20 +121,20 @@ func (s *storageRepo) UpdateStorages(request models.UpdateStorage) (string, erro
 	WHERE id = $3
 `
 
-if _, err := s.db.Exec(query, request.Product_id, request.Branch_id, request.ID); err != nil {
-	return "", err
+	if _, err := s.db.Exec(context.Background(), query, request.Product_id, request.Branch_id, request.ID); err != nil {
+		return "", err
+	}
+
+	return request.ID, nil
 }
 
-return request.ID, nil
-}
-
-//delete storage
+// delete storage
 func (s *storageRepo) DeleteStorages(request models.PrimaryKey) error {
 	query := `
 		DELETE FROM storage 
 		WHERE id = $1
 	`
-	if _, err := s.db.Exec(query, request.ID); err != nil {
+	if _, err := s.db.Exec(context.Background(), query, request.ID); err != nil {
 		return err
 	}
 

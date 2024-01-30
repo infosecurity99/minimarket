@@ -3,19 +3,20 @@ package postgres
 import (
 	"connected/api/models"
 	"connected/storage"
+	"context"
 
-	"database/sql"
 	"fmt"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type branchRepo struct {
-	db *sql.DB
+	db *pgxpool.Pool
 }
 
-func NewBranchRepo(db *sql.DB) storage.IBranchStorage {
+func NewBranchRepo(db *pgxpool.Pool) storage.IBranchStorage {
 	return &branchRepo{
 		db: db,
 	}
@@ -25,7 +26,7 @@ func NewBranchRepo(db *sql.DB) storage.IBranchStorage {
 func (b *branchRepo) Create(createBranch models.CreateBranch) (string, error) {
 	uid := uuid.New()
 	createAt := time.Now()
-	if _, err := b.db.Exec(`
+	if _, err := b.db.Exec(context.Background(), `
 		INSERT INTO branch VALUES ($1, $2, $3, $4)
 		`,
 		uid,
@@ -46,7 +47,7 @@ func (b *branchRepo) GetByID(pKey models.PrimaryKey) (models.Branch, error) {
 	query := `
 		SELECT id, name, address, create_at FROM branch WHERE id = $1
 	`
-	if err := b.db.QueryRow(query, pKey.ID).Scan(
+	if err := b.db.QueryRow(context.Background(), query, pKey.ID).Scan(
 		&branch.ID,
 		&branch.Name,
 		&branch.Address,
@@ -81,13 +82,13 @@ func (b *branchRepo) GetList(request models.GetListRequest) (models.BranchRespon
 
 	countQuery = addSearchCondition(countQuery)
 
-	if err := b.db.QueryRow(countQuery).Scan(&count); err != nil {
+	if err := b.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
 		return models.BranchResponse{}, err
 	}
 
 	query = addSearchCondition(query) + ` LIMIT $1 OFFSET $2`
 
-	rows, err := b.db.Query(query, request.Limit, (request.Page-1)*request.Limit)
+	rows, err := b.db.Query(context.Background(), query, request.Limit, (request.Page-1)*request.Limit)
 	if err != nil {
 		return models.BranchResponse{}, err
 	}
@@ -122,7 +123,7 @@ func (b *branchRepo) Update(request models.UpdateBranch) (string, error) {
 		WHERE id = $3
 	`
 
-	if _, err := b.db.Exec(query, request.Name, request.Address, request.ID); err != nil {
+	if _, err := b.db.Exec(context.Background(), query, request.Name, request.Address, request.ID); err != nil {
 		return "", err
 	}
 
@@ -135,7 +136,7 @@ func (b *branchRepo) Delete(request models.PrimaryKey) error {
 		DELETE FROM branch
 		WHERE id = $1
 	`
-	if _, err := b.db.Exec(query, request.ID); err != nil {
+	if _, err := b.db.Exec(context.Background(), query, request.ID); err != nil {
 		return err
 	}
 

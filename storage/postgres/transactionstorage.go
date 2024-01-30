@@ -3,29 +3,29 @@ package postgres
 import (
 	"connected/api/models"
 	"connected/storage"
-	"database/sql"
+	"context"
 	"fmt"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type transactionstorageRepo struct {
-	db *sql.DB
+	db *pgxpool.Pool
 }
 
-func NewTransactioStoragenRepo(db *sql.DB) storage.ITransactionStorage {
+func NewTransactioStoragenRepo(db *pgxpool.Pool) storage.ITransactionStorage {
 	return &transactionstorageRepo{
 		db: db,
 	}
 }
 
-//create  transaction storage
+// create  transaction storage
 func (s *transactionstorageRepo) CreateTransactionStorage(request models.CreateTransactionStorage) (string, error) {
 	uid := uuid.New()
 	createAt := time.Now()
-	if _, err := s.db.Exec(`
-		INSERT INTO storage_transaction VALUES ($1, $2, $3, $4,$5, $6, $7, $8)
+	if _, err := s.db.Exec(context.Background(), `INSERT INTO storage_transaction VALUES ($1, $2, $3, $4,$5, $6, $7, $8)
 		`,
 		uid,
 		request.Branch_id,
@@ -42,7 +42,7 @@ func (s *transactionstorageRepo) CreateTransactionStorage(request models.CreateT
 	return uid.String(), nil
 }
 
-//getbyid  transaction storage
+// getbyid  transaction storage
 func (s *transactionstorageRepo) GetByIdTranasactionStorage(pKey models.PrimaryKey) (models.TransactionStorage, error) {
 	tranasactionstorage := models.TransactionStorage{}
 
@@ -53,7 +53,7 @@ func (s *transactionstorageRepo) GetByIdTranasactionStorage(pKey models.PrimaryK
            WHERE id = $1
            `
 
-	if err := s.db.QueryRow(query, pKey.ID).Scan(
+	if err := s.db.QueryRow(context.Background(), query, pKey.ID).Scan(
 		&tranasactionstorage.ID,
 		&tranasactionstorage.Branch_id,
 		&tranasactionstorage.Staff_id,
@@ -69,7 +69,7 @@ func (s *transactionstorageRepo) GetByIdTranasactionStorage(pKey models.PrimaryK
 	return tranasactionstorage, nil
 }
 
-//getlist  transaction storage
+// getlist  transaction storage
 func (s *transactionstorageRepo) GetListTransactionStorage(request models.GetListRequest) (models.TransactionStorageResponse, error) {
 	var (
 		tranasactionstorages = []models.TransactionStorage{}
@@ -88,7 +88,7 @@ func (s *transactionstorageRepo) GetListTransactionStorage(request models.GetLis
 		countQuery += fmt.Sprintf(` AND (price ILIKE '%%%s%%')`, search)
 	}
 
-	if err := s.db.QueryRow(countQuery).Scan(&count); err != nil {
+	if err := s.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
 		fmt.Println("error while scanning count of basket", err.Error())
 		return models.TransactionStorageResponse{}, err
 	}
@@ -105,7 +105,7 @@ func (s *transactionstorageRepo) GetListTransactionStorage(request models.GetLis
 
 	query += ` LIMIT $1 OFFSET $2`
 
-	rows, err := s.db.Query(query, request.Limit, offset)
+	rows, err := s.db.Query(context.Background(), query, request.Limit, offset)
 	if err != nil {
 		fmt.Println("error while querying rows", err.Error())
 		return models.TransactionStorageResponse{}, err
@@ -137,7 +137,7 @@ func (s *transactionstorageRepo) GetListTransactionStorage(request models.GetLis
 	}, nil
 }
 
-//update  transaction storage
+// update  transaction storage
 func (s *transactionstorageRepo) UpdateTransactionStorage(request models.UpdateTransactionStorage) (string, error) {
 	query := `
 		UPDATE storage_transaction
@@ -145,7 +145,7 @@ func (s *transactionstorageRepo) UpdateTransactionStorage(request models.UpdateT
 		WHERE id = $6
 	`
 
-	if _, err := s.db.Exec(query,
+	if _, err := s.db.Exec(context.Background(), query,
 		request.Branch_id,
 		request.Staff_id,
 		request.Product_id,
@@ -158,15 +158,15 @@ func (s *transactionstorageRepo) UpdateTransactionStorage(request models.UpdateT
 	return request.ID, nil
 }
 
-//update  transaction storage
+// update  transaction storage
 func (s *transactionstorageRepo) DeleteTransactionStorage(request models.PrimaryKey) error {
 	query := `
 	DELETE FROM storage_transaction
 	WHERE id = $1
 `
-if _, err := s.db.Exec(query, request.ID); err != nil {
-	return err
-}
+	if _, err := s.db.Exec(context.Background(), query, request.ID); err != nil {
+		return err
+	}
 
-return nil
+	return nil
 }

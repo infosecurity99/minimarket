@@ -3,25 +3,27 @@ package postgres
 import (
 	"connected/api/models"
 	"connected/storage"
-	"github.com/google/uuid"
+	"context"
 
-	"database/sql"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
+
 	"fmt"
 	"time"
 )
 
 type productRepo struct {
-	db *sql.DB
+	db *pgxpool.Pool
 }
 
-func NewProductRepo(db *sql.DB) storage.IProduct {
+func NewProductRepo(db *pgxpool.Pool) storage.IProduct {
 	return &productRepo{
 		db: db,
 	}
 }
 
 func (p *productRepo) execWithLog(query string, args ...interface{}) error {
-	_, err := p.db.Exec(query, args...)
+	_, err := p.db.Exec(context.Background(), query, args...)
 	if err != nil {
 		fmt.Println("error while executing query", err.Error())
 	}
@@ -58,7 +60,7 @@ func (p *productRepo) GetByIdProduct(id models.PrimaryKey) (models.Product, erro
            WHERE id = $1
 `
 
-	if err := p.db.QueryRow(query, id.ID).Scan(
+	if err := p.db.QueryRow(context.Background(), query, id.ID).Scan(
 		&product.ID,
 		&product.Name,
 		&product.Price,
@@ -91,7 +93,7 @@ func (p *productRepo) GetListProduct(request models.GetListRequest) (models.Prod
 		countQuery += fmt.Sprintf(` AND (name ILIKE '%%%s%%')`, search)
 	}
 
-	if err := p.db.QueryRow(countQuery).Scan(&count); err != nil {
+	if err := p.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
 		fmt.Println("error while scanning count of product", err.Error())
 		return models.ProductResponse{}, err
 	}
@@ -107,7 +109,7 @@ func (p *productRepo) GetListProduct(request models.GetListRequest) (models.Prod
 
 	query += ` LIMIT $1 OFFSET $2`
 
-	rows, err := p.db.Query(query, request.Limit, offset)
+	rows, err := p.db.Query(context.Background(), query, request.Limit, offset)
 	if err != nil {
 		fmt.Println("error while querying rows", err.Error())
 		return models.ProductResponse{}, err

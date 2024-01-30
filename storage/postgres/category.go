@@ -1,27 +1,29 @@
 package postgres
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 	"time"
 
 	"connected/api/models"
 	"connected/storage"
+
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type categoryRepo struct {
-	db *sql.DB
+	db *pgxpool.Pool
 }
 
-func NewCategoryRepo(db *sql.DB) storage.ICategory {
+func NewCategoryRepo(db *pgxpool.Pool) storage.ICategory {
 	return &categoryRepo{
 		db: db,
 	}
 }
 
 func (s *categoryRepo) execWithLog(query string, args ...interface{}) error {
-	_, err := s.db.Exec(query, args...)
+	_, err := s.db.Exec(context.Background(), query, args...)
 	if err != nil {
 		fmt.Println("error during query execution:", err.Error())
 	}
@@ -56,7 +58,7 @@ func (c *categoryRepo) GetByIdCategory(pKey models.PrimaryKey) (models.Category,
         WHERE id = $1
     `
 
-	if err := c.db.QueryRow(query, pKey.ID).Scan(
+	if err := c.db.QueryRow(context.Background(), query, pKey.ID).Scan(
 		&category.ID,
 		&category.Name,
 		&category.Create_at,
@@ -86,7 +88,7 @@ func (c *categoryRepo) GetListCategory(request models.GetListRequest) (models.Ca
 		countQuery += fmt.Sprintf(` AND (name ILIKE '%%%s%%')`, search)
 	}
 
-	if err := c.db.QueryRow(countQuery).Scan(&count); err != nil {
+	if err := c.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
 		fmt.Println("error while scanning count of category", err.Error())
 		return models.CategoryResponse{}, err
 	}
@@ -102,7 +104,7 @@ func (c *categoryRepo) GetListCategory(request models.GetListRequest) (models.Ca
 
 	query += ` LIMIT $1 OFFSET $2`
 
-	rows, err := c.db.Query(query, request.Limit, offset)
+	rows, err := c.db.Query(context.Background(), query, request.Limit, offset)
 	if err != nil {
 		fmt.Println("error while querying rows", err.Error())
 		return models.CategoryResponse{}, err

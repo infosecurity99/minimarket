@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 	"log"
 	"time"
@@ -10,13 +10,14 @@ import (
 	"connected/storage"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type staftarifRepo struct {
-	db *sql.DB
+	db *pgxpool.Pool
 }
 
-func NewStaff_Tarif(db *sql.DB) storage.IStaff_Tarif {
+func NewStaff_Tarif(db *pgxpool.Pool) storage.IStaff_Tarif {
 	return &staftarifRepo{
 		db: db,
 	}
@@ -27,7 +28,7 @@ func (s *staftarifRepo) CreateStaff_Tarifs(createStaff_tarif models.CreateStaff_
 	uid := uuid.New()
 	create_ats := time.Now().UTC()
 
-	if _, err := s.db.Exec(
+	if _, err := s.db.Exec(context.Background(),
 		`INSERT INTO staff_tarif (id, name, tarif_type, amount_for_cash, amount_for_card, create_at)
 		VALUES ($1, $2, $3, $4, $5, $6)`,
 		uid,
@@ -51,7 +52,7 @@ func (s *staftarifRepo) GetByIdStaff_Tarifs(pKey models.PrimaryKey) (models.Staf
     SELECT id, name, tarif_type, amount_for_cash, amount_for_card, create_at FROM staff_tarif WHERE id = $1
 `
 
-	if err := s.db.QueryRow(query, pKey.ID).Scan(
+	if err := s.db.QueryRow(context.Background(), query, pKey.ID).Scan(
 		&stafftarif1.ID,
 		&stafftarif1.Name,
 		&stafftarif1.Tarif_Type_Enum,
@@ -83,7 +84,7 @@ func (s *staftarifRepo) GetListStaff_Tarifs(request models.GetListRequest) (mode
 		countQuery += fmt.Sprintf(` AND (name ILIKE '%%%s%%')`, search)
 	}
 
-	if err := s.db.QueryRow(countQuery).Scan(&count); err != nil {
+	if err := s.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
 		log.Printf("Error while scanning count of branch: %v", err)
 		return models.Staff_Tarif_Repo{}, err
 	}
@@ -99,7 +100,7 @@ func (s *staftarifRepo) GetListStaff_Tarifs(request models.GetListRequest) (mode
 
 	query += ` LIMIT $1 OFFSET $2`
 
-	rows, err := s.db.Query(query, request.Limit, offset)
+	rows, err := s.db.Query(context.Background(), query, request.Limit, offset)
 	if err != nil {
 		log.Printf("Error while querying rows: %v", err)
 		return models.Staff_Tarif_Repo{}, err
@@ -137,7 +138,7 @@ func (s *staftarifRepo) UpdateStaff_Tarifs(request models.UpdateStaff_Tarif) (st
 		WHERE id = $4
 	`
 
-	if _, err := s.db.Exec(query, request.Name, request.Amount_For_Cashe, request.Amount_For_Card, request.ID); err != nil {
+	if _, err := s.db.Exec(context.Background(), query, request.Name, request.Amount_For_Cashe, request.Amount_For_Card, request.ID); err != nil {
 		log.Printf("Error while updating branch data: %v", err)
 		return "", err
 	}
@@ -151,7 +152,7 @@ func (s *staftarifRepo) DeleteStaff_Tarifs(request models.PrimaryKey) error {
 		DELETE FROM staff_tarif
 		WHERE id = $1
 	`
-	if _, err := s.db.Exec(query, request.ID); err != nil {
+	if _, err := s.db.Exec(context.Background(), query, request.ID); err != nil {
 		log.Printf("Error while deleting branch by id: %v", err)
 		return err
 	}

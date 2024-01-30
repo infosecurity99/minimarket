@@ -1,92 +1,94 @@
 package postgres
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 
 	"connected/config"
 	"connected/storage"
 
+	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/lib/pq"
 )
 
 type Store struct {
-	DB *sql.DB
+	Pool *pgxpool.Pool
 }
 
-func New(cfg config.Config) (storage.IStorage, error) {
-	url := fmt.Sprintf(`host=%s port=%s user=%s password=%s database=%s sslmode=disable`, cfg.PostgresHost, cfg.PostgresPort, cfg.PostgresUser, cfg.PostgresPassword, cfg.PostgresDB)
-
-	db, err := sql.Open("postgres", url)
+func New(ctx context.Context, cfg config.Config) (storage.IStorage, error) {
+	poolConfig, err := pgxpool.ParseConfig(fmt.Sprintf(
+		`postgres://%s:%s@%s:%s/%s?sslmode=disable`,
+		cfg.PostgresUser,
+		cfg.PostgresPassword,
+		cfg.PostgresHost,
+		cfg.PostgresPort,
+		cfg.PostgresDB))
 	if err != nil {
-		return Store{}, err
+		fmt.Println("error while parsing config", err.Error())
+		return nil, err
+	}
+
+	poolConfig.MaxConns = 100
+
+	pool, err := pgxpool.NewWithConfig(ctx, poolConfig)
+	if err != nil {
+		fmt.Println("error while connecting to db", err.Error())
+		return nil, err
 	}
 
 	return Store{
-		DB: db,
+		Pool: pool,
 	}, nil
 }
 
 func (s Store) Close() {
-	s.DB.Close()
+	s.Pool.Close()
 }
-
 func (s Store) Branch() storage.IBranchStorage {
-	newBranch := NewBranchRepo(s.DB)
+	newBranch := NewBranchRepo(s.Pool)
 
 	return newBranch
 }
 
 func (s Store) Sale() storage.ISaleStorage {
-	newBranch := NewSaleRepo(s.DB)
+	newBranch := NewSaleRepo(s.Pool)
 
 	return newBranch
 }
 func (s Store) Transaction() storage.ITransaction {
-	newTransaction := NewTransactionRepo(s.DB)
-
-	return newTransaction
+	return NewTransactionRepo(s.Pool)
 }
 
 func (s Store) Staff() storage.IStaff {
-	newStaff := NewStaffRepo(s.DB)
-
-	return newStaff
+	return NewStaffRepo(s.Pool)
 }
 
 func (s Store) Staff_Tarif() storage.IStaff_Tarif {
-	newStaff_Tarif := NewStaff_Tarif(s.DB)
-
-	return newStaff_Tarif
+	return NewStaff_Tarif(s.Pool)
 }
 
 func (s Store) Category() storage.ICategory {
-	newCategory := NewCategoryRepo(s.DB)
 
-	return newCategory
+	return NewCategoryRepo(s.Pool)
 }
 
 func (s Store) Product() storage.IProduct {
-	newProduct := NewProductRepo(s.DB)
-
-	return newProduct
+	
+	return NewProductRepo(s.Pool)
 }
 
 func (s Store) Basket() storage.IBasket {
-	newBasket := NewBasketRepo(s.DB)
+	
 
-	return newBasket
+	return NewBasketRepo(s.Pool)
 }
 
 func (s Store) Storag() storage.IStorag {
-	newStorages:= NewStorRepo(s.DB)
 
-	return newStorages
+	return NewStorRepo(s.Pool)
 }
 
-
 func (s Store) TransactionStorage() storage.ITransactionStorage {
-	newTransactionStorage:=NewTransactioStoragenRepo(s.DB)
 
-	return newTransactionStorage
+	return NewTransactioStoragenRepo(s.Pool)
 }

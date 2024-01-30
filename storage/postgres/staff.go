@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 	"time"
 
@@ -9,20 +9,21 @@ import (
 	"connected/storage"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type staffRepo struct {
-	db *sql.DB
+	db *pgxpool.Pool
 }
 
-func NewStaffRepo(db *sql.DB) storage.IStaff {
+func NewStaffRepo(db *pgxpool.Pool) storage.IStaff {
 	return &staffRepo{
 		db: db,
 	}
 }
 
 func (s *staffRepo) execWithLog(query string, args ...interface{}) error {
-	_, err := s.db.Exec(query, args...)
+	_, err := s.db.Exec(context.Background(), query, args...)
 	if err != nil {
 		fmt.Println("error during query execution:", err.Error())
 	}
@@ -65,7 +66,7 @@ func (s *staffRepo) GetByIdStaff(pKey models.PrimaryKey) (models.Staff, error) {
 		WHERE id = $1
 	`
 
-	if err := s.db.QueryRow(query, pKey.ID).Scan(
+	if err := s.db.QueryRow(context.Background(), query, pKey.ID).Scan(
 		&staff.ID,
 		&staff.Branch_id,
 		&staff.Tarif_id,
@@ -103,7 +104,7 @@ func (s *staffRepo) GetListStaff(request models.GetListRequest) (models.StaffRep
 		countQuery += fmt.Sprintf(` AND (name ILIKE '%%%s%%')`, search)
 	}
 
-	if err := s.db.QueryRow(countQuery).Scan(&count); err != nil {
+	if err := s.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
 		fmt.Println("error while scanning count of staff", err.Error())
 		return models.StaffRepo{}, err
 	}
@@ -119,7 +120,7 @@ func (s *staffRepo) GetListStaff(request models.GetListRequest) (models.StaffRep
 
 	query += ` LIMIT $1 OFFSET $2`
 
-	rows, err := s.db.Query(query, request.Limit, offset)
+	rows, err := s.db.Query(context.Background(), query, request.Limit, offset)
 	if err != nil {
 		fmt.Println("error while querying rows", err.Error())
 		return models.StaffRepo{}, err
