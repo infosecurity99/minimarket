@@ -27,7 +27,7 @@ func (b *branchRepo) Create(createBranch models.CreateBranch) (string, error) {
 	uid := uuid.New()
 	createAt := time.Now()
 	if _, err := b.db.Exec(context.Background(), `
-		INSERT INTO branch VALUES ($1, $2, $3, $4)
+		insert into   branch values ($1, $2, $3, $4)
 		`,
 		uid,
 		createBranch.Name,

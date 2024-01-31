@@ -1885,7 +1885,7 @@ const docTemplate = `{
                     },
                     {
                         "description": "storage",
-                        "name": "user",
+                        "name": "storage",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -2034,7 +2034,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "transaction",
-                        "name": "basket",
+                        "name": "transaction",
                         "in": "body",
                         "schema": {
                             "$ref": "#/definitions/models.CreateTransaction"
@@ -2112,7 +2112,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "update transaction",
+                "description": "update sale",
                 "consumes": [
                     "application/json"
                 ],
@@ -2120,9 +2120,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "storage"
+                    "transaction"
                 ],
-                "summary": "Update transaction",
+                "summary": "Update sale",
                 "parameters": [
                     {
                         "type": "string",
@@ -2133,7 +2133,7 @@ const docTemplate = `{
                     },
                     {
                         "description": "transaction",
-                        "name": "user",
+                        "name": "transaction",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -2578,9 +2578,6 @@ const docTemplate = `{
         "models.CreateBasket": {
             "type": "object",
             "properties": {
-                "ctreate_at": {
-                    "type": "string"
-                },
                 "price": {
                     "type": "integer"
                 },
@@ -2601,9 +2598,6 @@ const docTemplate = `{
                 "address": {
                     "type": "string"
                 },
-                "ctreate_at": {
-                    "type": "string"
-                },
                 "name": {
                     "type": "string"
                 }
@@ -2612,9 +2606,6 @@ const docTemplate = `{
         "models.CreateCategory": {
             "type": "object",
             "properties": {
-                "ctreate_at": {
-                    "type": "string"
-                },
                 "name": {
                     "type": "string"
                 },
@@ -2627,9 +2618,6 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "category_id": {
-                    "type": "string"
-                },
-                "create_at": {
                     "type": "string"
                 },
                 "name": {
@@ -2650,9 +2638,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "clientname": {
-                    "type": "string"
-                },
-                "ctreate_at": {
                     "type": "string"
                 },
                 "payment_type": {
@@ -2682,9 +2667,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "branch_id": {
-                    "type": "string"
-                },
-                "ctreate_at": {
                     "type": "string"
                 },
                 "login": {
@@ -2730,9 +2712,6 @@ const docTemplate = `{
                 "count": {
                     "type": "integer"
                 },
-                "ctreate_at": {
-                    "type": "string"
-                },
                 "product_id": {
                     "type": "string"
                 }
@@ -2742,9 +2721,6 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "amount": {
-                    "type": "string"
-                },
-                "ctreate_at": {
                     "type": "string"
                 },
                 "description": {
@@ -2970,6 +2946,9 @@ const docTemplate = `{
                 "branch_id": {
                     "type": "string"
                 },
+                "ctreate_at": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -2993,9 +2972,6 @@ const docTemplate = `{
         "models.UpdateBasket": {
             "type": "object",
             "properties": {
-                "ctreate_at": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
                 },
@@ -3019,9 +2995,6 @@ const docTemplate = `{
                 "address": {
                     "type": "string"
                 },
-                "ctreate_at": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
                 },
@@ -3033,9 +3006,6 @@ const docTemplate = `{
         "models.UpdateCategory": {
             "type": "object",
             "properties": {
-                "ctreate_at": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
                 },
@@ -3051,9 +3021,6 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "category_id": {
-                    "type": "string"
-                },
-                "create_at": {
                     "type": "string"
                 },
                 "id": {
@@ -3077,9 +3044,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "clientname": {
-                    "type": "string"
-                },
-                "ctreate_at": {
                     "type": "string"
                 },
                 "id": {
@@ -3108,9 +3072,6 @@ const docTemplate = `{
                 "branch_id": {
                     "type": "string"
                 },
-                "ctreate_at": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
                 },
@@ -3130,9 +3091,6 @@ const docTemplate = `{
                 },
                 "amount_for_cashe": {
                     "type": "integer"
-                },
-                "ctreate_at": {
-                    "type": "string"
                 },
                 "id": {
                     "type": "string"
@@ -3163,9 +3121,6 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "amount": {
-                    "type": "string"
-                },
-                "ctreate_at": {
                     "type": "string"
                 },
                 "description": {

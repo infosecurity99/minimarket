@@ -26,6 +26,7 @@ func NewSaleRepo(db *pgxpool.Pool) storage.ISaleStorage {
 func (s *saleRepo) CreateSales(createSale models.CreateSale) (string, error) {
 	uid := uuid.New()
 	createAt := time.Now()
+
 	if _, err := s.db.Exec(context.Background(), `
         INSERT INTO sale (id, branch_id, shopassistant_id, cashier_id, payment_type, price, status_type, clientname, create_at)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -54,7 +55,7 @@ func (s *saleRepo) GetByIdSales(pKey models.PrimaryKey) (models.Sale, error) {
 
 	query := `
            SELECT id, sale_id, product_id, quantity, price, create_at
-           FROM basket
+           FROM sale
            WHERE id = $1
            `
 
@@ -104,7 +105,7 @@ func (s *saleRepo) GetListSales(request models.GetListRequest) (models.SaleRepos
 	query = `
              SELECT id, branch_id, shopassistant_id, cashier_id,
 			  payment_type, price, status_type, clientname, create_at
-             FROM basket
+             FROM sale
              `
 
 	if search != "" {
@@ -162,7 +163,6 @@ func (s *saleRepo) UpdateSales(updates models.UpdateSale) (string, error) {
 		updates.Cashier_id,
 		updates.Price,
 		updates.Clientname,
-		updates.Create_at,
 		updates.ID); err != nil {
 		fmt.Println("error while updating transaction data", err.Error())
 		return "", err

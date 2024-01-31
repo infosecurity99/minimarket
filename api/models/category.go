@@ -14,14 +14,13 @@ type Category struct {
 type CreateCategory struct {
 	Name      string    `json:"name"`
 	Parent_id string    `json:"parent_id"`
-	Create_at time.Time `json:"ctreate_at"`
+	
 }
 
 type UpdateCategory struct {
 	ID        string    `json:"id"`
 	Name      string    `json:"name"`
 	Parent_id string    `json:"parent_id"`
-	Create_at time.Time `json:"ctreate_at"`
 }
 
 type CategoryResponse struct {

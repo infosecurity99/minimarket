@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"connected/api/models"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -17,7 +18,7 @@ import (
 // @Tags         transaction
 // @Accept       json
 // @Produce      json
-// @Param        basket body models.CreateTransaction false "transaction"
+// @Param        transaction body models.CreateTransaction false "transaction"
 // @Success      201  {object}  models.Transaction
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
@@ -130,13 +131,13 @@ func (h Handler) GetListTransaction(c *gin.Context) {
 
 // UpdateTransaction godoc
 // @Router       /transaction/{id} [PUT]
-// @Summary      Update transaction
-// @Description  update transaction
-// @Tags         storage
+// @Summary      Update sale
+// @Description  update sale
+// @Tags         transaction
 // @Accept       json
 // @Produce      json
 // @Param 		 id path string true "transaction"
-// @Param        user body models.UpdateTransaction true "transaction"
+// @Param        transaction body models.UpdateTransaction true "transaction"
 // @Success      200  {object}  models.Transaction
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response

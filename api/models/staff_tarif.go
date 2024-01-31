@@ -24,7 +24,7 @@ type UpdateStaff_Tarif struct {
 	Name             string    `json:"name"`
 	Amount_For_Cashe int       `json:"amount_for_cashe"`
 	Amount_For_Card  int       `json:"amount_for_card"`
-	Create_at        time.Time `json:"ctreate_at"`
+
 }
 
 type Staff_Tarif_Repo struct {

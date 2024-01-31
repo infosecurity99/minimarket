@@ -19,7 +19,6 @@ type CreateTransaction struct {
 	Source_type_enum      string    `json:"source_type_enum"`
 	Amount                string    `json:"amount"`
 	Description           string    `json:"description"`
-	Create_at             time.Time `json:"ctreate_at"`
 }
 
 type UpdateTransaction struct {
@@ -28,7 +27,7 @@ type UpdateTransaction struct {
 	Staff_id    string    `json:"staff_id"`
 	Amount      string    `json:"amount"`
 	Description string    `json:"description"`
-	Create_at   time.Time `json:"ctreate_at"`
+
 }
 
 type TransactionRepo struct {

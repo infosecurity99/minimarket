@@ -22,23 +22,15 @@ func NewStaffRepo(db *pgxpool.Pool) storage.IStaff {
 	}
 }
 
-func (s *staffRepo) execWithLog(query string, args ...interface{}) error {
-	_, err := s.db.Exec(context.Background(), query, args...)
-	if err != nil {
-		fmt.Println("error during query execution:", err.Error())
-	}
-	return err
-}
-
 func (s *staffRepo) CreateStaff(createStaff models.CreateStaff) (string, error) {
 	uid := uuid.New()
-	create_ats := time.Now()
+	createAt := time.Now()
 
 	query := `
 		INSERT INTO staff VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 	`
 
-	if err := s.execWithLog(query,
+	if _, err := s.db.Exec(context.Background(), query,
 		uid,
 		createStaff.Branch_id,
 		createStaff.Tarif_id,
@@ -49,7 +41,7 @@ func (s *staffRepo) CreateStaff(createStaff models.CreateStaff) (string, error) 
 		createStaff.BirthDate,
 		createStaff.Login,
 		createStaff.Password,
-		create_ats,
+		createAt,
 	); err != nil {
 		return "", err
 	}
@@ -162,7 +154,7 @@ func (s *staffRepo) UpdateStaffs(request models.UpdateStaff) (string, error) {
 		WHERE id = $7
 	`
 
-	if err := s.execWithLog(query,
+	if _, err := s.db.Exec(context.Background(), query,
 		request.Branch_id,
 		request.Tarif_id,
 		request.Name,
@@ -183,7 +175,7 @@ func (s *staffRepo) DeleteStaff(request models.PrimaryKey) error {
 		WHERE id = $1
 	`
 
-	if err := s.execWithLog(query, request.ID); err != nil {
+	if _, err := s.db.Exec(context.Background(), query, request.ID); err != nil {
 		return err
 	}
 

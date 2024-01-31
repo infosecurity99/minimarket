@@ -26,7 +26,7 @@ func NewStaff_Tarif(db *pgxpool.Pool) storage.IStaff_Tarif {
 // create stafftarif
 func (s *staftarifRepo) CreateStaff_Tarifs(createStaff_tarif models.CreateStaff_Tarif) (string, error) {
 	uid := uuid.New()
-	create_ats := time.Now().UTC()
+	createAt := time.Now()
 
 	if _, err := s.db.Exec(context.Background(),
 		`INSERT INTO staff_tarif (id, name, tarif_type, amount_for_cash, amount_for_card, create_at)
@@ -36,7 +36,8 @@ func (s *staftarifRepo) CreateStaff_Tarifs(createStaff_tarif models.CreateStaff_
 		createStaff_tarif.Tarif_Type_Enum,
 		createStaff_tarif.Amount_For_Cashe,
 		createStaff_tarif.Amount_For_Card,
-		create_ats); err != nil {
+		createAt,
+		); err != nil {
 		log.Printf("Error while inserting data: %v", err)
 		return "", err
 	}

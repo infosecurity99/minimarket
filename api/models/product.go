@@ -17,7 +17,7 @@ type CreateProduct struct {
 	Name        string    `json:"name"`
 	Price       int       `json:"price"`
 	Category_id string    `json:"category_id"`
-	Create_at   time.Time `json:"create_at"`
+
 }
 
 type UpdateProduct struct {
@@ -25,7 +25,7 @@ type UpdateProduct struct {
 	Name        string    `json:"name"`
 	Price       int       `json:"price"`
 	Category_id string    `json:"category_id"`
-	Create_at   time.Time `json:"create_at"`
+
 }
 
 type ProductResponse struct {

@@ -22,28 +22,22 @@ func NewProductRepo(db *pgxpool.Pool) storage.IProduct {
 	}
 }
 
-func (p *productRepo) execWithLog(query string, args ...interface{}) error {
-	_, err := p.db.Exec(context.Background(), query, args...)
-	if err != nil {
-		fmt.Println("error while executing query", err.Error())
-	}
-	return nil
-}
+
 
 func (p *productRepo) CreateProduct(createProduct models.CreateProduct) (string, error) {
 	uid := uuid.New()
-	create_ats := time.Now()
+	createAt := time.Now()
 
 	query := `
         INSERT INTO product VALUES ($1, $2, $3, $4, $5)
         `
 
-	if err := p.execWithLog(query,
+	if _, err := p.db.Exec(context.Background(),query,
 		uid,
 		createProduct.Name,
 		createProduct.Price,
 		createProduct.Category_id,
-		create_ats,
+		createAt,
 	); err != nil {
 		return "", err
 	}
@@ -68,7 +62,7 @@ func (p *productRepo) GetByIdProduct(id models.PrimaryKey) (models.Product, erro
 		&product.Category_id,
 		&product.Create_at,
 	); err != nil {
-		fmt.Println("error while scanning user", err.Error())
+		fmt.Println("error while scanning product", err.Error())
 		return models.Product{}, nil
 	}
 
@@ -145,7 +139,7 @@ func (p *productRepo) UpdateProduct(updateProduct models.UpdateProduct) (string,
          SET name = $1, price = $2, category_id = $3
          WHERE id = $4
 `
-	if err := p.execWithLog(query,
+	if _, err := p.db.Exec(context.Background(),query,
 		updateProduct.Name,
 		updateProduct.Price,
 		updateProduct.Category_id,
@@ -163,7 +157,7 @@ func (p *productRepo) DeleteProduct(id models.PrimaryKey) error {
          WHERE id = $1
 `
 
-	if err := p.execWithLog(query, id.ID); err != nil {
+	if _, err := p.db.Exec(context.Background(), query, id.ID); err != nil {
 		return err
 	}
 	return nil

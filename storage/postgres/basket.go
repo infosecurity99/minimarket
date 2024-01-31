@@ -1,12 +1,11 @@
 package postgres
 
 import (
+	"connected/api/models"
+	"connected/storage"
 	"context"
 	"fmt"
 	"time"
-
-	"connected/api/models"
-	"connected/storage"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -22,46 +21,37 @@ func NewBasketRepo(db *pgxpool.Pool) storage.IBasket {
 	}
 }
 
-func (b *basketRepo) execWithLog(query string, args ...interface{}) error {
-	_, err := b.db.Exec(context.Background(), query, args...)
-	if err != nil {
-		fmt.Println("error while executing query", err.Error())
-	}
-	return nil
-}
-
 func (b *basketRepo) CreateBasket(createBasket models.CreateBasket) (string, error) {
 	uid := uuid.New()
-	create_ats := time.Now()
-
-	query := `
-        INSERT INTO basket VALUES ($1, $2, $3, $4, $5, $6)
-        `
-
-	if err := b.execWithLog(query,
+	createAt := time.Now()
+	if _, err := b.db.Exec(context.Background(), `
+        INSERT INTO basket (id,sale_id ,product_id,quantity,price,create_at )
+        VALUES ($1, $2, $3, $4, $5, $6)
+    `,
 		uid,
 		createBasket.Sale_id,
 		createBasket.Product_id,
 		createBasket.Quantity,
 		createBasket.Price,
-		create_ats,
+		createAt,
 	); err != nil {
+		fmt.Println("error while inserting data", err.Error())
 		return "", err
 	}
 
 	return uid.String(), nil
 }
 
-func (b *basketRepo) GetByIdBasket(id models.PrimaryKey) (models.Basket, error) {
+func (b *basketRepo) GetByIdBasket(pKey models.PrimaryKey) (models.Basket, error) {
 	basket := models.Basket{}
 
 	query := `
-           SELECT id, sale_id, product_id, quantity, price, create_at
+           SELECT id,sale_id ,product_id,quantity,price, create_at
            FROM basket
            WHERE id = $1
            `
 
-	if err := b.db.QueryRow(context.Background(), query, id.ID).Scan(
+	if err := b.db.QueryRow(context.Background(), query, pKey.ID).Scan(
 		&basket.ID,
 		&basket.Sale_id,
 		&basket.Product_id,
@@ -69,7 +59,7 @@ func (b *basketRepo) GetByIdBasket(id models.PrimaryKey) (models.Basket, error) 
 		&basket.Price,
 		&basket.Create_at,
 	); err != nil {
-		fmt.Println("error while scanning user", err.Error())
+		fmt.Println("error while scanning sale", err.Error())
 	}
 
 	return basket, nil
@@ -86,11 +76,11 @@ func (b *basketRepo) GetListBasket(request models.GetListRequest) (models.Basket
 	)
 
 	countQuery := `
-                SELECT COUNT(1) FROM basket
+                SELECT COUNT(1) FROM sale
                 `
 
 	if search != "" {
-		countQuery += fmt.Sprintf(` AND (name ILIKE '%%%s%%')`, search)
+		countQuery += fmt.Sprintf(` AND (quantity ILIKE '%%%s%%')`, search)
 	}
 
 	if err := b.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
@@ -99,12 +89,12 @@ func (b *basketRepo) GetListBasket(request models.GetListRequest) (models.Basket
 	}
 
 	query = `
-             SELECT id, sale_id, product_id, quantity, price, create_at
+             SELECT id,sale_id ,product_id,quantity,price, create_at
              FROM basket
              `
 
 	if search != "" {
-		query += fmt.Sprintf(` AND (name ILIKE '%%%s%%') `, search)
+		query += fmt.Sprintf(` AND (quantity ILIKE '%%%s%%') `, search)
 	}
 
 	query += ` LIMIT $1 OFFSET $2`
@@ -141,28 +131,31 @@ func (b *basketRepo) GetListBasket(request models.GetListRequest) (models.Basket
 
 func (b *basketRepo) UpdateBasket(updateBasket models.UpdateBasket) (string, error) {
 	query := `
-         UPDATE basket
-         SET quantity = $1
-         WHERE id = $2
-         `
+	update basket
+	   set sale_id=$1 ,product_id=$2,quantity=$3,price=$4
+		  where id = $5`
 
-	if err := b.execWithLog(query,
+	if _, err := b.db.Exec(context.Background(), query,
+
+		updateBasket.Sale_id,
+		updateBasket.Product_id,
 		updateBasket.Quantity,
-		updateBasket.ID,
-	); err != nil {
+		updateBasket.Price,
+		updateBasket.ID); err != nil {
+		fmt.Println("error while updating transaction data", err.Error())
 		return "", err
 	}
 
 	return updateBasket.ID, nil
 }
 
-func (b *basketRepo) DeleteBasket(id models.PrimaryKey) error {
+func (b *basketRepo) DeleteBasket(pKey models.PrimaryKey) error {
 	query := `
-         DELETE FROM basket
-         WHERE id = $1
-         `
-
-	if err := b.execWithLog(query, id.ID); err != nil {
+          delete from basket
+             where id = $1
+    `
+	if _, err := b.db.Exec(context.Background(), query, pKey.ID); err != nil {
+		fmt.Println("error while deleting basket  by id", err.Error())
 		return err
 	}
 

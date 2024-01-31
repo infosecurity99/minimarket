@@ -26,7 +26,7 @@ type CreateStaff struct {
 	BirthDate       int       `json:"birthdate"`
 	Login           string    `json:"login"`
 	Password        string    `json:"password"`
-	Create_at       time.Time `json:"ctreate_at"`
+	
 }
 
 type UpdateStaff struct {
@@ -37,7 +37,7 @@ type UpdateStaff struct {
 	Balance   int       `json:"balance"`
 	Age       int       `json:"age"`
 	BirthDate int       `json:"birthdate"`
-	Create_at time.Time `json:"ctreate_at"`
+
 }
 
 type StaffRepo struct {

@@ -47,8 +47,6 @@ definitions:
     type: object
   models.CreateBasket:
     properties:
-      ctreate_at:
-        type: string
       price:
         type: integer
       product_id:
@@ -62,15 +60,11 @@ definitions:
     properties:
       address:
         type: string
-      ctreate_at:
-        type: string
       name:
         type: string
     type: object
   models.CreateCategory:
     properties:
-      ctreate_at:
-        type: string
       name:
         type: string
       parent_id:
@@ -79,8 +73,6 @@ definitions:
   models.CreateProduct:
     properties:
       category_id:
-        type: string
-      create_at:
         type: string
       name:
         type: string
@@ -94,8 +86,6 @@ definitions:
       cashier_id:
         type: string
       clientname:
-        type: string
-      ctreate_at:
         type: string
       payment_type:
         type: string
@@ -115,8 +105,6 @@ definitions:
       birthdate:
         type: integer
       branch_id:
-        type: string
-      ctreate_at:
         type: string
       login:
         type: string
@@ -146,16 +134,12 @@ definitions:
         type: string
       count:
         type: integer
-      ctreate_at:
-        type: string
       product_id:
         type: string
     type: object
   models.CreateTransaction:
     properties:
       amount:
-        type: string
-      ctreate_at:
         type: string
       description:
         type: string
@@ -303,6 +287,8 @@ definitions:
     properties:
       branch_id:
         type: string
+      ctreate_at:
+        type: string
       id:
         type: string
       price:
@@ -318,8 +304,6 @@ definitions:
     type: object
   models.UpdateBasket:
     properties:
-      ctreate_at:
-        type: string
       id:
         type: string
       price:
@@ -335,8 +319,6 @@ definitions:
     properties:
       address:
         type: string
-      ctreate_at:
-        type: string
       id:
         type: string
       name:
@@ -344,8 +326,6 @@ definitions:
     type: object
   models.UpdateCategory:
     properties:
-      ctreate_at:
-        type: string
       id:
         type: string
       name:
@@ -356,8 +336,6 @@ definitions:
   models.UpdateProduct:
     properties:
       category_id:
-        type: string
-      create_at:
         type: string
       id:
         type: string
@@ -373,8 +351,6 @@ definitions:
       cashier_id:
         type: string
       clientname:
-        type: string
-      ctreate_at:
         type: string
       id:
         type: string
@@ -393,8 +369,6 @@ definitions:
         type: integer
       branch_id:
         type: string
-      ctreate_at:
-        type: string
       id:
         type: string
       name:
@@ -408,8 +382,6 @@ definitions:
         type: integer
       amount_for_cashe:
         type: integer
-      ctreate_at:
-        type: string
       id:
         type: string
       name:
@@ -429,8 +401,6 @@ definitions:
   models.UpdateTransaction:
     properties:
       amount:
-        type: string
-      ctreate_at:
         type: string
       description:
         type: string
@@ -1713,7 +1683,7 @@ paths:
         type: string
       - description: storage
         in: body
-        name: user
+        name: storage
         required: true
         schema:
           $ref: '#/definitions/models.UpdateStorage'
@@ -1784,7 +1754,7 @@ paths:
       parameters:
       - description: transaction
         in: body
-        name: basket
+        name: transaction
         schema:
           $ref: '#/definitions/models.CreateTransaction'
       produces:
@@ -1867,7 +1837,7 @@ paths:
     put:
       consumes:
       - application/json
-      description: update transaction
+      description: update sale
       parameters:
       - description: transaction
         in: path
@@ -1876,7 +1846,7 @@ paths:
         type: string
       - description: transaction
         in: body
-        name: user
+        name: transaction
         required: true
         schema:
           $ref: '#/definitions/models.UpdateTransaction'
@@ -1899,9 +1869,9 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.Response'
-      summary: Update transaction
+      summary: Update sale
       tags:
-      - storage
+      - transaction
   /transaction_storage:
     post:
       consumes:

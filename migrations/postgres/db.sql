@@ -1,92 +1,97 @@
-/*branch*/
+-- branch
 CREATE TABLE branch (
-id UUID PRIMARY KEY,
-name VARCHAR(30),
-address VARCHAR(30),
-create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  id UUID PRIMARY KEY,
+  name VARCHAR(30),
+  address VARCHAR(30),
+  create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TYPE status_enum AS ENUM ('In process', 'Success', 'Cancel');
-/*sale*/
+
+-- sale
 CREATE TABLE sale (
- id UUID PRIMARY KEY,
- branch_id UUID REFERENCES branch(id),
- shopassistant_id UUID REFERENCES staff(id),
- cashier_id UUID REFERENCES staff(id),
- payment_type payment_type_enum,
- price INT,
- status_type  status_enum,
- clientname VARCHAR(30),
- create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  id UUID PRIMARY KEY,
+  branch_id UUID REFERENCES branch(id),
+  shopassistant_id UUID REFERENCES staff(id),
+  cashier_id UUID REFERENCES staff(id),
+  payment_type payment_type_enum,
+  price INT,
+  status_type status_enum,
+  clientname VARCHAR(30),
+  create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-create type payment_type_enum as enum ('card', 'cashe');
 
-/*transaction*/
+CREATE TYPE payment_type_enum AS ENUM ('card', 'cashe');
+
+-- transaction
 CREATE TABLE transaction (
-id UUID PRIMARY KEY,
-sale_id UUID REFERENCES sale(id),
-staff_id UUID REFERENCES staff(id),
-transaction tarnsaction_type_enum,
-sourcetype source_type_enum,
-amount INT,
-description VARCHAR(30),
-create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  id UUID PRIMARY KEY,
+  sale_id UUID REFERENCES sale(id),
+  staff_id UUID REFERENCES staff(id),
+  transaction_type tarnsaction_type_enum,
+  source_type source_type_enum,
+  amount INT,
+  description VARCHAR(30),
+  create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-create type tarnsaction_type_enum as enum ('withdraw'  ,'topup' );
+CREATE TYPE tarnsaction_type_enum AS ENUM ('withdraw', 'topup');
+CREATE TYPE source_type_enum AS ENUM ('bonus', 'sales');
 
-create type source_type_enum as enum ( 'bonus'  ,'sales');
-
-/*staff*/
+-- staff
 CREATE TABLE staff (
-id UUID PRIMARY KEY,
-branch_id UUID REFERENCES branch(id),
-tarif_id UUID REFERENCES staff_tarif(id),
-type_stuff type_stuf_enum,
-name VARCHAR(30),
-balance VARCHAR(30),
-age INT,
-birthdate INT,
-login VARCHAR(30),
-password VARCHAR(30),
-create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  id UUID PRIMARY KEY,
+  branch_id UUID REFERENCES branch(id),
+  tarif_id UUID REFERENCES staff_tarif(id),
+  type_stuff type_stuf_enum,
+  name VARCHAR(30),
+  balance VARCHAR(30),
+  age INT,
+  birthdate INT,
+  login VARCHAR(30),
+  password VARCHAR(30),
+  create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-create type type_stuf_enum as enum ( 'shopassistant', 'cashier');
+CREATE TYPE type_stuf_enum AS ENUM ('shopassistant', 'cashier');
 
-/*stafftarif*/
+-- staff_tarif
 CREATE TABLE staff_tarif (
-id UUID PRIMARY KEY,
-name VARCHAR(30),
-tarif_type tarif_type_enum,
-amount_for_cashe INT,
-amount_for_card INT,
-create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  id UUID PRIMARY KEY,
+  name VARCHAR(30),
+  tarif_type tarif_type_enum,
+  amount_for_cashe INT,
+  amount_for_card INT,
+  create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-create type tarif_type_enum as enum ( 'percent'  ,'fixed');
+
+CREATE TYPE tarif_type_enum AS ENUM ('percent', 'fixed');
 
 
 
 
 
 
+/**/
 
 
-/*storage*/
+-- storage
 CREATE TABLE storage (
- id UUID PRIMARY KEY,
- product_id UUID REFERENCES product(id),
- branch_id UUID REFERENCES branch(id),
- count INT
+  id UUID PRIMARY KEY,
+  product_id UUID REFERENCES product(id),
+  branch_id UUID REFERENCES branch(id),
+  count INT,
+  create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-/*product*/
+-- product
 CREATE TABLE product (
- id UUID PRIMARY KEY,
- name VARCHAR(30),
- price INT,
- barcode SERIAL,
- category_id UUID REFERENCES category(id)
+  id UUID PRIMARY KEY,
+  name VARCHAR(30),
+  price INT,
+  barcode SERIAL,
+  category_id UUID REFERENCES category(id),
+  create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Barcode'i otomatik olarak oluşturacak bir fonksiyon
@@ -103,31 +108,33 @@ CREATE TRIGGER product_before_insert
  BEFORE INSERT ON product
  FOR EACH ROW EXECUTE FUNCTION generate_barcode();
 
-/*category*/
+-- category
 CREATE TABLE category (
   id UUID PRIMARY KEY,
   name VARCHAR(30),
-  parent_id UUID
+  parent_id UUID,
+  create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-/*storage transaction*/
+-- storage_transaction
 CREATE TABLE storage_transaction (
- id UUID PRIMARY KEY,
- branch_id UUID REFERENCES branch(id),
- staff_id UUID REFERENCES staff(id),
- product_id UUID REFERENCES product(id),
- transaction_type storage_transaction_type_enum,
- price INT,
- quantity INT
+  id UUID PRIMARY KEY,
+  branch_id UUID REFERENCES branch(id),
+  staff_id UUID REFERENCES staff(id),
+  product_id UUID REFERENCES product(id),
+  transaction_type storage_transaction_type_enum,
+  price INT,
+  quantity INT,
+  create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
 
 CREATE TYPE storage_transaction_type_enum AS ENUM ('minus', 'plus');
-/*basket*/
 
+-- basket
 CREATE TABLE basket (
-sale_id UUID REFERENCES sale(id),
-product_id UUID REFERENCES product(id),
-quantity INT,
-price INT
+  sale_id UUID REFERENCES sale(id),
+  product_id UUID REFERENCES product(id),
+  quantity INT,
+  price INT,
+  create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

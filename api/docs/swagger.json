@@ -1874,7 +1874,7 @@
                     },
                     {
                         "description": "storage",
-                        "name": "user",
+                        "name": "storage",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -2023,7 +2023,7 @@
                 "parameters": [
                     {
                         "description": "transaction",
-                        "name": "basket",
+                        "name": "transaction",
                         "in": "body",
                         "schema": {
                             "$ref": "#/definitions/models.CreateTransaction"
@@ -2101,7 +2101,7 @@
                 }
             },
             "put": {
-                "description": "update transaction",
+                "description": "update sale",
                 "consumes": [
                     "application/json"
                 ],
@@ -2109,9 +2109,9 @@
                     "application/json"
                 ],
                 "tags": [
-                    "storage"
+                    "transaction"
                 ],
-                "summary": "Update transaction",
+                "summary": "Update sale",
                 "parameters": [
                     {
                         "type": "string",
@@ -2122,7 +2122,7 @@
                     },
                     {
                         "description": "transaction",
-                        "name": "user",
+                        "name": "transaction",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -2567,9 +2567,6 @@
         "models.CreateBasket": {
             "type": "object",
             "properties": {
-                "ctreate_at": {
-                    "type": "string"
-                },
                 "price": {
                     "type": "integer"
                 },
@@ -2590,9 +2587,6 @@
                 "address": {
                     "type": "string"
                 },
-                "ctreate_at": {
-                    "type": "string"
-                },
                 "name": {
                     "type": "string"
                 }
@@ -2601,9 +2595,6 @@
         "models.CreateCategory": {
             "type": "object",
             "properties": {
-                "ctreate_at": {
-                    "type": "string"
-                },
                 "name": {
                     "type": "string"
                 },
@@ -2616,9 +2607,6 @@
             "type": "object",
             "properties": {
                 "category_id": {
-                    "type": "string"
-                },
-                "create_at": {
                     "type": "string"
                 },
                 "name": {
@@ -2639,9 +2627,6 @@
                     "type": "string"
                 },
                 "clientname": {
-                    "type": "string"
-                },
-                "ctreate_at": {
                     "type": "string"
                 },
                 "payment_type": {
@@ -2671,9 +2656,6 @@
                     "type": "integer"
                 },
                 "branch_id": {
-                    "type": "string"
-                },
-                "ctreate_at": {
                     "type": "string"
                 },
                 "login": {
@@ -2719,9 +2701,6 @@
                 "count": {
                     "type": "integer"
                 },
-                "ctreate_at": {
-                    "type": "string"
-                },
                 "product_id": {
                     "type": "string"
                 }
@@ -2731,9 +2710,6 @@
             "type": "object",
             "properties": {
                 "amount": {
-                    "type": "string"
-                },
-                "ctreate_at": {
                     "type": "string"
                 },
                 "description": {
@@ -2959,6 +2935,9 @@
                 "branch_id": {
                     "type": "string"
                 },
+                "ctreate_at": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -2982,9 +2961,6 @@
         "models.UpdateBasket": {
             "type": "object",
             "properties": {
-                "ctreate_at": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
                 },
@@ -3008,9 +2984,6 @@
                 "address": {
                     "type": "string"
                 },
-                "ctreate_at": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
                 },
@@ -3022,9 +2995,6 @@
         "models.UpdateCategory": {
             "type": "object",
             "properties": {
-                "ctreate_at": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
                 },
@@ -3040,9 +3010,6 @@
             "type": "object",
             "properties": {
                 "category_id": {
-                    "type": "string"
-                },
-                "create_at": {
                     "type": "string"
                 },
                 "id": {
@@ -3066,9 +3033,6 @@
                     "type": "string"
                 },
                 "clientname": {
-                    "type": "string"
-                },
-                "ctreate_at": {
                     "type": "string"
                 },
                 "id": {
@@ -3097,9 +3061,6 @@
                 "branch_id": {
                     "type": "string"
                 },
-                "ctreate_at": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
                 },
@@ -3119,9 +3080,6 @@
                 },
                 "amount_for_cashe": {
                     "type": "integer"
-                },
-                "ctreate_at": {
-                    "type": "string"
                 },
                 "id": {
                     "type": "string"
@@ -3152,9 +3110,6 @@
             "type": "object",
             "properties": {
                 "amount": {
-                    "type": "string"
-                },
-                "ctreate_at": {
                     "type": "string"
                 },
                 "description": {

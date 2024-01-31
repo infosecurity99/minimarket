@@ -25,7 +25,7 @@ func NewTransactionRepo(db *pgxpool.Pool) storage.ITransaction {
 // create tansaction
 func (t *transactionRepo) CreateTransaction(createTransaction models.CreateTransaction) (string, error) {
 	uid := uuid.New()
-	create_ats := time.Now()
+	createAt := time.Now()
 	if _, err := t.db.Exec(context.Background(), `insert into
           transaction values ($1, $2, $3, $4, $5, $6, $7, $8)
           `,
@@ -36,7 +36,7 @@ func (t *transactionRepo) CreateTransaction(createTransaction models.CreateTrans
 		createTransaction.Source_type_enum,
 		createTransaction.Amount,
 		createTransaction.Description,
-		create_ats,
+		createAt,
 	); err != nil {
 		fmt.Println("error while inserting transaction data", err.Error())
 		return "", err

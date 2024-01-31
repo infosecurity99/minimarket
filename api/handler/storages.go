@@ -130,7 +130,7 @@ func (h Handler) GetListStorages(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param 		 id path string true "storage"
-// @Param        user body models.UpdateStorage true "storage"
+// @Param        storage body models.UpdateStorage true "storage"
 // @Success      200  {object}  models.Storage
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response

@@ -21,7 +21,7 @@ type CreateSale struct {
 	Price            int       `json:"price"`
 	Status_type      string    `json:"status_type"`
 	Clientname       string    `json:"clientname"`
-	Create_at        time.Time `json:"ctreate_at"`
+
 }
 type UpdateSale struct {
 	ID               string    `json:"id"`
@@ -30,7 +30,7 @@ type UpdateSale struct {
 	Cashier_id       string    `json:"cashier_id"`
 	Price            int       `json:"price"`
 	Clientname       string    `json:"clientname"`
-	Create_at        time.Time `json:"ctreate_at"`
+
 }
 
 type SaleRepos struct {
