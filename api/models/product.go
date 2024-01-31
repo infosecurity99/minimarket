@@ -14,18 +14,17 @@ type Product struct {
 }
 
 type CreateProduct struct {
-	Name        string    `json:"name"`
-	Price       int       `json:"price"`
-	Category_id string    `json:"category_id"`
-
+	Name        string `json:"name"`
+	Price       int    `json:"price"`
+	Category_id string `json:"category_id"`
+	Barcode     int    `json:"barcode"`
 }
 
 type UpdateProduct struct {
-	ID          string    `json:"id"`
-	Name        string    `json:"name"`
-	Price       int       `json:"price"`
-	Category_id string    `json:"category_id"`
-
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Price       int    `json:"price"`
+	Category_id string `json:"category_id"`
 }
 
 type ProductResponse struct {

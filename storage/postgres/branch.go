@@ -70,7 +70,7 @@ func (b *branchRepo) GetList(request models.GetListRequest) (models.BranchRespon
 		SELECT COUNT(1) FROM branch`
 
 	query := `
-		SELECT id, name, address, create_at FROM branch`
+		SELECT id, name, address, create_at from branch`
 
 	// Common logic for adding search condition to queries
 	addSearchCondition := func(baseQuery string) string {

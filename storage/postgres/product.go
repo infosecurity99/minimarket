@@ -22,20 +22,19 @@ func NewProductRepo(db *pgxpool.Pool) storage.IProduct {
 	}
 }
 
-
-
 func (p *productRepo) CreateProduct(createProduct models.CreateProduct) (string, error) {
 	uid := uuid.New()
 	createAt := time.Now()
 
 	query := `
-        INSERT INTO product VALUES ($1, $2, $3, $4, $5)
+        insert into product values ($1, $2, $3, $4, $5 , $6)
         `
 
-	if _, err := p.db.Exec(context.Background(),query,
+	if _, err := p.db.Exec(context.Background(), query,
 		uid,
 		createProduct.Name,
 		createProduct.Price,
+		createProduct.Barcode,
 		createProduct.Category_id,
 		createAt,
 	); err != nil {
@@ -45,7 +44,7 @@ func (p *productRepo) CreateProduct(createProduct models.CreateProduct) (string,
 	return uid.String(), nil
 }
 
-func (p *productRepo) GetByIdProduct(id models.PrimaryKey) (models.Product, error) {
+func (p *productRepo) GetByIdProduct(pKey models.PrimaryKey) (models.Product, error) {
 	product := models.Product{}
 
 	query := `
@@ -54,7 +53,7 @@ func (p *productRepo) GetByIdProduct(id models.PrimaryKey) (models.Product, erro
            WHERE id = $1
 `
 
-	if err := p.db.QueryRow(context.Background(), query, id.ID).Scan(
+	if err := p.db.QueryRow(context.Background(), query, pKey.ID).Scan(
 		&product.ID,
 		&product.Name,
 		&product.Price,
@@ -139,7 +138,7 @@ func (p *productRepo) UpdateProduct(updateProduct models.UpdateProduct) (string,
          SET name = $1, price = $2, category_id = $3
          WHERE id = $4
 `
-	if _, err := p.db.Exec(context.Background(),query,
+	if _, err := p.db.Exec(context.Background(), query,
 		updateProduct.Name,
 		updateProduct.Price,
 		updateProduct.Category_id,

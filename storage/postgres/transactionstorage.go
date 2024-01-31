@@ -48,7 +48,7 @@ func (s *transactionstorageRepo) GetByIdTranasactionStorage(pKey models.PrimaryK
 
 	query := `
            SELECT id, branch_id, staff_id, product_id, 
-		   transaction_type, price,quantity
+		   transaction_type, price,quantity,create_at
            FROM storage_transaction
            WHERE id = $1
            `

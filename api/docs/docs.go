@@ -130,14 +130,14 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "basket",
+                        "description": "basket_id",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
                         "description": "basket",
-                        "name": "user",
+                        "name": "basket",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -173,6 +173,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "description": "delete basket",
                 "consumes": [
                     "application/json"
                 ],
@@ -182,11 +183,11 @@ const docTemplate = `{
                 "tags": [
                     "basket"
                 ],
-                "summary": "Delete basket by ID",
+                "summary": "Delete basket",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Basket ID",
+                        "description": "basket_id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -194,9 +195,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Data deleted successfully",
+                        "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.Response"
                         }
                     },
                     "400": {
@@ -222,6 +223,7 @@ const docTemplate = `{
         },
         "/baskets": {
             "get": {
+                "description": "get basket list",
                 "consumes": [
                     "application/json"
                 ],
@@ -231,25 +233,23 @@ const docTemplate = `{
                 "tags": [
                     "basket"
                 ],
-                "summary": "Get a list of baskets",
+                "summary": "Get basket list",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "default": 1,
-                        "description": "Page number",
+                        "type": "string",
+                        "description": "page",
                         "name": "page",
                         "in": "query"
                     },
                     {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "Number of items per page",
+                        "type": "string",
+                        "description": "limit",
                         "name": "limit",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Search term",
+                        "description": "search",
                         "name": "search",
                         "in": "query"
                     }
@@ -298,7 +298,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "branch",
-                        "name": "basket",
+                        "name": "branch",
                         "in": "body",
                         "schema": {
                             "$ref": "#/definitions/models.CreateBranch"
@@ -335,6 +335,7 @@ const docTemplate = `{
         },
         "/branch/{id}": {
             "get": {
+                "description": "get branch by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -344,11 +345,11 @@ const docTemplate = `{
                 "tags": [
                     "branch"
                 ],
-                "summary": "Get branch by ID",
+                "summary": "Gets branch",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Branch ID",
+                        "description": "branch",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -364,13 +365,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.Response"
                         }
                     }
                 }
@@ -390,14 +397,14 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "branch",
+                        "description": "branch_id",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
                         "description": "branch",
-                        "name": "user",
+                        "name": "branch",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -433,6 +440,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "description": "delete branch",
                 "consumes": [
                     "application/json"
                 ],
@@ -442,11 +450,11 @@ const docTemplate = `{
                 "tags": [
                     "branch"
                 ],
-                "summary": "Delete branch by ID",
+                "summary": "Delete branch",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Branch ID",
+                        "description": "branch_id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -456,19 +464,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.Response"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.Response"
                         }
                     }
                 }
@@ -476,6 +490,7 @@ const docTemplate = `{
         },
         "/branchs": {
             "get": {
+                "description": "get branch list",
                 "consumes": [
                     "application/json"
                 ],
@@ -485,25 +500,23 @@ const docTemplate = `{
                 "tags": [
                     "branch"
                 ],
-                "summary": "Get a list of branches",
+                "summary": "Get branch list",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "default": 1,
-                        "description": "Page number",
+                        "type": "string",
+                        "description": "page",
                         "name": "page",
                         "in": "query"
                     },
                     {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "Number of items per page",
+                        "type": "string",
+                        "description": "limit",
                         "name": "limit",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Search query",
+                        "description": "search",
                         "name": "search",
                         "in": "query"
                     }
@@ -512,19 +525,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Branch"
+                            "$ref": "#/definitions/models.BranchResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.Response"
                         }
                     }
                 }
@@ -1290,7 +1309,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "staff",
-                        "name": "basket",
+                        "name": "staff",
                         "in": "body",
                         "schema": {
                             "$ref": "#/definitions/models.CreateStaff"
@@ -2558,6 +2577,20 @@ const docTemplate = `{
                 }
             }
         },
+        "models.BranchResponse": {
+            "type": "object",
+            "properties": {
+                "branches": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Branch"
+                    }
+                },
+                "count": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.Category": {
             "type": "object",
             "properties": {
@@ -2617,6 +2650,9 @@ const docTemplate = `{
         "models.CreateProduct": {
             "type": "object",
             "properties": {
+                "barcode": {
+                    "type": "integer"
+                },
                 "category_id": {
                     "type": "string"
                 },
@@ -2661,7 +2697,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "balance": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "birthdate": {
                     "type": "integer"
@@ -2678,10 +2714,10 @@ const docTemplate = `{
                 "password": {
                     "type": "string"
                 },
-                "staff_type_enum": {
+                "tarif_id": {
                     "type": "string"
                 },
-                "tarif_id": {
+                "type_stuff": {
                     "type": "string"
                 }
             }
@@ -2837,7 +2873,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "balance": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "birthdate": {
                     "type": "integer"
@@ -2860,10 +2896,10 @@ const docTemplate = `{
                 "password": {
                     "type": "string"
                 },
-                "staff_type_enum": {
+                "tarif_id": {
                     "type": "string"
                 },
-                "tarif_id": {
+                "type_stuff": {
                     "type": "string"
                 }
             }
@@ -3064,7 +3100,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "balance": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "birthdate": {
                     "type": "integer"

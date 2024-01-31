@@ -25,15 +25,15 @@ func (b *basketRepo) CreateBasket(createBasket models.CreateBasket) (string, err
 	uid := uuid.New()
 	createAt := time.Now()
 	if _, err := b.db.Exec(context.Background(), `
-        INSERT INTO basket (id,sale_id ,product_id,quantity,price,create_at )
+        INSERT INTO basket
         VALUES ($1, $2, $3, $4, $5, $6)
     `,
-		uid,
 		createBasket.Sale_id,
 		createBasket.Product_id,
 		createBasket.Quantity,
 		createBasket.Price,
 		createAt,
+		uid,
 	); err != nil {
 		fmt.Println("error while inserting data", err.Error())
 		return "", err
@@ -46,7 +46,7 @@ func (b *basketRepo) GetByIdBasket(pKey models.PrimaryKey) (models.Basket, error
 	basket := models.Basket{}
 
 	query := `
-           SELECT id,sale_id ,product_id,quantity,price, create_at
+           SELECT sale_id ,product_id,quantity,price, create_at,id
            FROM basket
            WHERE id = $1
            `
@@ -89,7 +89,7 @@ func (b *basketRepo) GetListBasket(request models.GetListRequest) (models.Basket
 	}
 
 	query = `
-             SELECT id,sale_id ,product_id,quantity,price, create_at
+             SELECT sale_id ,product_id,quantity,price, create_at,id
              FROM basket
              `
 
@@ -142,7 +142,7 @@ func (b *basketRepo) UpdateBasket(updateBasket models.UpdateBasket) (string, err
 		updateBasket.Quantity,
 		updateBasket.Price,
 		updateBasket.ID); err != nil {
-		fmt.Println("error while updating transaction data", err.Error())
+		fmt.Println("error while updating basket data", err.Error())
 		return "", err
 	}
 

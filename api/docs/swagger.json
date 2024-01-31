@@ -119,14 +119,14 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "basket",
+                        "description": "basket_id",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
                         "description": "basket",
-                        "name": "user",
+                        "name": "basket",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -162,6 +162,7 @@
                 }
             },
             "delete": {
+                "description": "delete basket",
                 "consumes": [
                     "application/json"
                 ],
@@ -171,11 +172,11 @@
                 "tags": [
                     "basket"
                 ],
-                "summary": "Delete basket by ID",
+                "summary": "Delete basket",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Basket ID",
+                        "description": "basket_id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -183,9 +184,9 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Data deleted successfully",
+                        "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.Response"
                         }
                     },
                     "400": {
@@ -211,6 +212,7 @@
         },
         "/baskets": {
             "get": {
+                "description": "get basket list",
                 "consumes": [
                     "application/json"
                 ],
@@ -220,25 +222,23 @@
                 "tags": [
                     "basket"
                 ],
-                "summary": "Get a list of baskets",
+                "summary": "Get basket list",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "default": 1,
-                        "description": "Page number",
+                        "type": "string",
+                        "description": "page",
                         "name": "page",
                         "in": "query"
                     },
                     {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "Number of items per page",
+                        "type": "string",
+                        "description": "limit",
                         "name": "limit",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Search term",
+                        "description": "search",
                         "name": "search",
                         "in": "query"
                     }
@@ -287,7 +287,7 @@
                 "parameters": [
                     {
                         "description": "branch",
-                        "name": "basket",
+                        "name": "branch",
                         "in": "body",
                         "schema": {
                             "$ref": "#/definitions/models.CreateBranch"
@@ -324,6 +324,7 @@
         },
         "/branch/{id}": {
             "get": {
+                "description": "get branch by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -333,11 +334,11 @@
                 "tags": [
                     "branch"
                 ],
-                "summary": "Get branch by ID",
+                "summary": "Gets branch",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Branch ID",
+                        "description": "branch",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -353,13 +354,19 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.Response"
                         }
                     }
                 }
@@ -379,14 +386,14 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "branch",
+                        "description": "branch_id",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
                         "description": "branch",
-                        "name": "user",
+                        "name": "branch",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -422,6 +429,7 @@
                 }
             },
             "delete": {
+                "description": "delete branch",
                 "consumes": [
                     "application/json"
                 ],
@@ -431,11 +439,11 @@
                 "tags": [
                     "branch"
                 ],
-                "summary": "Delete branch by ID",
+                "summary": "Delete branch",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Branch ID",
+                        "description": "branch_id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -445,19 +453,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.Response"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.Response"
                         }
                     }
                 }
@@ -465,6 +479,7 @@
         },
         "/branchs": {
             "get": {
+                "description": "get branch list",
                 "consumes": [
                     "application/json"
                 ],
@@ -474,25 +489,23 @@
                 "tags": [
                     "branch"
                 ],
-                "summary": "Get a list of branches",
+                "summary": "Get branch list",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "default": 1,
-                        "description": "Page number",
+                        "type": "string",
+                        "description": "page",
                         "name": "page",
                         "in": "query"
                     },
                     {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "Number of items per page",
+                        "type": "string",
+                        "description": "limit",
                         "name": "limit",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Search query",
+                        "description": "search",
                         "name": "search",
                         "in": "query"
                     }
@@ -501,19 +514,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Branch"
+                            "$ref": "#/definitions/models.BranchResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.Response"
                         }
                     }
                 }
@@ -1279,7 +1298,7 @@
                 "parameters": [
                     {
                         "description": "staff",
-                        "name": "basket",
+                        "name": "staff",
                         "in": "body",
                         "schema": {
                             "$ref": "#/definitions/models.CreateStaff"
@@ -2547,6 +2566,20 @@
                 }
             }
         },
+        "models.BranchResponse": {
+            "type": "object",
+            "properties": {
+                "branches": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Branch"
+                    }
+                },
+                "count": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.Category": {
             "type": "object",
             "properties": {
@@ -2606,6 +2639,9 @@
         "models.CreateProduct": {
             "type": "object",
             "properties": {
+                "barcode": {
+                    "type": "integer"
+                },
                 "category_id": {
                     "type": "string"
                 },
@@ -2650,7 +2686,7 @@
                     "type": "integer"
                 },
                 "balance": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "birthdate": {
                     "type": "integer"
@@ -2667,10 +2703,10 @@
                 "password": {
                     "type": "string"
                 },
-                "staff_type_enum": {
+                "tarif_id": {
                     "type": "string"
                 },
-                "tarif_id": {
+                "type_stuff": {
                     "type": "string"
                 }
             }
@@ -2826,7 +2862,7 @@
                     "type": "integer"
                 },
                 "balance": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "birthdate": {
                     "type": "integer"
@@ -2849,10 +2885,10 @@
                 "password": {
                     "type": "string"
                 },
-                "staff_type_enum": {
+                "tarif_id": {
                     "type": "string"
                 },
-                "tarif_id": {
+                "type_stuff": {
                     "type": "string"
                 }
             }
@@ -3053,7 +3089,7 @@
                     "type": "integer"
                 },
                 "balance": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "birthdate": {
                     "type": "integer"

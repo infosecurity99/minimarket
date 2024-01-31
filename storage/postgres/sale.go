@@ -54,7 +54,7 @@ func (s *saleRepo) GetByIdSales(pKey models.PrimaryKey) (models.Sale, error) {
 	sale := models.Sale{}
 
 	query := `
-           SELECT id, sale_id, product_id, quantity, price, create_at
+           SELECT id, branch_id, shopassistant_id, cashier_id,payment_type, price,status_type, clientname,create_at
            FROM sale
            WHERE id = $1
            `
@@ -64,7 +64,6 @@ func (s *saleRepo) GetByIdSales(pKey models.PrimaryKey) (models.Sale, error) {
 		&sale.Branch_id,
 		&sale.Shopassistant_id,
 		&sale.Cashier_id,
-		&sale.Price,
 		&sale.Payment_type,
 		&sale.Price,
 		&sale.Status_type,

@@ -17,7 +17,7 @@ import (
 // @Tags         staff
 // @Accept       json
 // @Produce      json
-// @Param        basket body models.CreateStaff false "staff"
+// @Param        staff body models.CreateStaff false "staff"
 // @Success      201  {object}  models.Staff
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response

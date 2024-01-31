@@ -18,7 +18,7 @@ import (
 // @Tags         branch
 // @Accept       json
 // @Produce      json
-// @Param        basket body models.CreateBranch false "branch"
+// @Param        branch body models.CreateBranch false "branch"
 // @Success      201  {object}  models.Branch
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
@@ -41,23 +41,25 @@ func (h Handler) CreateBranch(c *gin.Context) {
 		ID: pKey,
 	})
 	if err != nil {
-		handleResponse(c, "error while getting branch by id", http.StatusInternalServerError, err)
+		handleResponse(c, "error while getting branch by id1", http.StatusInternalServerError, err)
 		return
 	}
 
 	handleResponse(c, "", http.StatusCreated, branch)
 }
 
-// GetByID retrieves branch information by ID.
-// @Summary Get branch by ID
-// @Tags branch
-// @Accept json
-// @Produce json
-// @Param id path string true "Branch ID"
-// @Success 200 {object} models.Branch
-// @Failure 400 {string} models.Response
-// @Failure 500 {string} models.Response
-// @Router /branch/{id} [get]
+/// GetByID godoc
+// @Router       /branch/{id} [GET]
+// @Summary      Gets branch
+// @Description  get branch by ID
+// @Tags         branch
+// @Accept       json
+// @Produce      json
+// @Param        id path string true "branch"
+// @Success      200  {object}  models.Branch
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h Handler) GetByID(c *gin.Context) {
 	var err error
 
@@ -67,25 +69,27 @@ func (h Handler) GetByID(c *gin.Context) {
 		ID: uid,
 	})
 	if err != nil {
-		handleResponse(c, "error while getting branch by id", http.StatusInternalServerError, err)
+		handleResponse(c, "error while getting branch by id2", http.StatusInternalServerError, err)
 		return
 	}
 
 	handleResponse(c, "", http.StatusOK, branch)
 }
 
-// GetList returns a list of branches.
-// @Summary Get a list of branches
-// @Tags branch
-// @Accept json
-// @Produce json
-// @Param page query int false "Page number" default(1)
-// @Param limit query int false "Number of items per page" default(10)
-// @Param search query string false "Search query"
-// @Success 200 {object} models.Branch
-// @Failure 400 {string} models.Response
-// @Failure 500 {string} models.Response
-// @Router /branchs [get]
+// GetList godoc
+// @Router       /branchs [GET]
+// @Summary      Get branch list
+// @Description  get branch list
+// @Tags         branch
+// @Accept       json
+// @Produce      json
+// @Param        page query string false "page"
+// @Param 		 limit query string false "limit"
+// @Param 		 search query string false "search"
+// @Success      200  {object}  models.BranchResponse
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h Handler) GetList(c *gin.Context) {
 	var (
 		page, limit int
@@ -129,8 +133,8 @@ func (h Handler) GetList(c *gin.Context) {
 // @Tags         branch
 // @Accept       json
 // @Produce      json
-// @Param 		 id path string true "branch"
-// @Param        user body models.UpdateBranch true "branch"
+// @Param 		 id path string true "branch_id"
+// @Param        branch body models.UpdateBranch true "branch"
 // @Success      200  {object}  models.Branch
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
@@ -161,23 +165,25 @@ func (h Handler) UpdateBranch(c *gin.Context) {
 		ID: pKey,
 	})
 	if err != nil {
-		handleResponse(c, "error while getting branch by id", http.StatusInternalServerError, err)
+		handleResponse(c, "error while getting branch by id3", http.StatusInternalServerError, err)
 		return
 	}
 
 	handleResponse(c, "", http.StatusOK, branch)
 }
 
-// Delete deletes branch by ID.
-// @Summary Delete branch by ID
-// @Tags branch
-// @Accept json
-// @Produce json
-// @Param id path string true "Branch ID"
-// @Success 200 {string} models.Response
-// @Failure 400 {string} models.Response
-// @Failure 500 {string} models.Response
-// @Router /branch/{id} [delete]
+// Delete godoc
+// @Router       /branch/{id} [DELETE]
+// @Summary      Delete branch
+// @Description  delete branch
+// @Tags         branch
+// @Accept       json
+// @Produce      json
+// @Param 		 id path string true "branch_id"
+// @Success      200  {object}  models.Response
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h Handler) Delete(c *gin.Context) {
 	uid := c.Param("id")
 	id, err := uuid.Parse(uid)

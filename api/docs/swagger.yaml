@@ -34,6 +34,15 @@ definitions:
       name:
         type: string
     type: object
+  models.BranchResponse:
+    properties:
+      branches:
+        items:
+          $ref: '#/definitions/models.Branch'
+        type: array
+      count:
+        type: integer
+    type: object
   models.Category:
     properties:
       ctreate_at:
@@ -72,6 +81,8 @@ definitions:
     type: object
   models.CreateProduct:
     properties:
+      barcode:
+        type: integer
       category_id:
         type: string
       name:
@@ -101,7 +112,7 @@ definitions:
       age:
         type: integer
       balance:
-        type: integer
+        type: string
       birthdate:
         type: integer
       branch_id:
@@ -112,9 +123,9 @@ definitions:
         type: string
       password:
         type: string
-      staff_type_enum:
-        type: string
       tarif_id:
+        type: string
+      type_stuff:
         type: string
     type: object
   models.CreateStaff_Tarif:
@@ -216,7 +227,7 @@ definitions:
       age:
         type: integer
       balance:
-        type: integer
+        type: string
       birthdate:
         type: integer
       branch_id:
@@ -231,9 +242,9 @@ definitions:
         type: string
       password:
         type: string
-      staff_type_enum:
-        type: string
       tarif_id:
+        type: string
+      type_stuff:
         type: string
     type: object
   models.Staff_Tarif:
@@ -364,7 +375,7 @@ definitions:
       age:
         type: integer
       balance:
-        type: integer
+        type: string
       birthdate:
         type: integer
       branch_id:
@@ -466,8 +477,9 @@ paths:
     delete:
       consumes:
       - application/json
+      description: delete basket
       parameters:
-      - description: Basket ID
+      - description: basket_id
         in: path
         name: id
         required: true
@@ -476,9 +488,9 @@ paths:
       - application/json
       responses:
         "200":
-          description: Data deleted successfully
+          description: OK
           schema:
-            type: string
+            $ref: '#/definitions/models.Response'
         "400":
           description: Bad Request
           schema:
@@ -491,7 +503,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.Response'
-      summary: Delete basket by ID
+      summary: Delete basket
       tags:
       - basket
     get:
@@ -531,14 +543,14 @@ paths:
       - application/json
       description: update basket
       parameters:
-      - description: basket
+      - description: basket_id
         in: path
         name: id
         required: true
         type: string
       - description: basket
         in: body
-        name: user
+        name: basket
         required: true
         schema:
           $ref: '#/definitions/models.UpdateBasket'
@@ -568,18 +580,17 @@ paths:
     get:
       consumes:
       - application/json
+      description: get basket list
       parameters:
-      - default: 1
-        description: Page number
+      - description: page
         in: query
         name: page
-        type: integer
-      - default: 10
-        description: Number of items per page
+        type: string
+      - description: limit
         in: query
         name: limit
-        type: integer
-      - description: Search term
+        type: string
+      - description: search
         in: query
         name: search
         type: string
@@ -602,7 +613,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.Response'
-      summary: Get a list of baskets
+      summary: Get basket list
       tags:
       - basket
   /branch:
@@ -613,7 +624,7 @@ paths:
       parameters:
       - description: branch
         in: body
-        name: basket
+        name: branch
         schema:
           $ref: '#/definitions/models.CreateBranch'
       produces:
@@ -642,8 +653,9 @@ paths:
     delete:
       consumes:
       - application/json
+      description: delete branch
       parameters:
-      - description: Branch ID
+      - description: branch_id
         in: path
         name: id
         required: true
@@ -654,23 +666,28 @@ paths:
         "200":
           description: OK
           schema:
-            type: string
+            $ref: '#/definitions/models.Response'
         "400":
           description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
         "500":
           description: Internal Server Error
           schema:
-            type: string
-      summary: Delete branch by ID
+            $ref: '#/definitions/models.Response'
+      summary: Delete branch
       tags:
       - branch
     get:
       consumes:
       - application/json
+      description: get branch by ID
       parameters:
-      - description: Branch ID
+      - description: branch
         in: path
         name: id
         required: true
@@ -685,12 +702,16 @@ paths:
         "400":
           description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
         "500":
           description: Internal Server Error
           schema:
-            type: string
-      summary: Get branch by ID
+            $ref: '#/definitions/models.Response'
+      summary: Gets branch
       tags:
       - branch
     put:
@@ -698,14 +719,14 @@ paths:
       - application/json
       description: update branch
       parameters:
-      - description: branch
+      - description: branch_id
         in: path
         name: id
         required: true
         type: string
       - description: branch
         in: body
-        name: user
+        name: branch
         required: true
         schema:
           $ref: '#/definitions/models.UpdateBranch'
@@ -735,18 +756,17 @@ paths:
     get:
       consumes:
       - application/json
+      description: get branch list
       parameters:
-      - default: 1
-        description: Page number
+      - description: page
         in: query
         name: page
-        type: integer
-      - default: 10
-        description: Number of items per page
+        type: string
+      - description: limit
         in: query
         name: limit
-        type: integer
-      - description: Search query
+        type: string
+      - description: search
         in: query
         name: search
         type: string
@@ -756,16 +776,20 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Branch'
+            $ref: '#/definitions/models.BranchResponse'
         "400":
           description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
         "500":
           description: Internal Server Error
           schema:
-            type: string
-      summary: Get a list of branches
+            $ref: '#/definitions/models.Response'
+      summary: Get branch list
       tags:
       - branch
   /categories:
@@ -1265,7 +1289,7 @@ paths:
       parameters:
       - description: staff
         in: body
-        name: basket
+        name: staff
         schema:
           $ref: '#/definitions/models.CreateStaff'
       produces:

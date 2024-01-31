@@ -26,11 +26,12 @@ func (s *storageRepo) CreateStorages(request models.CreateStorage) (string, erro
 	uid := uuid.New()
 	createAt := time.Now()
 	if _, err := s.db.Exec(context.Background(), `
-		INSERT INTO storge VALUES ($1, $2, $3, $4)
+		INSERT INTO storage VALUES ($1, $2, $3, $4 ,$5)
 		`,
 		uid,
 		request.Product_id,
 		request.Branch_id,
+		request.Count,
 		createAt,
 	); err != nil {
 		return "", err
@@ -44,12 +45,13 @@ func (s *storageRepo) GetByIdStorages(pKey models.PrimaryKey) (models.Storage, e
 	stoges := models.Storage{}
 
 	query := `
-		SELECT id,product_id,branch_id, create_at FROM storage WHERE id = $1
+		SELECT id,product_id,branch_id, count,create_at FROM storage WHERE id = $1
 	`
 	if err := s.db.QueryRow(context.Background(), query, pKey.ID).Scan(
 		&stoges.ID,
 		&stoges.Product_id,
 		&stoges.Branch_id,
+		&stoges.Count,
 		&stoges.Create_at,
 	); err != nil {
 		return models.Storage{}, err
@@ -69,7 +71,7 @@ func (s *storageRepo) GetListStorages(reuqest models.GetListRequest) (models.Sto
 		SELECT COUNT(1) FROM storage`
 
 	query := `
-		SELECT id,product_id,branch_id, create_at FROM   storage `
+		SELECT id,product_id,branch_id, count, create_at FROM   storage `
 
 	addSearchCondition := func(baseQuery string) string {
 		if reuqest.Search != "" {
@@ -99,6 +101,7 @@ func (s *storageRepo) GetListStorages(reuqest models.GetListRequest) (models.Sto
 			&storage.ID,
 			&storage.Product_id,
 			&storage.Branch_id,
+			&storage.Count,
 			&storage.Create_at,
 		); err != nil {
 			return models.StorageRepos{}, err

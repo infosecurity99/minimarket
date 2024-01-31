@@ -26,7 +26,7 @@ func (c *categoryRepo) CreateCategory(createCategory models.CreateCategory) (str
 	uid := uuid.New()
 	createAt := time.Now()
 	if _, err := c.db.Exec(context.Background(), `
-        INSERT INTO category (id, name, parent_id, create_at)
+        INSERT INTO category 
         VALUES ($1, $2, $3, $4)
     `,
 		uid,
@@ -45,7 +45,7 @@ func (c *categoryRepo) GetByIdCategory(pKey models.PrimaryKey) (models.Category,
 	category := models.Category{}
 
 	query := `
-        SELECT id, name, create_at,parent_id
+        SELECT id, name, parent_id, create_at
         FROM category
         WHERE id = $1
     `
@@ -87,8 +87,7 @@ func (c *categoryRepo) GetListCategory(request models.GetListRequest) (models.Ca
 	}
 
 	query = `
-         SELECT id, name, create_at
-         FROM category
+         SELECT id, name, parent_id, create_at  FROM category
 `
 
 	if search != "" {
@@ -109,6 +108,7 @@ func (c *categoryRepo) GetListCategory(request models.GetListRequest) (models.Ca
 		if err = rows.Scan(
 			&category.ID,
 			&category.Name,
+			&category.Parent_id,
 			&category.Create_at,
 		); err != nil {
 			fmt.Println("error while scanning row", err.Error())

@@ -34,7 +34,7 @@ func (s *staffRepo) CreateStaff(createStaff models.CreateStaff) (string, error) 
 		uid,
 		createStaff.Branch_id,
 		createStaff.Tarif_id,
-		createStaff.Type_Stuff_Enum,
+		createStaff.Type_stuff,
 		createStaff.Name,
 		createStaff.Balance,
 		createStaff.Age,
@@ -53,7 +53,7 @@ func (s *staffRepo) GetByIdStaff(pKey models.PrimaryKey) (models.Staff, error) {
 	staff := models.Staff{}
 
 	query := `
-		SELECT id, branch_id, tarif_id, staff_type, name, balance, age, birthdate, login, password, create_at
+		SELECT id, branch_id, tarif_id, type_stuff, name, balance, age, birthdate, login, password, create_at
 		FROM staff
 		WHERE id = $1
 	`
@@ -62,7 +62,7 @@ func (s *staffRepo) GetByIdStaff(pKey models.PrimaryKey) (models.Staff, error) {
 		&staff.ID,
 		&staff.Branch_id,
 		&staff.Tarif_id,
-		&staff.Type_Stuff_Enum,
+		&staff.Type_stuff,
 		&staff.Name,
 		&staff.Balance,
 		&staff.Age,
@@ -102,7 +102,7 @@ func (s *staffRepo) GetListStaff(request models.GetListRequest) (models.StaffRep
 	}
 
 	query = `
-		SELECT id, branch_id, tarif_id, name, staff_type, balance, age, birthdate, login, password, create_at
+		SELECT id, branch_id, tarif_id, type_stuff,name, balance, age, birthdate, login, password, create_at
 		FROM staff
 	`
 
@@ -125,8 +125,8 @@ func (s *staffRepo) GetListStaff(request models.GetListRequest) (models.StaffRep
 			&staff.ID,
 			&staff.Branch_id,
 			&staff.Tarif_id,
+			&staff.Type_stuff,
 			&staff.Name,
-			&staff.Type_Stuff_Enum,
 			&staff.Balance,
 			&staff.Age,
 			&staff.BirthDate,
