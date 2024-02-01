@@ -156,11 +156,11 @@ definitions:
         type: string
       sale_id:
         type: string
-      source_type_enum:
+      sourcetype:
         type: string
       staff_id:
         type: string
-      transaction_type_enum:
+      transaction_type:
         type: string
     type: object
   models.CreateTransactionStorage:
@@ -287,11 +287,11 @@ definitions:
         type: string
       sale_id:
         type: string
-      source_type_enum:
+      sourcetype:
         type: string
       staff_id:
         type: string
-      transaction_type_enum:
+      transaction_type:
         type: string
     type: object
   models.TransactionStorage:

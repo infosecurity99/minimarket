@@ -2765,13 +2765,13 @@ const docTemplate = `{
                 "sale_id": {
                     "type": "string"
                 },
-                "source_type_enum": {
+                "sourcetype": {
                     "type": "string"
                 },
                 "staff_id": {
                     "type": "string"
                 },
-                "transaction_type_enum": {
+                "transaction_type": {
                     "type": "string"
                 }
             }
@@ -2965,13 +2965,13 @@ const docTemplate = `{
                 "sale_id": {
                     "type": "string"
                 },
-                "source_type_enum": {
+                "sourcetype": {
                     "type": "string"
                 },
                 "staff_id": {
                     "type": "string"
                 },
-                "transaction_type_enum": {
+                "transaction_type": {
                     "type": "string"
                 }
             }

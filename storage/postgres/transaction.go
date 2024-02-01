@@ -33,7 +33,7 @@ func (t *transactionRepo) CreateTransaction(createTransaction models.CreateTrans
 		createTransaction.Sale_id,
 		createTransaction.Staff_id,
 		createTransaction.Transaction_type,
-		createTransaction.Source_type_enum,
+		createTransaction.Sourcetype,
 		createTransaction.Amount,
 		createTransaction.Description,
 		createAt,
@@ -51,14 +51,14 @@ func (t *transactionRepo) GetByIdTransaction(pKey models.PrimaryKey) (models.Tra
 	transaction := models.Transaction{}
 
 	query := `
-       select id, sale_id, staff_id, transaction_type, source_type_enum, amount, description, create_at from transaction where id = $1
+       select id, sale_id, staff_id, transaction_type, sourcetype, amount, description, create_at from transaction where id = $1
 `
 	if err := t.db.QueryRow(context.Background(), query, pKey.ID).Scan(
 		&transaction.ID,
 		&transaction.Sale_id,
 		&transaction.Staff_id,
 		&transaction.Transaction_type,
-		&transaction.Source_type_enum,
+		&transaction.Sourcetype,
 		&transaction.Amount,
 		&transaction.Description,
 		&transaction.Create_at,
@@ -94,7 +94,7 @@ func (t *transactionRepo) GetListTransaction(request models.GetListRequest) (mod
 	}
 
 	query = `
-       select id, sale_id, staff_id, transaction_type, source_type_enum, amount, description, create_at
+       select id, sale_id, staff_id, transaction_type, sourcetype, amount, description, create_at
           FROM transaction
               `
 
@@ -118,7 +118,7 @@ func (t *transactionRepo) GetListTransaction(request models.GetListRequest) (mod
 			&transaction.Sale_id,
 			&transaction.Staff_id,
 			&transaction.Transaction_type,
-			&transaction.Source_type_enum,
+			&transaction.Sourcetype,
 			&transaction.Amount,
 			&transaction.Description,
 			&transaction.Create_at,
