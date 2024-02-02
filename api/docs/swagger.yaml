@@ -101,7 +101,7 @@ definitions:
       payment_type:
         type: string
       price:
-        type: integer
+        type: number
       shopassistant_id:
         type: string
       status_type:
@@ -214,11 +214,20 @@ definitions:
       payment_type:
         type: string
       price:
-        type: integer
+        type: number
       shopassistant_id:
         type: string
       status_type:
         type: string
+    type: object
+  models.SaleRepos:
+    properties:
+      count:
+        type: integer
+      sales:
+        items:
+          $ref: '#/definitions/models.Sale'
+        type: array
     type: object
   models.Staff:
     properties:
@@ -364,7 +373,7 @@ definitions:
       id:
         type: string
       price:
-        type: integer
+        type: number
       shopassistant_id:
         type: string
     type: object
@@ -1268,13 +1277,13 @@ paths:
         in: query
         name: search
         type: string
-      - description: Minimum price
+      - description: price from for response
         in: query
-        name: from_price
+        name: fromprice
         type: number
-      - description: Maximum price
+      - description: price to for response
         in: query
-        name: to_price
+        name: toprice
         type: number
       produces:
       - application/json
@@ -1282,7 +1291,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Sale'
+            $ref: '#/definitions/models.SaleRepos'
         "400":
           description: Bad Request
           schema:

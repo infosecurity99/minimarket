@@ -1272,14 +1272,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "number",
-                        "description": "Minimum price",
-                        "name": "from_price",
+                        "description": "price from for response",
+                        "name": "fromprice",
                         "in": "query"
                     },
                     {
                         "type": "number",
-                        "description": "Maximum price",
-                        "name": "to_price",
+                        "description": "price to for response",
+                        "name": "toprice",
                         "in": "query"
                     }
                 ],
@@ -1287,7 +1287,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Sale"
+                            "$ref": "#/definitions/models.SaleRepos"
                         }
                     },
                     "400": {
@@ -2773,7 +2773,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "shopassistant_id": {
                     "type": "string"
@@ -2946,13 +2946,27 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "shopassistant_id": {
                     "type": "string"
                 },
                 "status_type": {
                     "type": "string"
+                }
+            }
+        },
+        "models.SaleRepos": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "sales": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Sale"
+                    }
                 }
             }
         },
@@ -3176,7 +3190,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "shopassistant_id": {
                     "type": "string"

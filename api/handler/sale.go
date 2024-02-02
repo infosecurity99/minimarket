@@ -82,9 +82,9 @@ func (h Handler) GetByIDSales(c *gin.Context) {
 // @Param page query int false "Page number" default(1)
 // @Param limit query int false "Number of items per page" default(10)
 // @Param search query string false "Search query"
-// @Param from_price query float64 false "Minimum price"
-// @Param to_price query float64 false "Maximum price"
-// @Success 200 {object} models.Sale
+// @Param        fromprice    query     float64  false  "price from for response"
+// @Param        toprice    query     float64  false  "price to for response"
+// @Success 200 {object} models.SaleRepos
 // @Failure 400 {string} models.Response
 // @Failure 500 {string} models.Response
 // @Router /sales [get]

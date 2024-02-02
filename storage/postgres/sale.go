@@ -76,83 +76,89 @@ func (s *saleRepo) GetByIdSales(pKey models.PrimaryKey) (models.Sale, error) {
 	return sale, nil
 }
 
-//get list
-
+// get list
 func (s *saleRepo) GetListSales(request models.GetListRequestSale) (models.SaleRepos, error) {
 	var (
-		sales     = []models.Sale{}
-		count     = 0
-		query     string
-		page      = request.Page
-		offset    = (page - 1) * request.Limit
-		search    = request.Search
-		priceFrom = request.FromPrice
-		priceTo   = request.ToPrice
+		sales  = []models.Sale{}
+		count  = 0
+		query  string
+		page   = request.Page
+		offset = (page - 1) * request.Limit
+		search = request.Search
 	)
 
 	countQuery := `
-        SELECT COUNT(1) FROM sale 
+        SELECT COUNT(1) FROM sale
     `
 
 	if search != "" {
-		countQuery += fmt.Sprintf(` (clientname ILIKE '%%%s%%')`, search)
+		countQuery += fmt.Sprintf(` WHERE clientname ILIKE '%%%s%%'`, search)
 	}
 
-	if priceFrom != 0 || priceTo != 0 {
-		countQuery += `  (price BETWEEN $1 AND $2)`
-	}
-
-	row := s.db.QueryRow(context.Background(), countQuery, priceFrom, priceTo)
-	if err := row.Scan(&count); err != nil {
-		fmt.Println("error while scanning count of sale", err.Error())
+	if err := s.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
+		fmt.Println("error while scanning count of transaction", err.Error())
 		return models.SaleRepos{}, err
 	}
 
 	query = `
-        SELECT id, branch_id, shopassistant_id, cashier_id,
-               payment_type, price, status_type, clientname, create_at
-        FROM sale 
+	SELECT id, branch_id, shopassistant_id, cashier_id,payment_type, price,status_type, clientname,create_at
+	FROM sale
     `
 
 	if search != "" {
-		query += fmt.Sprintf(`  (clientname ILIKE '%%%s%%')`, search)
+		query += fmt.Sprintf(` WHERE clientname ILIKE '%%%s%%'`, search)
 	}
 
-	if priceFrom != 0 || priceTo != 0 {
-		query += `  (price BETWEEN $1 AND $2)`
-		query += ` LIMIT $3 OFFSET $4`
+	if request.FromPrice > 0 || request.ToPrice > 0 {
 
-		rows, err := s.db.Query(context.Background(), query, priceFrom, priceTo, request.Limit, offset)
-		if err != nil {
-			fmt.Println("error while querying rows", err.Error())
-			return models.SaleRepos{}, err
+		if search == "" {
+			query += " WHERE "
+		} else {
+			query += " AND "
 		}
 
-		for rows.Next() {
-			sale := models.Sale{}
-
-			if err = rows.Scan(
-				&sale.ID,
-				&sale.Branch_id,
-				&sale.Shopassistant_id,
-				&sale.Cashier_id,
-				&sale.Price,
-				&sale.Payment_type,
-				&sale.Status_type,
-				&sale.Clientname,
-				&sale.Create_at,
-			); err != nil {
-				fmt.Println("error while scanning row", err.Error())
-				return models.SaleRepos{}, err
-			}
-
-			sales = append(sales, sale)
+		// Add condition for FromAmount and ToAmount
+		if request.FromPrice > 0 && request.ToPrice > 0 {
+			query += fmt.Sprintf(`amount BETWEEN %f AND %f`, request.FromPrice, request.ToPrice)
+		} else if request.FromPrice > 0 {
+			query += fmt.Sprintf(`amount >= %f`, request.FromPrice)
+		} else if request.ToPrice > 0 {
+			query += fmt.Sprintf(`amount <= %f`, request.ToPrice)
 		}
+	}
+
+	query += ` LIMIT $1 OFFSET $2`
+
+	rows, err := s.db.Query(context.Background(), query, request.Limit, offset)
+	if err != nil {
+		fmt.Println("error while querying rows", err.Error())
+		return models.SaleRepos{}, err
+	}
+
+	for rows.Next() {
+		sale := models.Sale{}
+
+		if err = rows.Scan(
+			&sale.ID,
+			&sale.Branch_id,
+			&sale.Shopassistant_id,
+			&sale.Cashier_id,
+			&sale.Payment_type,
+			&sale.Price,
+			&sale.Status_type,
+			&sale.Clientname,
+			&sale.Create_at,
+		); err != nil {
+			fmt.Println("error while scanning row", err.Error())
+			return models.SaleRepos{}, nil
+		}
+
+		sales = append(sales, sale)
 	}
 
 	return models.SaleRepos{
 		Sales: sales,
-		Count: count,
+		Count:        count,
 	}, nil
 }
 

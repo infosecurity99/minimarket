@@ -33,7 +33,6 @@ func (s *staffRepo) CreateStaff(createStaff models.CreateStaff) (string, error) 
 	}
 	age := int(time.Since(birthDate).Hours() / 24 / 365)
 
-	// Use the calculated age from above or use the provided Age field
 	query := `
 		INSERT INTO staff VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 	`
@@ -56,7 +55,6 @@ func (s *staffRepo) CreateStaff(createStaff models.CreateStaff) (string, error) 
 
 	return uid.String(), nil
 }
-
 
 func (s *staffRepo) GetByIdStaff(pKey models.PrimaryKey) (models.Staff, error) {
 	staff := models.Staff{}
