@@ -6,6 +6,8 @@ import (
 	"strconv"
 
 	"connected/api/models"
+	"connected/pkg/check"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -193,4 +195,57 @@ func (h Handler) DeleteStaff(c *gin.Context) {
 	}
 
 	handleResponse(c, "", http.StatusOK, "data successfully deleted")
+}
+
+// UpdateStaffPassword godoc
+// @Router       /staff/{id} [PATCH]
+// @Summary      Update staff password
+// @Description  update staff password
+// @Tags         staff
+// @Accept       json
+// @Produce      json
+// @Param 		 id path string true "staff_id"
+// @Param        staff body models.UpdateStaffPassword true "staff"
+// @Success      200  {object}  models.Response
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
+func (h Handler) UpdateStaffPassword(c *gin.Context) {
+	updateStaffPassword := models.UpdateStaffPassword{}
+
+	if err := c.ShouldBindJSON(&updateStaffPassword); err != nil {
+		handleResponse(c, "error while reading body", http.StatusBadRequest, err.Error())
+		return
+	}
+
+	uid, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		handleResponse(c, "error while parsing uuid", http.StatusBadRequest, err.Error())
+		return
+	}
+
+	updateStaffPassword.ID = uid.String()
+
+	oldPassword, err := h.storage.Staff().GetPassword(updateStaffPassword.ID)
+	if err != nil {
+		handleResponse(c, "error while getting password by id", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if oldPassword != updateStaffPassword.OldPassword {
+		handleResponse(c, "old password is not correct", http.StatusBadRequest, "old password is not correct")
+		return
+	}
+
+	if err = check.ValidatePassword(updateStaffPassword.NewPassword); err != nil {
+		handleResponse(c, "new password is weak", http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err = h.storage.Staff().UpdatePassword(updateStaffPassword); err != nil {
+		handleResponse(c, "error while updating user password by id", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	handleResponse(c, "", http.StatusOK, "password successfully updated")
 }

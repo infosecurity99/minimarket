@@ -35,7 +35,7 @@ func New(store storage.IStorage) *gin.Engine {
 	r.GET("/staffs", h.GetListStaff)
 	r.PUT("/staff/:id", h.UpdateStaff)
 	r.DELETE("/staff/:id", h.DeleteStaff)
-
+	r.PATCH("/staff/:id", h.UpdateStaffPassword)
 	//sale
 	r.POST("/sale", h.CreateSale)
 	r.GET("/sale/:id", h.GetByIDSales)

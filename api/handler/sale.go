@@ -82,6 +82,8 @@ func (h Handler) GetByIDSales(c *gin.Context) {
 // @Param page query int false "Page number" default(1)
 // @Param limit query int false "Number of items per page" default(10)
 // @Param search query string false "Search query"
+// @Param from_price query float64 false "Minimum price"
+// @Param to_price query float64 false "Maximum price"
 // @Success 200 {object} models.Sale
 // @Failure 400 {string} models.Response
 // @Failure 500 {string} models.Response
@@ -90,6 +92,8 @@ func (h Handler) GetListSales(c *gin.Context) {
 	var (
 		page, limit int
 		search      string
+		priceFrom   float64
+		priceTo     float64
 		err         error
 	)
 
@@ -109,13 +113,33 @@ func (h Handler) GetListSales(c *gin.Context) {
 
 	search = c.Query("search")
 
-	resp, err := h.storage.Sale().GetListSales(models.GetListRequest{
-		Page:   page,
-		Limit:  limit,
-		Search: search,
+	priceFromStr := c.Query("price_from")
+	if priceFromStr != "" {
+		priceFrom, err = strconv.ParseFloat(priceFromStr, 64)
+		if err != nil {
+			handleResponse(c, "error while parsing price_from", http.StatusBadRequest, err.Error())
+			return
+		}
+	}
+
+	priceToStr := c.Query("price_to")
+	if priceToStr != "" {
+		priceTo, err = strconv.ParseFloat(priceToStr, 64)
+		if err != nil {
+			handleResponse(c, "error while parsing price_to", http.StatusBadRequest, err.Error())
+			return
+		}
+	}
+
+	resp, err := h.storage.Sale().GetListSales(models.GetListRequestSale{
+		Page:      page,
+		Limit:     limit,
+		Search:    search,
+		FromPrice: float64(priceFrom),
+		ToPrice:   float64(priceTo),
 	})
 	if err != nil {
-		handleResponse(c, "error while getting sale", http.StatusInternalServerError, err)
+		handleResponse(c, "error while getting sale", http.StatusInternalServerError, err.Error()) // Adjusted this line
 		return
 	}
 
@@ -161,7 +185,7 @@ func (h Handler) UpdateSales(c *gin.Context) {
 		ID: pKey,
 	})
 	if err != nil {
-		handleResponse(c, "error while getting sale by id", http.StatusInternalServerError, err)
+		handleResponse(c, "error while getting sale by id", http.StatusInternalServerError, err.Error())
 		return
 	}
 

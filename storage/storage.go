@@ -29,7 +29,7 @@ type IBranchStorage interface {
 type ISaleStorage interface {
 	CreateSales(models.CreateSale) (string, error)
 	GetByIdSales(models.PrimaryKey) (models.Sale, error)
-	GetListSales(models.GetListRequest) (models.SaleRepos, error)
+	GetListSales(models.GetListRequestSale) (models.SaleRepos, error)
 	UpdateSales(models.UpdateSale) (string, error)
 	DeleteSales(models.PrimaryKey) error
 }
@@ -38,7 +38,7 @@ type ISaleStorage interface {
 type ITransaction interface {
 	CreateTransaction(models.CreateTransaction) (string, error)
 	GetByIdTransaction(models.PrimaryKey) (models.Transaction, error)
-	GetListTransaction(models.GetListRequest) (models.TransactionRepo, error)
+	GetListTransaction(models.GetListRequestTransaction) (models.TransactionRepo, error)
 	UpdateTransaction(models.UpdateTransaction) (string, error)
 	DeleteTransaction(models.PrimaryKey) error
 }
@@ -51,6 +51,8 @@ type IStaff interface {
 	GetListStaff(models.GetListRequest) (models.StaffRepo, error)
 	UpdateStaffs(models.UpdateStaff) (string, error)
 	DeleteStaff(models.PrimaryKey) error
+	GetPassword(id string) (string, error)
+	UpdatePassword(password models.UpdateStaffPassword) error
 }
 
 // staff_tarif

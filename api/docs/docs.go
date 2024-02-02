@@ -1269,6 +1269,18 @@ const docTemplate = `{
                         "description": "Search query",
                         "name": "search",
                         "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Minimum price",
+                        "name": "from_price",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Maximum price",
+                        "name": "to_price",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1480,6 +1492,63 @@ const docTemplate = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "type": "string"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "update staff password",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "staff"
+                ],
+                "summary": "Update staff password",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "staff_id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "staff",
+                        "name": "staff",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateStaffPassword"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
                         }
                     }
                 }
@@ -2432,7 +2501,7 @@ const docTemplate = `{
                 "tags": [
                     "transaction_storage"
                 ],
-                "summary": "Get a list of transaction storage",
+                "summary": "Get a list of transaction_storages",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2447,13 +2516,19 @@ const docTemplate = `{
                         "description": "Number of items per page",
                         "name": "limit",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search query",
+                        "name": "search",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Transaction"
+                            "$ref": "#/definitions/models.TransactionStorage"
                         }
                     },
                     "400": {
@@ -2496,6 +2571,24 @@ const docTemplate = `{
                         "default": 10,
                         "description": "Number of items per page",
                         "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search query",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "amount from for response",
+                        "name": "fromamount",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "amount to for response",
+                        "name": "toamount",
                         "in": "query"
                     }
                 ],
@@ -2693,14 +2786,11 @@ const docTemplate = `{
         "models.CreateStaff": {
             "type": "object",
             "properties": {
-                "age": {
-                    "type": "integer"
-                },
                 "balance": {
                     "type": "string"
                 },
                 "birthdate": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "branch_id": {
                     "type": "string"
@@ -2876,7 +2966,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "birthdate": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "branch_id": {
                     "type": "string"
@@ -3103,7 +3193,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "birthdate": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "branch_id": {
                     "type": "string"
@@ -3115,6 +3205,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "tarif_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UpdateStaffPassword": {
+            "type": "object",
+            "properties": {
+                "new_password": {
+                    "type": "string"
+                },
+                "old_password": {
                     "type": "string"
                 }
             }

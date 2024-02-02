@@ -94,9 +94,9 @@ func (s *transactionstorageRepo) GetListTransactionStorage(request models.GetLis
 	}
 
 	query = `
-             SELECT id, branch_id, staff_id, product_id, 
-			 transaction_type, price,quantity
-             FROM storage_transaction
+	SELECT id, branch_id, staff_id, product_id, 
+	transaction_type, price,quantity,create_at
+	FROM storage_transaction
              `
 
 	if search != "" {

@@ -73,14 +73,15 @@ func (h Handler) GetByIdTranasactionStorage(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, transactionstorage)
 }
 
-// GetListTransactionStorage returns a list of transaction storage.
-// @Summary Get a list of transaction storage
+// GetListTransactionStorage returns a list of transaction_storages.
+// @Summary Get a list of transaction_storages
 // @Tags transaction_storage
 // @Accept json
 // @Produce json
 // @Param page query int false "Page number" default(1)
 // @Param limit query int false "Number of items per page" default(10)
-// @Success 200 {object} models.Transaction
+// @Param search query string false "Search query"
+// @Success 200 {object} models.TransactionStorage
 // @Failure 400 {string} string "Bad Request"
 // @Failure 500 {string} string "Internal Server Error"
 // @Router /transaction_storages [get]
@@ -110,10 +111,6 @@ func (h Handler) GetListTransactionStorage(c *gin.Context) {
 		return
 	}
 
-	if limit < 1 {
-		handleResponse(c, "Error: Invalid limit value", http.StatusBadRequest, nil)
-		return
-	}
 
 	resp, err := h.storage.TransactionStorage().GetListTransactionStorage(models.GetListRequest{
 		Page:   page,

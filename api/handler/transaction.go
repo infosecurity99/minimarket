@@ -81,15 +81,19 @@ func (h Handler) GetByIdTransaction(c *gin.Context) {
 // @Produce json
 // @Param page query int false "Page number" default(1)
 // @Param limit query int false "Number of items per page" default(10)
+// @Param search query string false "Search query"
+// @Param        fromamount    query     float64  false  "amount from for response"
+// @Param        toamount    query     float64  false  "amount to for response"
 // @Success 200 {object} models.Transaction
-// @Failure 400 {string} string "Bad Request"
-// @Failure 500 {string} string "Internal Server Error"
+// @Failure 400 {string} models.Response
+// @Failure 500 {string} models.Response
 // @Router /transactions [get]
 func (h Handler) GetListTransaction(c *gin.Context) {
 	var (
-		page, limit int
-		search      string
-		err         error
+		page, limit          int
+		search               string
+		fromAmount, toAmount float64
+		err                  error
 	)
 
 	pageStr := c.DefaultQuery("page", "1")
@@ -116,12 +120,31 @@ func (h Handler) GetListTransaction(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.storage.Transaction().GetListTransaction(models.GetListRequest{
-		Page:   page,
-		Limit:  limit,
-		Search: search,
+	search = c.Query("search")
+
+	fromAmountStr := c.DefaultQuery("fromamount", "0")
+	fromAmount, err = strconv.ParseFloat(fromAmountStr, 64)
+	if err != nil {
+		handleResponse(c, "Error: Failed to parse fromamount parameter", http.StatusBadRequest, err)
+		return
+	}
+
+	toAmountStr := c.DefaultQuery("toamount", "0")
+	toAmount, err = strconv.ParseFloat(toAmountStr, 64)
+	if err != nil {
+		handleResponse(c, "Error: Failed to parse toamount parameter", http.StatusBadRequest, err)
+		return
+	}
+
+	resp, err := h.storage.Transaction().GetListTransaction(models.GetListRequestTransaction{
+		Page:       page,
+		Limit:      limit,
+		Search:     search,
+		FromAmount: fromAmount,
+		ToAmount:   toAmount,
 	})
 	if err != nil {
+
 		handleResponse(c, "Error: Failed to get transaction list", http.StatusInternalServerError, err)
 		return
 	}

@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"connected/api/models"
@@ -25,7 +26,14 @@ func NewStaffRepo(db *pgxpool.Pool) storage.IStaff {
 func (s *staffRepo) CreateStaff(createStaff models.CreateStaff) (string, error) {
 	uid := uuid.New()
 	createAt := time.Now()
+	birthDate, err := time.Parse("2006-01-02", createStaff.BirthDate)
+	if err != nil {
+		log.Println("Error parsing birth date:", err)
+		return "", err
+	}
+	age := int(time.Since(birthDate).Hours() / 24 / 365)
 
+	// Use the calculated age from above or use the provided Age field
 	query := `
 		INSERT INTO staff VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 	`
@@ -37,8 +45,8 @@ func (s *staffRepo) CreateStaff(createStaff models.CreateStaff) (string, error) 
 		createStaff.Type_stuff,
 		createStaff.Name,
 		createStaff.Balance,
-		createStaff.Age,
-		createStaff.BirthDate,
+		age,
+		birthDate,
 		createStaff.Login,
 		createStaff.Password,
 		createAt,
@@ -48,6 +56,7 @@ func (s *staffRepo) CreateStaff(createStaff models.CreateStaff) (string, error) 
 
 	return uid.String(), nil
 }
+
 
 func (s *staffRepo) GetByIdStaff(pKey models.PrimaryKey) (models.Staff, error) {
 	staff := models.Staff{}
@@ -176,6 +185,35 @@ func (s *staffRepo) DeleteStaff(request models.PrimaryKey) error {
 	`
 
 	if _, err := s.db.Exec(context.Background(), query, request.ID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *staffRepo) GetPassword(id string) (string, error) {
+	password := ""
+
+	query := `
+		select password from staff 
+		                where  id = $1`
+
+	if err := s.db.QueryRow(context.Background(), query, id).Scan(&password); err != nil {
+		fmt.Println("Error while scanning password from staff", err.Error())
+		return "", err
+	}
+
+	return password, nil
+}
+
+func (s *staffRepo) UpdatePassword(request models.UpdateStaffPassword) error {
+	query := `
+		update staff 
+				set password = $1
+					where id = $2 `
+
+	if _, err := s.db.Exec(context.Background(), query, request.NewPassword, request.ID); err != nil {
+		fmt.Println("error while updating password for ff", err.Error())
 		return err
 	}
 

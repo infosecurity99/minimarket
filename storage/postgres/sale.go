@@ -78,67 +78,76 @@ func (s *saleRepo) GetByIdSales(pKey models.PrimaryKey) (models.Sale, error) {
 
 //get list
 
-func (s *saleRepo) GetListSales(request models.GetListRequest) (models.SaleRepos, error) {
+func (s *saleRepo) GetListSales(request models.GetListRequestSale) (models.SaleRepos, error) {
 	var (
-		sales  = []models.Sale{}
-		count  = 0
-		query  string
-		page   = request.Page
-		offset = (page - 1) * request.Limit
-		search = request.Search
+		sales     = []models.Sale{}
+		count     = 0
+		query     string
+		page      = request.Page
+		offset    = (page - 1) * request.Limit
+		search    = request.Search
+		priceFrom = request.FromPrice
+		priceTo   = request.ToPrice
 	)
 
 	countQuery := `
-                SELECT COUNT(1) FROM sale
-                `
+        SELECT COUNT(1) FROM sale 
+    `
 
 	if search != "" {
-		countQuery += fmt.Sprintf(` AND (clientname ILIKE '%%%s%%')`, search)
+		countQuery += fmt.Sprintf(` (clientname ILIKE '%%%s%%')`, search)
 	}
 
-	if err := s.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
+	if priceFrom != 0 || priceTo != 0 {
+		countQuery += `  (price BETWEEN $1 AND $2)`
+	}
+
+	row := s.db.QueryRow(context.Background(), countQuery, priceFrom, priceTo)
+	if err := row.Scan(&count); err != nil {
 		fmt.Println("error while scanning count of sale", err.Error())
 		return models.SaleRepos{}, err
 	}
 
 	query = `
-             SELECT id, branch_id, shopassistant_id, cashier_id,
-			  payment_type, price, status_type, clientname, create_at
-             FROM sale
-             `
+        SELECT id, branch_id, shopassistant_id, cashier_id,
+               payment_type, price, status_type, clientname, create_at
+        FROM sale 
+    `
 
 	if search != "" {
-		query += fmt.Sprintf(` AND (clientname ILIKE '%%%s%%') `, search)
+		query += fmt.Sprintf(`  (clientname ILIKE '%%%s%%')`, search)
 	}
 
-	query += ` LIMIT $1 OFFSET $2`
+	if priceFrom != 0 || priceTo != 0 {
+		query += `  (price BETWEEN $1 AND $2)`
+		query += ` LIMIT $3 OFFSET $4`
 
-	rows, err := s.db.Query(context.Background(), query, request.Limit, offset)
-	if err != nil {
-		fmt.Println("error while querying rows", err.Error())
-		return models.SaleRepos{}, err
-	}
-
-	for rows.Next() {
-		sale := models.Sale{}
-
-		if err = rows.Scan(
-			&sale.ID,
-			&sale.Branch_id,
-			&sale.Shopassistant_id,
-			&sale.Cashier_id,
-			&sale.Price,
-			&sale.Payment_type,
-			&sale.Price,
-			&sale.Status_type,
-			&sale.Clientname,
-			&sale.Create_at,
-		); err != nil {
-			fmt.Println("error while scanning row", err.Error())
-			return models.SaleRepos{}, nil
+		rows, err := s.db.Query(context.Background(), query, priceFrom, priceTo, request.Limit, offset)
+		if err != nil {
+			fmt.Println("error while querying rows", err.Error())
+			return models.SaleRepos{}, err
 		}
 
-		sales = append(sales, sale)
+		for rows.Next() {
+			sale := models.Sale{}
+
+			if err = rows.Scan(
+				&sale.ID,
+				&sale.Branch_id,
+				&sale.Shopassistant_id,
+				&sale.Cashier_id,
+				&sale.Price,
+				&sale.Payment_type,
+				&sale.Status_type,
+				&sale.Clientname,
+				&sale.Create_at,
+			); err != nil {
+				fmt.Println("error while scanning row", err.Error())
+				return models.SaleRepos{}, err
+			}
+
+			sales = append(sales, sale)
+		}
 	}
 
 	return models.SaleRepos{
@@ -151,9 +160,9 @@ func (s *saleRepo) GetListSales(request models.GetListRequest) (models.SaleRepos
 
 func (s *saleRepo) UpdateSales(updates models.UpdateSale) (string, error) {
 	query := `
-	update transaction
-	   set sale_id = $1, staff_id = $2, amount = $3, description = $4
-		  where id = $5`
+	update sale
+	   set branch_id = $1, shopassistant_id = $2, cashier_id = $3, price = $4,clientname=$5
+		  where id = $6`
 
 	if _, err := s.db.Exec(context.Background(), query,
 

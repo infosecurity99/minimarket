@@ -71,42 +71,61 @@ func (t *transactionRepo) GetByIdTransaction(pKey models.PrimaryKey) (models.Tra
 }
 
 // getlisttransaction
-func (t *transactionRepo) GetListTransaction(request models.GetListRequest) (models.TransactionRepo, error) {
+func (t *transactionRepo) GetListTransaction(request models.GetListRequestTransaction) (models.TransactionRepo, error) {
 	var (
-		transactions      = []models.Transaction{}
-		count             = 0
-		countQuery, query string
-		page              = request.Page
-		offset            = (page - 1) * request.Limit
-		search            = request.Search
+		transactions = []models.Transaction{}
+		count        = 0
+		query        string
+		page         = request.Page
+		offset       = (page - 1) * request.Limit
+		search       = request.Search
 	)
 
-	countQuery = `
-       SELECT count(1) from transaction  `
+	countQuery := `
+        SELECT COUNT(1) FROM transaction
+    `
 
 	if search != "" {
-		countQuery += fmt.Sprintf(` and (description ilike '%%%s%%' )`, search)
+		countQuery += fmt.Sprintf(` WHERE description ILIKE '%%%s%%'`, search)
 	}
 
 	if err := t.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
-		fmt.Println("error while scanning count of transactions", err.Error())
+		fmt.Println("error while scanning count of transaction", err.Error())
 		return models.TransactionRepo{}, err
 	}
 
 	query = `
-       select id, sale_id, staff_id, transaction_type, sourcetype, amount, description, create_at
-          FROM transaction
-              `
+        SELECT id, sale_id, staff_id, transaction_type, sourcetype,
+        amount, description, create_at FROM transaction
+    `
 
 	if search != "" {
-		query += fmt.Sprintf(` and (description ilike '%%%s%%' ) `, search)
+		query += fmt.Sprintf(` WHERE description ILIKE '%%%s%%'`, search)
+	}
+
+	if request.FromAmount > 0 || request.ToAmount > 0 {
+
+		if search == "" {
+			query += " WHERE "
+		} else {
+			query += " AND "
+		}
+
+		// Add condition for FromAmount and ToAmount
+		if request.FromAmount > 0 && request.ToAmount > 0 {
+			query += fmt.Sprintf(`amount BETWEEN %f AND %f`, request.FromAmount, request.ToAmount)
+		} else if request.FromAmount > 0 {
+			query += fmt.Sprintf(`amount >= %f`, request.FromAmount)
+		} else if request.ToAmount > 0 {
+			query += fmt.Sprintf(`amount <= %f`, request.ToAmount)
+		}
 	}
 
 	query += ` LIMIT $1 OFFSET $2`
 
 	rows, err := t.db.Query(context.Background(), query, request.Limit, offset)
 	if err != nil {
-		fmt.Println("error while query rows", err.Error())
+		fmt.Println("error while querying rows", err.Error())
 		return models.TransactionRepo{}, err
 	}
 
@@ -124,7 +143,7 @@ func (t *transactionRepo) GetListTransaction(request models.GetListRequest) (mod
 			&transaction.Create_at,
 		); err != nil {
 			fmt.Println("error while scanning row", err.Error())
-			return models.TransactionRepo{}, err
+			return models.TransactionRepo{}, nil
 		}
 
 		transactions = append(transactions, transaction)

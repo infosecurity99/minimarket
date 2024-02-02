@@ -109,12 +109,10 @@ definitions:
     type: object
   models.CreateStaff:
     properties:
-      age:
-        type: integer
       balance:
         type: string
       birthdate:
-        type: integer
+        type: string
       branch_id:
         type: string
       login:
@@ -229,7 +227,7 @@ definitions:
       balance:
         type: string
       birthdate:
-        type: integer
+        type: string
       branch_id:
         type: string
       ctreate_at:
@@ -377,7 +375,7 @@ definitions:
       balance:
         type: string
       birthdate:
-        type: integer
+        type: string
       branch_id:
         type: string
       id:
@@ -396,6 +394,13 @@ definitions:
       id:
         type: string
       name:
+        type: string
+    type: object
+  models.UpdateStaffPassword:
+    properties:
+      new_password:
+        type: string
+      old_password:
         type: string
     type: object
   models.UpdateStorage:
@@ -1263,6 +1268,14 @@ paths:
         in: query
         name: search
         type: string
+      - description: Minimum price
+        in: query
+        name: from_price
+        type: number
+      - description: Maximum price
+        in: query
+        name: to_price
+        type: number
       produces:
       - application/json
       responses:
@@ -1367,6 +1380,44 @@ paths:
           schema:
             type: string
       summary: Get staff by ID
+      tags:
+      - staff
+    patch:
+      consumes:
+      - application/json
+      description: update staff password
+      parameters:
+      - description: staff_id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: staff
+        in: body
+        name: staff
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateStaffPassword'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Update staff password
       tags:
       - staff
     put:
@@ -2037,13 +2088,17 @@ paths:
         in: query
         name: limit
         type: integer
+      - description: Search query
+        in: query
+        name: search
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Transaction'
+            $ref: '#/definitions/models.TransactionStorage'
         "400":
           description: Bad Request
           schema:
@@ -2052,7 +2107,7 @@ paths:
           description: Internal Server Error
           schema:
             type: string
-      summary: Get a list of transaction storage
+      summary: Get a list of transaction_storages
       tags:
       - transaction_storage
   /transactions:
@@ -2070,6 +2125,18 @@ paths:
         in: query
         name: limit
         type: integer
+      - description: Search query
+        in: query
+        name: search
+        type: string
+      - description: amount from for response
+        in: query
+        name: fromamount
+        type: number
+      - description: amount to for response
+        in: query
+        name: toamount
+        type: number
       produces:
       - application/json
       responses:
