@@ -24,16 +24,27 @@ func NewBasketRepo(db *pgxpool.Pool) storage.IBasket {
 func (b *basketRepo) CreateBasket(createBasket models.CreateBasket) (string, error) {
 	uid := uuid.New()
 	createAt := time.Now()
+
+	price, err := b.StartSell(createBasket.Product_id)
+	if err != nil {
+		fmt.Println("getbyidproductprice error")
+		return "", err
+	}
+   
+	totalPrice := price * float64(createBasket.Quantity)
+
+	fmt.Println("Total Price:", totalPrice)
+
 	if _, err := b.db.Exec(context.Background(), `
-        INSERT INTO basket
+        INSERT INTO basket (id, sale_id, product_id, quantity, price, create_at)
         VALUES ($1, $2, $3, $4, $5, $6)
     `,
+		uid,
 		createBasket.Sale_id,
 		createBasket.Product_id,
 		createBasket.Quantity,
-		createBasket.Price,
+		totalPrice,
 		createAt,
-		uid,
 	); err != nil {
 		fmt.Println("error while inserting data", err.Error())
 		return "", err
@@ -46,7 +57,7 @@ func (b *basketRepo) GetByIdBasket(pKey models.PrimaryKey) (models.Basket, error
 	basket := models.Basket{}
 
 	query := `
-           SELECT sale_id ,product_id,quantity,price, create_at,id
+           SELECT  id, sale_id ,product_id,quantity,price, create_at
            FROM basket
            WHERE id = $1
            `
@@ -89,7 +100,7 @@ func (b *basketRepo) GetListBasket(request models.GetListRequest) (models.Basket
 	}
 
 	query = `
-             SELECT sale_id ,product_id,quantity,price, create_at,id
+             SELECT id, sale_id ,product_id,quantity,price, create_at
              FROM basket
              `
 
@@ -160,4 +171,23 @@ func (b *basketRepo) DeleteBasket(pKey models.PrimaryKey) error {
 	}
 
 	return nil
+}
+
+func (p *basketRepo) StartSell(pKey string) (float64, error) {
+	var price float64
+
+	query := `
+           SELECT price
+           FROM product
+           WHERE id = $1
+`
+
+	if err := p.db.QueryRow(context.Background(), query, pKey).Scan(
+		&price,
+	); err != nil {
+		fmt.Println("error while scanning product  price", err.Error())
+		return price, nil
+	}
+
+	return price, nil
 }

@@ -1305,6 +1305,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/sell-new": {
+            "post": {
+                "description": "selling product",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product"
+                ],
+                "summary": "Selling product",
+                "parameters": [
+                    {
+                        "description": "sell_request",
+                        "name": "sell_request",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/models.SellRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/staff": {
             "post": {
                 "description": "create a new staff",
@@ -2773,7 +2824,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "shopassistant_id": {
                     "type": "string"
@@ -2908,7 +2959,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "integer"
+                    "type": "number"
                 }
             }
         },
@@ -2946,7 +2997,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "shopassistant_id": {
                     "type": "string"
@@ -2966,6 +3017,23 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.Sale"
+                    }
+                }
+            }
+        },
+        "models.SellRequest": {
+            "type": "object",
+            "properties": {
+                "basket_id": {
+                    "type": "string"
+                },
+                "branch_id": {
+                    "type": "string"
+                },
+                "products": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "integer"
                     }
                 }
             }
@@ -3190,7 +3258,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "shopassistant_id": {
                     "type": "string"

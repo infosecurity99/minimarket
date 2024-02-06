@@ -2,6 +2,7 @@ package handler
 
 import (
 	"connected/api/models"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
@@ -193,4 +194,27 @@ func (h Handler) DeleteProduct(c *gin.Context) {
 	}
 
 	handleResponse(c, "", http.StatusOK, "data successfully deleted")
+}
+
+// StartSellNew godoc
+// @Router       /sell-new [POST]
+// @Summary      Selling product
+// @Description  selling product
+// @Tags         product
+// @Accept       json
+// @Produce      json
+// @Param 		 sell_request body models.SellRequest false "sell_request"
+// @Success      200  {object}  models.Response
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
+func (h Handler) StartSellNew(c *gin.Context) {
+	request := models.SellRequest{}
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		handleResponse(c, "error while reading body", http.StatusBadRequest, err.Error())
+		return
+	}
+
+	handleResponse(c, "successfully finished the purchase", http.StatusOK, "success")
 }

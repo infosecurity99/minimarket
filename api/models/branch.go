@@ -10,15 +10,13 @@ type Branch struct {
 }
 
 type CreateBranch struct {
-	Name      string    `json:"name"`
-	Address   string    `json:"address"`
-
+	Name    string `json:"name"`
+	Address string `json:"address"`
 }
 type UpdateBranch struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	Address   string    `json:"address"`
-
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	Address string `json:"address"`
 }
 
 type BranchResponse struct {
