@@ -797,6 +797,65 @@ const docTemplate = `{
                 }
             }
         },
+        "/end-sale/{id}": {
+            "put": {
+                "description": "update end-sale",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "end-sale"
+                ],
+                "summary": "Update end-sale",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "end-sale",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "end-sale",
+                        "name": "end-sale",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.EndSales"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.EndSales"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/product": {
             "post": {
                 "description": "create a new product",
@@ -1300,57 +1359,6 @@ const docTemplate = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/sell-new": {
-            "post": {
-                "description": "selling product",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "product"
-                ],
-                "summary": "Selling product",
-                "parameters": [
-                    {
-                        "description": "sell_request",
-                        "name": "sell_request",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/models.SellRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Response"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/models.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.Response"
                         }
                     }
                 }
@@ -1904,6 +1912,57 @@ const docTemplate = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/star_sale": {
+            "post": {
+                "description": "create a new star_sale",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "star_sale"
+                ],
+                "summary": "Creates a new star_sale",
+                "parameters": [
+                    {
+                        "description": "star_sale",
+                        "name": "star_sale",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/models.StartSale"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.StartSale"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
                         }
                     }
                 }
@@ -2677,13 +2736,13 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "product_id": {
                     "type": "string"
                 },
                 "quantity": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "sale_id": {
                     "type": "string"
@@ -2756,13 +2815,13 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "price": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "product_id": {
                     "type": "string"
                 },
                 "quantity": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "sale_id": {
                     "type": "string"
@@ -2804,7 +2863,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "integer"
+                    "type": "number"
                 }
             }
         },
@@ -2824,7 +2883,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "shopassistant_id": {
                     "type": "string"
@@ -2940,6 +2999,9 @@ const docTemplate = `{
                 }
             }
         },
+        "models.EndSales": {
+            "type": "object"
+        },
         "models.Product": {
             "type": "object",
             "properties": {
@@ -2997,7 +3059,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "shopassistant_id": {
                     "type": "string"
@@ -3017,23 +3079,6 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.Sale"
-                    }
-                }
-            }
-        },
-        "models.SellRequest": {
-            "type": "object",
-            "properties": {
-                "basket_id": {
-                    "type": "string"
-                },
-                "branch_id": {
-                    "type": "string"
-                },
-                "products": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "integer"
                     }
                 }
             }
@@ -3095,6 +3140,29 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "tarif_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.StartSale": {
+            "type": "object",
+            "properties": {
+                "branch_id": {
+                    "type": "string"
+                },
+                "cashier_id": {
+                    "type": "string"
+                },
+                "clientname": {
+                    "type": "string"
+                },
+                "payment_type": {
+                    "type": "string"
+                },
+                "shopassistant_id": {
+                    "type": "string"
+                },
+                "status_type": {
                     "type": "string"
                 }
             }
@@ -3184,13 +3252,13 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "product_id": {
                     "type": "string"
                 },
                 "quantity": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "sale_id": {
                     "type": "string"
@@ -3238,7 +3306,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "integer"
+                    "type": "number"
                 }
             }
         },
@@ -3258,7 +3326,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "shopassistant_id": {
                     "type": "string"

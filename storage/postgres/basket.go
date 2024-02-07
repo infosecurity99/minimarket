@@ -25,15 +25,15 @@ func (b *basketRepo) CreateBasket(createBasket models.CreateBasket) (string, err
 	uid := uuid.New()
 	createAt := time.Now()
 
-	price, err := b.StartSell(createBasket.Product_id)
+	/*price, err := b.StartSell(createBasket.Product_id)
 	if err != nil {
 		fmt.Println("getbyidproductprice error")
 		return "", err
 	}
-   
+
 	totalPrice := price * float64(createBasket.Quantity)
 
-	fmt.Println("Total Price:", totalPrice)
+	fmt.Println("Total Price:", totalPrice)*/
 
 	if _, err := b.db.Exec(context.Background(), `
         INSERT INTO basket (id, sale_id, product_id, quantity, price, create_at)
@@ -43,7 +43,7 @@ func (b *basketRepo) CreateBasket(createBasket models.CreateBasket) (string, err
 		createBasket.Sale_id,
 		createBasket.Product_id,
 		createBasket.Quantity,
-		totalPrice,
+		createBasket.Price,
 		createAt,
 	); err != nil {
 		fmt.Println("error while inserting data", err.Error())
@@ -91,7 +91,7 @@ func (b *basketRepo) GetListBasket(request models.GetListRequest) (models.Basket
                 `
 
 	if search != "" {
-		countQuery += fmt.Sprintf(` AND (quantity ILIKE '%%%s%%')`, search)
+		countQuery += fmt.Sprintf(` and (sale_id ILIKE '%%%s%%')`, search)
 	}
 
 	if err := b.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
@@ -105,7 +105,7 @@ func (b *basketRepo) GetListBasket(request models.GetListRequest) (models.Basket
              `
 
 	if search != "" {
-		query += fmt.Sprintf(` AND (quantity ILIKE '%%%s%%') `, search)
+		query += fmt.Sprintf(` and (sale_id ILIKE '%%%s%%') `, search)
 	}
 
 	query += ` LIMIT $1 OFFSET $2`
@@ -173,6 +173,7 @@ func (b *basketRepo) DeleteBasket(pKey models.PrimaryKey) error {
 	return nil
 }
 
+/*
 func (p *basketRepo) StartSell(pKey string) (float64, error) {
 	var price float64
 
@@ -191,3 +192,4 @@ func (p *basketRepo) StartSell(pKey string) (float64, error) {
 
 	return price, nil
 }
+*/

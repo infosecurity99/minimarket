@@ -8,7 +8,7 @@ type Sale struct {
 	Shopassistant_id string    `json:"shopassistant_id"`
 	Cashier_id       string    `json:"cashier_id"`
 	Payment_type     string    `json:"payment_type"`
-	Price            uint   `json:"price"`
+	Price            float64   `json:"price"`
 	Status_type      string    `json:"status_type"`
 	Clientname       string    `json:"clientname"`
 	Create_at        time.Time `json:"ctreate_at"`
@@ -18,7 +18,7 @@ type CreateSale struct {
 	Shopassistant_id string  `json:"shopassistant_id"`
 	Cashier_id       string  `json:"cashier_id"`
 	Payment_type     string  `json:"payment_type"`
-	Price            uint `json:"price"`
+	Price            float64 `json:"price"`
 	Status_type      string  `json:"status_type"`
 	Clientname       string  `json:"clientname"`
 }
@@ -27,7 +27,7 @@ type UpdateSale struct {
 	Branch_id        string  `json:"branch_id"`
 	Shopassistant_id string  `json:"shopassistant_id"`
 	Cashier_id       string  `json:"cashier_id"`
-	Price            uint `json:"price"`
+	Price            float64 `json:"price"`
 	Clientname       string  `json:"clientname"`
 }
 
@@ -36,12 +36,15 @@ type SaleRepos struct {
 	Count int    `json:"count"`
 }
 
-type  SaleSell struct {
-	Branch_id        string    `json:"branch_id"`
-	Shopassistant_id string    `json:"shopassistant_id"`
-	Cashier_id       string    `json:"cashier_id"`
-	Payment_type     string    `json:"payment_type"`
-	Price            uint   `json:"price"`
-	Status_type      string    `json:"status_type"`
+type StartSale struct {
+	Branch_id        string `json:"branch_id"`
+	Shopassistant_id string `json:"shopassistant_id"`
+	Cashier_id       string `json:"cashier_id"`
+	Status_type      string `json:"status_type"`
+	Clientname       string `json:"clientname"`
+	Payment_type     string `json:"payment_type"`
 }
 
+type EndSales struct {
+
+}

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -218,4 +219,85 @@ func (h Handler) DeleteSales(c *gin.Context) {
 	}
 
 	handleResponse(c, "", http.StatusOK, "data successfully deleted")
+}
+
+// StartSale godoc
+// @Router       /star_sale [POST]
+// @Summary      Creates a new star_sale
+// @Description  create a new star_sale
+// @Tags         star_sale
+// @Accept       json
+// @Produce      json
+// @Param        star_sale body models.StartSale false "star_sale"
+// @Success      201  {object}  models.StartSale
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
+func (h Handler) StartSale(c *gin.Context) {
+
+	startSale := models.StartSale{}
+
+	if err := c.ShouldBindJSON(&startSale); err != nil {
+		handleResponse(c, "Error: Failed to read request body from client", http.StatusBadRequest, err)
+		return
+	}
+
+	pKey, err := h.storage.Sale().CreateSales(models.CreateSale{
+		Clientname:       startSale.Clientname,
+		Cashier_id:       startSale.Cashier_id,
+		Branch_id:        startSale.Branch_id,
+		Shopassistant_id: startSale.Shopassistant_id,
+		Status_type:      startSale.Status_type,
+		Payment_type:     startSale.Payment_type,
+	})
+	if err != nil {
+		handleResponse(c, "Error: Failed to create sale", http.StatusInternalServerError, err)
+		return
+	}
+
+	sale, err := h.storage.Sale().GetByIdSales(models.PrimaryKey{
+		ID: pKey,
+	})
+	if err != nil {
+		handleResponse(c, "Error: Failed to get sale by ID", http.StatusInternalServerError, err)
+		return
+	}
+
+	handleResponse(c, "", http.StatusCreated, sale)
+}
+
+// EndSales godoc
+// @Router       /end-sale/{id} [PUT]
+// @Summary      Update end-sale
+// @Description  update end-sale
+// @Tags         end-sale
+// @Accept       json
+// @Produce      json
+// @Param 		 id path string true "end-sale"
+// @Param        end-sale body models.EndSales true "end-sale"
+// @Success      200  {object}  models.EndSales
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
+func (h Handler) EndSales(c *gin.Context) {
+	saleID := c.Param("id")
+	if saleID == "" {
+		handleResponse(c, "Error: Sale ID is required", http.StatusBadRequest, nil)
+		return
+	}
+
+	basketResponse, err := h.storage.Basket().GetListBasket(models.GetListRequest{Search: saleID})
+	if err != nil {
+		handleResponse(c, "Error while retrieving basket list", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	var totalSum float64 = 0
+	for _, basket := range basketResponse.Baskets {
+		totalSum += float64(basket.Price)
+	}
+
+	handleResponse(c, "Total price calculated successfully", http.StatusOK, totalSum)
+
+	fmt.Println("totalsumaaaaaaaaaaaaaaaaaaa", totalSum)
 }

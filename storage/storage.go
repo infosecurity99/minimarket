@@ -32,6 +32,7 @@ type ISaleStorage interface {
 	GetListSales(models.GetListRequestSale) (models.SaleRepos, error)
 	UpdateSales(models.UpdateSale) (string, error)
 	DeleteSales(models.PrimaryKey) error
+	
 }
 
 // for transaction interface
@@ -89,6 +90,7 @@ type IBasket interface {
 	GetListBasket(models.GetListRequest) (models.BasketResponse, error)
 	UpdateBasket(models.UpdateBasket) (string, error)
 	DeleteBasket(models.PrimaryKey) error
+	
 }
 
 // storage intarface

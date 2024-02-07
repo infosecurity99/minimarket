@@ -45,6 +45,19 @@ func (h Handler) CreateBasket(c *gin.Context) {
 		return
 	}
 
+	product, err := h.storage.Product().GetByIdProduct(models.PrimaryKey{ID: basket.Product_id})
+	if err != nil {
+		handleResponse(c, "Error: Failed to find product by ID", http.StatusInternalServerError, err)
+		return
+	}
+
+	if product.Price == 0 {
+		handleResponse(c, "Error: Product price is zero", http.StatusInternalServerError, nil)
+		return
+	}
+
+	basket.Price = product.Price * basket.Quantity
+
 	handleResponse(c, "", http.StatusCreated, basket)
 }
 
@@ -132,6 +145,15 @@ func (h Handler) GetListBasket(c *gin.Context) {
 		handleResponse(c, "Error: Failed to get basket list", http.StatusInternalServerError, err)
 		return
 	}
+
+
+
+	/**************************/
+
+
+
+
+	/*****************************/
 
 	handleResponse(c, "", http.StatusOK, resp)
 }
