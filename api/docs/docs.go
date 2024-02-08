@@ -798,8 +798,7 @@ const docTemplate = `{
             }
         },
         "/end-sale/{id}": {
-            "put": {
-                "description": "update end-sale",
+            "get": {
                 "consumes": [
                     "application/json"
                 ],
@@ -809,23 +808,14 @@ const docTemplate = `{
                 "tags": [
                     "end-sale"
                 ],
-                "summary": "Update end-sale",
+                "summary": "Get end-sale by ID",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "end-sale",
+                        "description": "end-sale ID",
                         "name": "id",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "description": "end-sale",
-                        "name": "end-sale",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.EndSales"
-                        }
                     }
                 ],
                 "responses": {
@@ -838,19 +828,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "type": "string"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/models.Response"
+                            "type": "string"
                         }
                     }
                 }

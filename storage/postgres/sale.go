@@ -92,7 +92,7 @@ func (s *saleRepo) GetListSales(request models.GetListRequestSale) (models.SaleR
     `
 
 	if search != "" {
-		countQuery += fmt.Sprintf(` WHERE clientname ILIKE '%%%s%%'`, search)
+		countQuery += fmt.Sprintf(` WHERE id= '%%%s%%'`, search)
 	}
 
 	if err := s.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
@@ -106,7 +106,7 @@ func (s *saleRepo) GetListSales(request models.GetListRequestSale) (models.SaleR
     `
 
 	if search != "" {
-		query += fmt.Sprintf(` WHERE clientname ILIKE '%%%s%%'`, search)
+		query += fmt.Sprintf(` WHERE id= '%%%s%%'`, search)
 	}
 
 	if request.FromPrice > 0 || request.ToPrice > 0 {
@@ -158,7 +158,7 @@ func (s *saleRepo) GetListSales(request models.GetListRequestSale) (models.SaleR
 
 	return models.SaleRepos{
 		Sales: sales,
-		Count:        count,
+		Count: count,
 	}, nil
 }
 

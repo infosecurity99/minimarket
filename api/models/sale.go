@@ -46,5 +46,5 @@ type StartSale struct {
 }
 
 type EndSales struct {
-
+	
 }

@@ -75,7 +75,6 @@ func (b *basketRepo) GetByIdBasket(pKey models.PrimaryKey) (models.Basket, error
 
 	return basket, nil
 }
-
 func (b *basketRepo) GetListBasket(request models.GetListRequest) (models.BasketResponse, error) {
 	var (
 		baskets = []models.Basket{}
@@ -86,12 +85,10 @@ func (b *basketRepo) GetListBasket(request models.GetListRequest) (models.Basket
 		search  = request.Search
 	)
 
-	countQuery := `
-                SELECT COUNT(1) FROM sale
-                `
+	countQuery := `SELECT COUNT(1) FROM basket`
 
 	if search != "" {
-		countQuery += fmt.Sprintf(` and (sale_id ILIKE '%%%s%%')`, search)
+		countQuery += fmt.Sprintf(` WHERE sale_id = '%s'`, search)
 	}
 
 	if err := b.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
@@ -99,20 +96,17 @@ func (b *basketRepo) GetListBasket(request models.GetListRequest) (models.Basket
 		return models.BasketResponse{}, err
 	}
 
-	query = `
-             SELECT id, sale_id ,product_id,quantity,price, create_at
-             FROM basket
-             `
+	query = `SELECT id, sale_id ,product_id,quantity,price, create_at FROM basket`
 
 	if search != "" {
-		query += fmt.Sprintf(` and (sale_id ILIKE '%%%s%%') `, search)
+		query += fmt.Sprintf(` WHERE sale_id = '%s'`, search)
 	}
 
 	query += ` LIMIT $1 OFFSET $2`
 
 	rows, err := b.db.Query(context.Background(), query, request.Limit, offset)
 	if err != nil {
-		fmt.Println("error while querying rows", err.Error())
+		//	fmt.Println("error while querying rows", err.Error())
 		return models.BasketResponse{}, err
 	}
 
@@ -127,7 +121,7 @@ func (b *basketRepo) GetListBasket(request models.GetListRequest) (models.Basket
 			&basket.Price,
 			&basket.Create_at,
 		); err != nil {
-			fmt.Println("error while scanning row", err.Error())
+			//	fmt.Println("error while scanning row", err.Error())
 			return models.BasketResponse{}, nil
 		}
 

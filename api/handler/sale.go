@@ -2,7 +2,6 @@ package handler
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -268,14 +267,13 @@ func (h Handler) StartSale(c *gin.Context) {
 
 // EndSales godoc
 // @Router       /end-sale/{id} [PUT]
-// @Summary      Update end-sale
-// @Description  update end-sale
-// @Tags         end-sale
+// @Summary      end sell
+// @Description  end sell
+// @Tags         sell
 // @Accept       json
 // @Produce      json
-// @Param 		 id path string true "end-sale"
-// @Param        end-sale body models.EndSales true "end-sale"
-// @Success      200  {object}  models.EndSales
+// @Param 		 id path string true "sale_id"
+// @Success      200  {object}  models.Response
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
 // @Failure      500  {object}  models.Response
@@ -286,9 +284,13 @@ func (h Handler) EndSales(c *gin.Context) {
 		return
 	}
 
-	basketResponse, err := h.storage.Basket().GetListBasket(models.GetListRequest{Search: saleID})
+	basketResponse, err := h.storage.Basket().GetListBasket(models.GetListRequest{
+		Page:   1,
+		Limit:  10,
+		Search: saleID})
 	if err != nil {
 		handleResponse(c, "Error while retrieving basket list", http.StatusInternalServerError, err.Error())
+
 		return
 	}
 
@@ -299,5 +301,4 @@ func (h Handler) EndSales(c *gin.Context) {
 
 	handleResponse(c, "Total price calculated successfully", http.StatusOK, totalSum)
 
-	fmt.Println("totalsumaaaaaaaaaaaaaaaaaaa", totalSum)
 }

@@ -31,21 +31,7 @@ func (h Handler) CreateBasket(c *gin.Context) {
 		return
 	}
 
-	pKey, err := h.storage.Basket().CreateBasket(createBasket)
-	if err != nil {
-		handleResponse(c, "Error: Failed to create basket", http.StatusInternalServerError, err)
-		return
-	}
-
-	basket, err := h.storage.Basket().GetByIdBasket(models.PrimaryKey{
-		ID: pKey,
-	})
-	if err != nil {
-		handleResponse(c, "Error: Failed to find basket by ID", http.StatusInternalServerError, err)
-		return
-	}
-
-	product, err := h.storage.Product().GetByIdProduct(models.PrimaryKey{ID: basket.Product_id})
+	product, err := h.storage.Product().GetByIdProduct(models.PrimaryKey{ID: createBasket.Product_id})
 	if err != nil {
 		handleResponse(c, "Error: Failed to find product by ID", http.StatusInternalServerError, err)
 		return
@@ -56,7 +42,23 @@ func (h Handler) CreateBasket(c *gin.Context) {
 		return
 	}
 
-	basket.Price = product.Price * basket.Quantity
+	// Narxi hisoblash
+	price := product.Price * createBasket.Quantity
+
+	// Basket obyektini yaratish
+	createBasket.Price = price
+	pKey, err := h.storage.Basket().CreateBasket(createBasket)
+	if err != nil {
+		handleResponse(c, "Error: Failed to create basket", http.StatusInternalServerError, err)
+		return
+	}
+
+	// Yaratilgan basketni ID bo'yicha qidirish
+	basket, err := h.storage.Basket().GetByIdBasket(models.PrimaryKey{ID: pKey})
+	if err != nil {
+		handleResponse(c, "Error: Failed to find basket by ID", http.StatusInternalServerError, err)
+		return
+	}
 
 	handleResponse(c, "", http.StatusCreated, basket)
 }
@@ -145,16 +147,6 @@ func (h Handler) GetListBasket(c *gin.Context) {
 		handleResponse(c, "Error: Failed to get basket list", http.StatusInternalServerError, err)
 		return
 	}
-
-
-
-	/**************************/
-
-
-
-
-	/*****************************/
-
 	handleResponse(c, "", http.StatusOK, resp)
 }
 
