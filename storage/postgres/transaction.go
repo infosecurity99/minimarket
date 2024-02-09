@@ -86,7 +86,7 @@ func (t *transactionRepo) GetListTransaction(request models.GetListRequestTransa
     `
 
 	if search != "" {
-		countQuery += fmt.Sprintf(` WHERE description ILIKE '%%%s%%'`, search)
+		countQuery += fmt.Sprintf(` WHERE product_id = '%s'`, search)
 	}
 
 	if err := t.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
@@ -100,7 +100,7 @@ func (t *transactionRepo) GetListTransaction(request models.GetListRequestTransa
     `
 
 	if search != "" {
-		query += fmt.Sprintf(` WHERE description ILIKE '%%%s%%'`, search)
+		query += fmt.Sprintf(` WHERE product_id = '%s'`, search)
 	}
 
 	if request.FromAmount > 0 || request.ToAmount > 0 {

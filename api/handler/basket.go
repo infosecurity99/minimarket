@@ -31,13 +31,46 @@ func (h Handler) CreateBasket(c *gin.Context) {
 		return
 	}
 
-	
 	product, err := h.storage.Product().GetByIdProduct(models.PrimaryKey{ID: createBasket.Product_id})
 	if err != nil {
 		handleResponse(c, "Error: Failed to find product by ID", http.StatusInternalServerError, err)
 		return
 	}
 
+	storages, err := h.storage.Storag().GetListStorages(models.GetListRequest{Page: 1, Limit: 100, Search: createBasket.Product_id})
+	if err != nil {
+		handleResponse(c, "Error: Failed to find product by ID", http.StatusInternalServerError, err)
+		return
+	}
+
+	var storageToUpdate models.Storage
+	found := false
+	for _, s := range storages.Storages {
+		if s.Count >= int(createBasket.Quantity) {
+			found = true
+			// Mahsulot sonini kamaytirish
+			updatedCount := s.Count - int(createBasket.Quantity)
+			s.Count = updatedCount
+			storageToUpdate = s
+			break
+		}
+	}
+
+	if !found {
+		handleResponse(c, "Error: Product not found", http.StatusNotFound, nil)
+		return
+	}
+
+	// Update storage count
+	if _, err := h.storage.Storag().UpdateStorages(models.UpdateStorage{
+		ID:         storageToUpdate.ID,
+		Product_id: storageToUpdate.Product_id,
+		Branch_id:  storageToUpdate.Branch_id,
+		Count:      storageToUpdate.Count,
+	}); err != nil {
+		handleResponse(c, "Error: Failed to update storage count", http.StatusInternalServerError, err)
+		return
+	}
 
 	if product.Price == 0 {
 		handleResponse(c, "Error: Product price is zero", http.StatusInternalServerError, nil)
@@ -47,12 +80,15 @@ func (h Handler) CreateBasket(c *gin.Context) {
 	price := product.Price * createBasket.Quantity
 
 	createBasket.Price = price
+
+	// Create basket
 	pKey, err := h.storage.Basket().CreateBasket(createBasket)
 	if err != nil {
 		handleResponse(c, "Error: Failed to create basket", http.StatusInternalServerError, err)
 		return
 	}
 
+	// Get created basket
 	basket, err := h.storage.Basket().GetByIdBasket(models.PrimaryKey{ID: pKey})
 	if err != nil {
 		handleResponse(c, "Error: Failed to find basket by ID", http.StatusInternalServerError, err)

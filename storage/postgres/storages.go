@@ -75,7 +75,7 @@ func (s *storageRepo) GetListStorages(reuqest models.GetListRequest) (models.Sto
 
 	addSearchCondition := func(baseQuery string) string {
 		if reuqest.Search != "" {
-			return fmt.Sprintf("%s AND (product_id ILIKE '%%%s%%')", baseQuery, reuqest.Search)
+			return fmt.Sprintf("%s where (product_id='%s')", baseQuery, reuqest.Search)
 		}
 		return baseQuery
 	}
@@ -120,11 +120,11 @@ func (s *storageRepo) GetListStorages(reuqest models.GetListRequest) (models.Sto
 func (s *storageRepo) UpdateStorages(request models.UpdateStorage) (string, error) {
 	query := `
 	UPDATE storage
-	SET product_id = $1, branch_id = $2
-	WHERE id = $3
+	SET product_id = $1, branch_id = $2 ,count=$3
+	WHERE id = $4
 `
 
-	if _, err := s.db.Exec(context.Background(), query, request.Product_id, request.Branch_id, request.ID); err != nil {
+	if _, err := s.db.Exec(context.Background(), query, request.Product_id, request.Branch_id, request.Count, request.ID); err != nil {
 		return "", err
 	}
 

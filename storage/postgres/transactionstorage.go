@@ -88,7 +88,7 @@ func (s *transactionstorageRepo) GetListTransactionStorage(request models.GetLis
                 `
 
 	if search != "" {
-		countQuery += fmt.Sprintf(` AND (price ILIKE '%%%s%%')`, search)
+		countQuery += fmt.Sprintf(` WHERE product_id = '%s'`, search)
 	}
 
 	if err := s.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
@@ -103,7 +103,7 @@ func (s *transactionstorageRepo) GetListTransactionStorage(request models.GetLis
              `
 
 	if search != "" {
-		query += fmt.Sprintf(` AND (price ILIKE '%%%s%%') `, search)
+		query += fmt.Sprintf(` WHERE product_id = '%s'`, search)
 	}
 
 	query += ` LIMIT $1 OFFSET $2`
