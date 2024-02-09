@@ -87,7 +87,7 @@ func New(store storage.IStorage) *gin.Engine {
 
 	// start sell
 	r.POST("/star_sale", h.StartSale)
-	r.GET("/end-sale/:id", h.EndSales)
+	r.PUT("/end-sale/:id", h.EndSales)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	return r

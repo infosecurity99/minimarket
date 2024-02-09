@@ -798,7 +798,8 @@ const docTemplate = `{
             }
         },
         "/end-sale/{id}": {
-            "get": {
+            "put": {
+                "description": "Update end-sale by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -808,33 +809,48 @@ const docTemplate = `{
                 "tags": [
                     "end-sale"
                 ],
-                "summary": "Get end-sale by ID",
+                "summary": "Update end-sale by ID",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "end-sale ID",
+                        "description": "End-sale ID",
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "End-sale",
+                        "name": "end-sale",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.EndSales"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.EndSales"
+                            "$ref": "#/definitions/models.Response"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Error: Sale ID is required",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Error: Basket list not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Error: Internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.Response"
                         }
                     }
                 }
@@ -2967,13 +2983,13 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "product_id": {
                     "type": "string"
                 },
                 "quantity": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "staff_id": {
                     "type": "string"
@@ -3213,13 +3229,13 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "product_id": {
                     "type": "string"
                 },
                 "quantity": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "staff_id": {
                     "type": "string"
@@ -3418,13 +3434,13 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "product_id": {
                     "type": "string"
                 },
                 "quantity": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "staff_id": {
                     "type": "string"

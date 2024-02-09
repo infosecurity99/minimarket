@@ -31,21 +31,21 @@ func (h Handler) CreateBasket(c *gin.Context) {
 		return
 	}
 
+	
 	product, err := h.storage.Product().GetByIdProduct(models.PrimaryKey{ID: createBasket.Product_id})
 	if err != nil {
 		handleResponse(c, "Error: Failed to find product by ID", http.StatusInternalServerError, err)
 		return
 	}
 
+
 	if product.Price == 0 {
 		handleResponse(c, "Error: Product price is zero", http.StatusInternalServerError, nil)
 		return
 	}
 
-	// Narxi hisoblash
 	price := product.Price * createBasket.Quantity
 
-	// Basket obyektini yaratish
 	createBasket.Price = price
 	pKey, err := h.storage.Basket().CreateBasket(createBasket)
 	if err != nil {
@@ -53,7 +53,6 @@ func (h Handler) CreateBasket(c *gin.Context) {
 		return
 	}
 
-	// Yaratilgan basketni ID bo'yicha qidirish
 	basket, err := h.storage.Basket().GetByIdBasket(models.PrimaryKey{ID: pKey})
 	if err != nil {
 		handleResponse(c, "Error: Failed to find basket by ID", http.StatusInternalServerError, err)

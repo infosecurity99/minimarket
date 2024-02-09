@@ -1,6 +1,9 @@
 package storage
 
-import "connected/api/models"
+import (
+	"connected/api/models"
+	"context"
+)
 
 type IStorage interface {
 	Close()
@@ -32,7 +35,7 @@ type ISaleStorage interface {
 	GetListSales(models.GetListRequestSale) (models.SaleRepos, error)
 	UpdateSales(models.UpdateSale) (string, error)
 	DeleteSales(models.PrimaryKey) error
-	
+	UpdatePrice(context.Context, float64, string) (string, error)
 }
 
 // for transaction interface
@@ -90,7 +93,6 @@ type IBasket interface {
 	GetListBasket(models.GetListRequest) (models.BasketResponse, error)
 	UpdateBasket(models.UpdateBasket) (string, error)
 	DeleteBasket(models.PrimaryKey) error
-	
 }
 
 // storage intarface

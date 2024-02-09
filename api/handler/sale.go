@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -267,16 +269,17 @@ func (h Handler) StartSale(c *gin.Context) {
 
 // EndSales godoc
 // @Router       /end-sale/{id} [PUT]
-// @Summary      end sell
-// @Description  end sell
-// @Tags         sell
+// @Summary      Update end-sale by ID
+// @Description  Update end-sale by ID
+// @Tags         end-sale
 // @Accept       json
 // @Produce      json
-// @Param 		 id path string true "sale_id"
-// @Success      200  {object}  models.Response
-// @Failure      400  {object}  models.Response
-// @Failure      404  {object}  models.Response
-// @Failure      500  {object}  models.Response
+// @Param        id path string true "End-sale ID"
+// @Param        end-sale body models.EndSales true "End-sale"
+// @Success      200 {object} models.Response
+// @Failure      400 {object} models.Response "Error: Sale ID is required"
+// @Failure      404 {object} models.Response "Error: Basket list not found"
+// @Failure      500 {object} models.Response "Error: Internal server error"
 func (h Handler) EndSales(c *gin.Context) {
 	saleID := c.Param("id")
 	if saleID == "" {
@@ -289,8 +292,7 @@ func (h Handler) EndSales(c *gin.Context) {
 		Limit:  10,
 		Search: saleID})
 	if err != nil {
-		handleResponse(c, "Error while retrieving basket list", http.StatusInternalServerError, err.Error())
-
+		handleResponse(c, "Error: Basket list not found", http.StatusNotFound, err.Error())
 		return
 	}
 
@@ -299,6 +301,18 @@ func (h Handler) EndSales(c *gin.Context) {
 		totalSum += float64(basket.Price)
 	}
 
-	handleResponse(c, "Total price calculated successfully", http.StatusOK, totalSum)
+	fmt.Println("totalpricerrrrrrrrrrrrrrrrrrrrrrrrrrrr", totalSum)
+	id, err := h.storage.Sale().UpdatePrice(context.Background(), float64(totalSum), saleID)
+	if err != nil {
+		handleResponse(c, "Error: Internal server error", http.StatusInternalServerError, err.Error())
+		return
+	}
 
+	resp, err := h.storage.Sale().GetByIdSales(models.PrimaryKey{ID: id})
+	if err != nil {
+		handleResponse(c, "Error: Internal server error", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	handleResponse(c, "", http.StatusOK, resp)
 }

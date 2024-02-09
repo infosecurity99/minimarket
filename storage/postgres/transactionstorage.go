@@ -25,8 +25,10 @@ func NewTransactioStoragenRepo(db *pgxpool.Pool) storage.ITransactionStorage {
 func (s *transactionstorageRepo) CreateTransactionStorage(request models.CreateTransactionStorage) (string, error) {
 	uid := uuid.New()
 	createAt := time.Now()
-	if _, err := s.db.Exec(context.Background(), `INSERT INTO storage_transaction VALUES ($1, $2, $3, $4,$5, $6, $7, $8)
-		`,
+	if _, err := s.db.Exec(context.Background(), `
+		INSERT INTO storage_transaction(id, branch_id, staff_id, product_id, transaction_type, price, quantity, create_at) 
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+	`,
 		uid,
 		request.Branch_id,
 		request.Staff_id,
@@ -41,6 +43,7 @@ func (s *transactionstorageRepo) CreateTransactionStorage(request models.CreateT
 
 	return uid.String(), nil
 }
+
 
 // getbyid  transaction storage
 func (s *transactionstorageRepo) GetByIdTranasactionStorage(pKey models.PrimaryKey) (models.TransactionStorage, error) {

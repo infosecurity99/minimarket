@@ -4,6 +4,7 @@ import (
 	"connected/api/models"
 	"connected/storage"
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -117,7 +118,6 @@ func (s *saleRepo) GetListSales(request models.GetListRequestSale) (models.SaleR
 			query += " AND "
 		}
 
-		// Add condition for FromAmount and ToAmount
 		if request.FromPrice > 0 && request.ToPrice > 0 {
 			query += fmt.Sprintf(`amount BETWEEN %f AND %f`, request.FromPrice, request.ToPrice)
 		} else if request.FromPrice > 0 {
@@ -198,4 +198,20 @@ func (s *saleRepo) DeleteSales(pKey models.PrimaryKey) error {
 	}
 
 	return nil
+}
+
+func (s *saleRepo) UpdatePrice(ctx context.Context, totalSum float64, id string) (string, error) {
+	query := `UPDATE sale SET price = $1, status_type = 'Success' WHERE id = $2`
+	rowsAffected, err := s.db.Exec(ctx, query, totalSum, id)
+	if err != nil {
+		fmt.Println("error is while updating sale price", err.Error())
+		return "", err
+	}
+
+	if r := rowsAffected.RowsAffected(); r == 0 {
+		fmt.Println("error in rows affected: no rows updated")
+		return "", errors.New("no rows updated")
+	}
+
+	return id, nil
 }

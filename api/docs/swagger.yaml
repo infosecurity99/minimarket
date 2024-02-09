@@ -166,11 +166,11 @@ definitions:
       branch_id:
         type: string
       price:
-        type: string
+        type: number
       product_id:
         type: string
       quantity:
-        type: string
+        type: number
       staff_id:
         type: string
       transaction_type:
@@ -327,11 +327,11 @@ definitions:
       id:
         type: string
       price:
-        type: string
+        type: number
       product_id:
         type: string
       quantity:
-        type: string
+        type: number
       staff_id:
         type: string
       transaction_type:
@@ -460,11 +460,11 @@ definitions:
       id:
         type: string
       price:
-        type: string
+        type: number
       product_id:
         type: string
       quantity:
-        type: string
+        type: number
       staff_id:
         type: string
     type: object
@@ -987,31 +987,42 @@ paths:
       tags:
       - category
   /end-sale/{id}:
-    get:
+    put:
       consumes:
       - application/json
+      description: Update end-sale by ID
       parameters:
-      - description: end-sale ID
+      - description: End-sale ID
         in: path
         name: id
         required: true
         type: string
+      - description: End-sale
+        in: body
+        name: end-sale
+        required: true
+        schema:
+          $ref: '#/definitions/models.EndSales'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.EndSales'
+            $ref: '#/definitions/models.Response'
         "400":
-          description: Bad Request
+          description: 'Error: Sale ID is required'
           schema:
-            type: string
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: 'Error: Basket list not found'
+          schema:
+            $ref: '#/definitions/models.Response'
         "500":
-          description: Internal Server Error
+          description: 'Error: Internal server error'
           schema:
-            type: string
-      summary: Get end-sale by ID
+            $ref: '#/definitions/models.Response'
+      summary: Update end-sale by ID
       tags:
       - end-sale
   /product:

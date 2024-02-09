@@ -94,7 +94,7 @@ CREATE TABLE sale (
                       cashier_id UUID REFERENCES staff(id),
                       payment_type payment_type_enum,
                       price INT,
-                      status_type status_enum,
+                      status_type status_enum  DEFAULT "InProgress"  ,
                       clientname VARCHAR(255),
                       create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                       deleted_at INTEGER
