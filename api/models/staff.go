@@ -8,7 +8,7 @@ type Staff struct {
 	Tarif_id   string    `json:"tarif_id"`
 	Type_stuff string    `json:"type_stuff"`
 	Name       string    `json:"name"`
-	Balance    string    `json:"balance"`
+	Balance    uint      `json:"balance"`
 	Age        int       `json:"age"`
 	BirthDate  time.Time `json:"birthdate"`
 	Login      string    `json:"login"`
@@ -21,22 +21,21 @@ type CreateStaff struct {
 	Tarif_id   string `json:"tarif_id"`
 	Type_stuff string `json:"type_stuff"`
 	Name       string `json:"name"`
-	Balance    string `json:"balance"`
+	Balance    uint   `json:"balance"`
 	BirthDate  string `json:"birthdate"`
 	Login      string `json:"login"`
 	Password   string `json:"password"`
 }
 
 type UpdateStaff struct {
-	ID        string    `json:"id"`
-	Branch_id string    `json:"branch_id"`
-	Tarif_id  string    `json:"tarif_id"`
-	Name      string    `json:"name"`
-	Balance   string    `json:"balance"`
-	Age       int       `json:"age"`
-	BirthDate time.Time `json:"birthdate"`
+	ID        string `json:"-"`
+	BranchID  string `json:"branch_id"`
+	TariffID  string `json:"tariff_id"`
+	StaffType string `json:"staff_type"`
+	Name      string `json:"name"`
+	Balance   uint   `json:"balance"`
+	Login     string `json:"login"`
 }
-
 type StaffRepo struct {
 	Staffs []Staff `json:"staffs"`
 	Count  int     `json:"count"`

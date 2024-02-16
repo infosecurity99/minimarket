@@ -296,9 +296,9 @@ func (h Handler) EndSales(c *gin.Context) {
 		return
 	}
 
-	var totalSum float64 = 0
+	var totalSum uint = 0
 	for _, basket := range basketResponse.Baskets {
-		totalSum += float64(basket.Price)
+		totalSum += uint(basket.Price)
 	}
 
 	fmt.Println("totalpricerrrrrrrrrrrrrrrrrrrrrrrrrrrr", totalSum)
@@ -314,5 +314,97 @@ func (h Handler) EndSales(c *gin.Context) {
 		return
 	}
 
-	handleResponse(c, "", http.StatusOK, resp)
+	/****************************************************************/
+	// Xodimlarni va xodim tariflarini olish
+	tariffs, err := h.storage.Staff_Tarif().GetListStaff_Tarifs( models.GetListRequest{
+		Page:  1,
+		Limit: 10,
+	})
+	if err != nil {
+		handleResponse(c, "Error: Internal server errorqqqq", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	staffs, err := h.storage.Staff().GetListStaff( models.GetListRequest{
+		Page:  1,
+		Limit: 100,
+	})
+	if err != nil {
+		handleResponse(c, "Error: Internal server erroraaaaaa", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	// Xodimlarni ma'lumotlarini qo'llash
+	staffsMap := make(map[string]models.Staff)
+	staffBalance := make(map[string]uint)
+	for _, staff := range staffs.Staffs {
+		if resp.Cashier_id == staff.ID || resp.Shopassistant_id == staff.ID {
+			staffsMap[staff.Tarif_id] = staff
+			staffBalance[staff.Tarif_id] = staff.Balance
+		}
+	}
+
+
+	// Xodimlar tariflarini o'zlashtirish
+	tariffsMap := make(map[string]models.Staff_Tarif)
+	for _, tariff := range tariffs.Staff_Tarif_Repos {
+		tariffsMap[tariff.ID] = tariff
+	}
+
+	// Xodimlar uchun yangilashlar
+	for _, staff := range staffsMap {
+		tariff, found := tariffsMap[staff.Tarif_id]
+		if !found {
+			continue
+		}
+
+		switch {
+		case tariff.Tarif_Type_Enum == "fixed":
+			switch resp.Payment_type {
+			case "cash":
+				staffBalance[staff.ID] += uint(tariff.Amount_For_Card)
+			case "card":
+				staffBalance[staff.ID] += uint(tariff.Amount_For_Cashe)
+			}
+		case tariff.Tarif_Type_Enum == "percent":
+			switch resp.Payment_type {
+			case "cash":
+				staffBalance[staff.ID] += uint(totalSum * uint(tariff.Amount_For_Cashe) / 100)
+			case "card":
+				staffBalance[staff.ID] += uint(totalSum * uint(tariff.Amount_For_Card) / 100)
+			}
+		}
+
+		// Xodimlarni yangilash
+		_, err := h.storage.Staff().UpdateStaffs( models.UpdateStaff{
+			ID:        staff.ID,
+			BranchID:  staff.Branch_id,
+			TariffID:  staff.Tarif_id,
+			StaffType: staff.Type_stuff,
+			Name:      staff.Name,
+			Balance:   staffBalance[staff.ID],
+			Login:     staff.Login,
+		})
+		if err != nil {
+			handleResponse(c, "Error: Internal server errorccccc", http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		// Tranzaktsiyani yaratish
+		_, err = h.storage.Transaction().CreateTransaction( models.CreateTransaction{
+			Sale_id:          saleID,
+			Staff_id:         staff.ID,
+			Transaction_type: "topup",
+			Sourcetype:       "sales",
+			Amount:           float64(totalSum),
+			Description:      "staff sell products",
+		})
+		if err != nil {
+			handleResponse(c, "Error: Internal server errorcccccc", http.StatusInternalServerError, err.Error())
+			return
+		}
+	}
+
+	handleResponse(c, "Success", http.StatusOK, resp)
+	/***************************************************************/
 }

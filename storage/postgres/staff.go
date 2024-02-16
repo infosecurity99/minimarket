@@ -157,17 +157,18 @@ func (s *staffRepo) GetListStaff(request models.GetListRequest) (models.StaffRep
 func (s *staffRepo) UpdateStaffs(request models.UpdateStaff) (string, error) {
 	query := `
 		UPDATE staff
-		SET branch_id = $1, tarif_id = $2, name=$3,  balance=$4 ,  age=$5 , birthdate=$6
+		SET branch_id = $1, tarif_id = $2, type_stuff=$3,
+		  name=$4 ,  balance=$5 , login=$6
 		WHERE id = $7
 	`
 
 	if _, err := s.db.Exec(context.Background(), query,
-		request.Branch_id,
-		request.Tarif_id,
+		request.BranchID,
+		request.TariffID,
+		request.StaffType,
 		request.Name,
 		request.Balance,
-		request.Age,
-		request.BirthDate,
+		request.Login,
 		request.ID,
 	); err != nil {
 		return "", err
