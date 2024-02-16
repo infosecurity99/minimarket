@@ -34,7 +34,7 @@ CREATE TABLE staff (
                        tarif_id UUID REFERENCES staff_tarif(id),
                        type_stuff type_stuf_enum,
                        name VARCHAR(255),
-                       balance VARCHAR(255),
+                       balance INT,
                        age INT,
                        birthdate DATE ,
                        login VARCHAR(255),
@@ -88,17 +88,18 @@ CREATE TABLE storage (
 
 -- Sale tablosu
 CREATE TABLE sale (
-                      id UUID PRIMARY KEY,
-                      branch_id UUID REFERENCES branch(id),
-                      shopassistant_id UUID REFERENCES staff(id),
-                      cashier_id UUID REFERENCES staff(id),
-                      payment_type payment_type_enum,
-                      price INT,
-                      status_type status_enum  DEFAULT "InProgress"  ,
-                      clientname VARCHAR(255),
-                      create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                      deleted_at INTEGER
+    id UUID PRIMARY KEY,
+    branch_id UUID REFERENCES branch(id),
+    shopassistant_id UUID REFERENCES staff(id),
+    cashier_id UUID REFERENCES staff(id),
+    payment_type payment_type_enum,
+    price INT,
+    status_type status_enum DEFAULT 'Success',
+    clientname VARCHAR(255),
+    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at INTEGER
 );
+
 
 -- Transaction tablosu
 CREATE TABLE transaction (

@@ -84,8 +84,8 @@ func (h Handler) GetByIDSales(c *gin.Context) {
 // @Param page query int false "Page number" default(1)
 // @Param limit query int false "Number of items per page" default(10)
 // @Param search query string false "Search query"
-// @Param        fromprice    query     float64  false  "price from for response"
-// @Param        toprice    query     float64  false  "price to for response"
+// @Param        fromprice    query     uint64  false  "price from for response"
+// @Param        toprice    query     uint64  false  "price to for response"
 // @Success 200 {object} models.SaleRepos
 // @Failure 400 {string} models.Response
 // @Failure 500 {string} models.Response
@@ -94,8 +94,8 @@ func (h Handler) GetListSales(c *gin.Context) {
 	var (
 		page, limit int
 		search      string
-		priceFrom   float64
-		priceTo     float64
+		priceFrom   uint64
+		priceTo     uint64
 		err         error
 	)
 
@@ -117,7 +117,7 @@ func (h Handler) GetListSales(c *gin.Context) {
 
 	priceFromStr := c.Query("price_from")
 	if priceFromStr != "" {
-		priceFrom, err = strconv.ParseFloat(priceFromStr, 64)
+		priceFrom, err = strconv.ParseUint(priceFromStr, 64, 64)
 		if err != nil {
 			handleResponse(c, "error while parsing price_from", http.StatusBadRequest, err.Error())
 			return
@@ -126,7 +126,7 @@ func (h Handler) GetListSales(c *gin.Context) {
 
 	priceToStr := c.Query("price_to")
 	if priceToStr != "" {
-		priceTo, err = strconv.ParseFloat(priceToStr, 64)
+		priceTo, err = strconv.ParseUint(priceToStr, 64, 64)
 		if err != nil {
 			handleResponse(c, "error while parsing price_to", http.StatusBadRequest, err.Error())
 			return
@@ -137,8 +137,8 @@ func (h Handler) GetListSales(c *gin.Context) {
 		Page:      page,
 		Limit:     limit,
 		Search:    search,
-		FromPrice: float64(priceFrom),
-		ToPrice:   float64(priceTo),
+		FromPrice: uint64(priceFrom),
+		ToPrice:   uint64(priceTo),
 	})
 	if err != nil {
 		handleResponse(c, "error while getting sale", http.StatusInternalServerError, err.Error()) // Adjusted this line
@@ -296,27 +296,26 @@ func (h Handler) EndSales(c *gin.Context) {
 		return
 	}
 
-	var totalSum uint = 0
+	var totalSum uint64 = 0
 	for _, basket := range basketResponse.Baskets {
-		totalSum += uint(basket.Price)
+		totalSum += uint64(basket.Price)
 	}
 
 	fmt.Println("totalpricerrrrrrrrrrrrrrrrrrrrrrrrrrrr", totalSum)
-	id, err := h.storage.Sale().UpdatePrice(context.Background(), float64(totalSum), saleID)
+	id, err := h.storage.Sale().UpdatePrice(context.Background(), uint64(totalSum), saleID)
 	if err != nil {
-		handleResponse(c, "Error: Internal server error", http.StatusInternalServerError, err.Error())
+		handleResponse(c, "Error: Internal server error1111111111", http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	resp, err := h.storage.Sale().GetByIdSales(models.PrimaryKey{ID: id})
 	if err != nil {
-		handleResponse(c, "Error: Internal server error", http.StatusInternalServerError, err.Error())
+		handleResponse(c, "Error: Internal server error2222222222", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	/****************************************************************/
 	// Xodimlarni va xodim tariflarini olish
-	tariffs, err := h.storage.Staff_Tarif().GetListStaff_Tarifs( models.GetListRequest{
+	tariffs, err := h.storage.Staff_Tarif().GetListStaff_Tarifs(models.GetListRequest{
 		Page:  1,
 		Limit: 10,
 	})
@@ -325,7 +324,7 @@ func (h Handler) EndSales(c *gin.Context) {
 		return
 	}
 
-	staffs, err := h.storage.Staff().GetListStaff( models.GetListRequest{
+	staffs, err := h.storage.Staff().GetListStaff(models.GetListRequest{
 		Page:  1,
 		Limit: 100,
 	})
@@ -336,14 +335,13 @@ func (h Handler) EndSales(c *gin.Context) {
 
 	// Xodimlarni ma'lumotlarini qo'llash
 	staffsMap := make(map[string]models.Staff)
-	staffBalance := make(map[string]uint)
+	staffBalance := make(map[string]uint64)
 	for _, staff := range staffs.Staffs {
 		if resp.Cashier_id == staff.ID || resp.Shopassistant_id == staff.ID {
 			staffsMap[staff.Tarif_id] = staff
 			staffBalance[staff.Tarif_id] = staff.Balance
 		}
 	}
-
 
 	// Xodimlar tariflarini o'zlashtirish
 	tariffsMap := make(map[string]models.Staff_Tarif)
@@ -362,21 +360,21 @@ func (h Handler) EndSales(c *gin.Context) {
 		case tariff.Tarif_Type_Enum == "fixed":
 			switch resp.Payment_type {
 			case "cash":
-				staffBalance[staff.ID] += uint(tariff.Amount_For_Card)
+				staffBalance[staff.ID] += uint64(tariff.Amount_For_Card)
 			case "card":
-				staffBalance[staff.ID] += uint(tariff.Amount_For_Cashe)
+				staffBalance[staff.ID] += uint64(tariff.Amount_For_Cashe)
 			}
 		case tariff.Tarif_Type_Enum == "percent":
 			switch resp.Payment_type {
 			case "cash":
-				staffBalance[staff.ID] += uint(totalSum * uint(tariff.Amount_For_Cashe) / 100)
+				staffBalance[staff.ID] += uint64(totalSum * uint64(tariff.Amount_For_Cashe) / 100)
 			case "card":
-				staffBalance[staff.ID] += uint(totalSum * uint(tariff.Amount_For_Card) / 100)
+				staffBalance[staff.ID] += uint64(totalSum * uint64(tariff.Amount_For_Card) / 100)
 			}
 		}
 
 		// Xodimlarni yangilash
-		_, err := h.storage.Staff().UpdateStaffs( models.UpdateStaff{
+		_, err := h.storage.Staff().UpdateStaffs(models.UpdateStaff{
 			ID:        staff.ID,
 			BranchID:  staff.Branch_id,
 			TariffID:  staff.Tarif_id,
@@ -391,13 +389,13 @@ func (h Handler) EndSales(c *gin.Context) {
 		}
 
 		// Tranzaktsiyani yaratish
-		_, err = h.storage.Transaction().CreateTransaction( models.CreateTransaction{
+		_, err = h.storage.Transaction().CreateTransaction(models.CreateTransaction{
 			Sale_id:          saleID,
 			Staff_id:         staff.ID,
 			Transaction_type: "topup",
 			Sourcetype:       "sales",
 			Amount:           float64(totalSum),
-			Description:      "staff sell products",
+			Description:      "staff ",
 		})
 		if err != nil {
 			handleResponse(c, "Error: Internal server errorcccccc", http.StatusInternalServerError, err.Error())
@@ -406,5 +404,5 @@ func (h Handler) EndSales(c *gin.Context) {
 	}
 
 	handleResponse(c, "Success", http.StatusOK, resp)
-	/***************************************************************/
+
 }

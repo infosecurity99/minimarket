@@ -6,11 +6,11 @@ definitions:
       id:
         type: string
       price:
-        type: number
+        type: integer
       product_id:
         type: string
       quantity:
-        type: number
+        type: integer
       sale_id:
         type: string
     type: object
@@ -57,11 +57,11 @@ definitions:
   models.CreateBasket:
     properties:
       price:
-        type: number
+        type: integer
       product_id:
         type: string
       quantity:
-        type: number
+        type: integer
       sale_id:
         type: string
     type: object
@@ -88,7 +88,7 @@ definitions:
       name:
         type: string
       price:
-        type: number
+        type: integer
     type: object
   models.CreateSale:
     properties:
@@ -101,7 +101,7 @@ definitions:
       payment_type:
         type: string
       price:
-        type: number
+        type: integer
       shopassistant_id:
         type: string
       status_type:
@@ -110,7 +110,7 @@ definitions:
   models.CreateStaff:
     properties:
       balance:
-        type: string
+        type: integer
       birthdate:
         type: string
       branch_id:
@@ -149,7 +149,7 @@ definitions:
   models.CreateTransaction:
     properties:
       amount:
-        type: string
+        type: number
       description:
         type: string
       sale_id:
@@ -166,11 +166,11 @@ definitions:
       branch_id:
         type: string
       price:
-        type: number
+        type: integer
       product_id:
         type: string
       quantity:
-        type: number
+        type: integer
       staff_id:
         type: string
       transaction_type:
@@ -191,7 +191,7 @@ definitions:
       name:
         type: string
       price:
-        type: number
+        type: integer
     type: object
   models.Response:
     properties:
@@ -216,7 +216,7 @@ definitions:
       payment_type:
         type: string
       price:
-        type: number
+        type: integer
       shopassistant_id:
         type: string
       status_type:
@@ -236,7 +236,7 @@ definitions:
       age:
         type: integer
       balance:
-        type: string
+        type: integer
       birthdate:
         type: string
       branch_id:
@@ -302,7 +302,7 @@ definitions:
   models.Transaction:
     properties:
       amount:
-        type: string
+        type: number
       ctreate_at:
         type: string
       description:
@@ -327,11 +327,11 @@ definitions:
       id:
         type: string
       price:
-        type: number
+        type: integer
       product_id:
         type: string
       quantity:
-        type: number
+        type: integer
       staff_id:
         type: string
       transaction_type:
@@ -342,11 +342,11 @@ definitions:
       id:
         type: string
       price:
-        type: number
+        type: integer
       product_id:
         type: string
       quantity:
-        type: number
+        type: integer
       sale_id:
         type: string
     type: object
@@ -377,7 +377,7 @@ definitions:
       name:
         type: string
       price:
-        type: number
+        type: integer
     type: object
   models.UpdateSale:
     properties:
@@ -390,25 +390,23 @@ definitions:
       id:
         type: string
       price:
-        type: number
+        type: integer
       shopassistant_id:
         type: string
     type: object
   models.UpdateStaff:
     properties:
-      age:
-        type: integer
       balance:
-        type: string
-      birthdate:
-        type: string
+        type: integer
       branch_id:
         type: string
-      id:
+      login:
         type: string
       name:
         type: string
-      tarif_id:
+      staff_type:
+        type: string
+      tariff_id:
         type: string
     type: object
   models.UpdateStaff_Tarif:
@@ -443,7 +441,7 @@ definitions:
   models.UpdateTransaction:
     properties:
       amount:
-        type: string
+        type: number
       description:
         type: string
       id:
@@ -460,11 +458,11 @@ definitions:
       id:
         type: string
       price:
-        type: number
+        type: integer
       product_id:
         type: string
       quantity:
-        type: number
+        type: integer
       staff_id:
         type: string
     type: object
@@ -1336,11 +1334,11 @@ paths:
       - description: price from for response
         in: query
         name: fromprice
-        type: number
+        type: integer
       - description: price to for response
         in: query
         name: toprice
-        type: number
+        type: integer
       produces:
       - application/json
       responses:

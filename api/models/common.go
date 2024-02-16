@@ -13,13 +13,13 @@ type GetListRequestTransaction struct {
 	Page       int     `json:"page"`
 	Limit      int     `json:"limit"`
 	Search     string  `json:"search"`
-	ToAmount   float64 `json:"toamount"`
-	FromAmount float64 `json:"fromamount"`
+	ToAmount   uint64 `json:"toamount"`
+	FromAmount uint64 `json:"fromamount"`
 }
 type GetListRequestSale struct {
 	Page      int     `json:"page"`
 	Limit     int     `json:"limit"`
 	Search    string  `json:"search"`
-	ToPrice   float64 `json:"toprice"`
-	FromPrice float64 `json:"fromprice"`
+	ToPrice   uint64 `json:"toprice"`
+	FromPrice uint64 `json:"fromprice"`
 }

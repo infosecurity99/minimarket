@@ -35,7 +35,7 @@ type ISaleStorage interface {
 	GetListSales(models.GetListRequestSale) (models.SaleRepos, error)
 	UpdateSales(models.UpdateSale) (string, error)
 	DeleteSales(models.PrimaryKey) error
-	UpdatePrice(context.Context, float64, string) (string, error)
+	UpdatePrice(context.Context, uint64, string) (string, error)
 }
 
 // for transaction interface

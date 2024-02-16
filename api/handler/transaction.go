@@ -92,7 +92,7 @@ func (h Handler) GetListTransaction(c *gin.Context) {
 	var (
 		page, limit          int
 		search               string
-		fromAmount, toAmount float64
+		fromAmount, toAmount uint64
 		err                  error
 	)
 
@@ -123,14 +123,14 @@ func (h Handler) GetListTransaction(c *gin.Context) {
 	search = c.Query("search")
 
 	fromAmountStr := c.DefaultQuery("fromamount", "0")
-	fromAmount, err = strconv.ParseFloat(fromAmountStr, 64)
+	fromAmount, err = strconv.ParseUint(fromAmountStr, 64, 64)
 	if err != nil {
 		handleResponse(c, "Error: Failed to parse fromamount parameter", http.StatusBadRequest, err)
 		return
 	}
 
 	toAmountStr := c.DefaultQuery("toamount", "0")
-	toAmount, err = strconv.ParseFloat(toAmountStr, 64)
+	toAmount, err = strconv.ParseUint(toAmountStr, 64, 64)
 	if err != nil {
 		handleResponse(c, "Error: Failed to parse toamount parameter", http.StatusBadRequest, err)
 		return

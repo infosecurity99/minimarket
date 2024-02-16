@@ -1330,13 +1330,13 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "type": "number",
+                        "type": "integer",
                         "description": "price from for response",
                         "name": "fromprice",
                         "in": "query"
                     },
                     {
-                        "type": "number",
+                        "type": "integer",
                         "description": "price to for response",
                         "name": "toprice",
                         "in": "query"
@@ -2736,13 +2736,13 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "product_id": {
                     "type": "string"
                 },
                 "quantity": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "sale_id": {
                     "type": "string"
@@ -2815,13 +2815,13 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "price": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "product_id": {
                     "type": "string"
                 },
                 "quantity": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "sale_id": {
                     "type": "string"
@@ -2863,7 +2863,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "number"
+                    "type": "integer"
                 }
             }
         },
@@ -2883,7 +2883,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "shopassistant_id": {
                     "type": "string"
@@ -2897,7 +2897,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "balance": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "birthdate": {
                     "type": "string"
@@ -2957,7 +2957,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "amount": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "description": {
                     "type": "string"
@@ -2983,13 +2983,13 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "product_id": {
                     "type": "string"
                 },
                 "quantity": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "staff_id": {
                     "type": "string"
@@ -3021,7 +3021,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "number"
+                    "type": "integer"
                 }
             }
         },
@@ -3059,7 +3059,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "shopassistant_id": {
                     "type": "string"
@@ -3090,7 +3090,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "balance": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "birthdate": {
                     "type": "string"
@@ -3191,7 +3191,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "amount": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "ctreate_at": {
                     "type": "string"
@@ -3229,13 +3229,13 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "product_id": {
                     "type": "string"
                 },
                 "quantity": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "staff_id": {
                     "type": "string"
@@ -3252,13 +3252,13 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "product_id": {
                     "type": "string"
                 },
                 "quantity": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "sale_id": {
                     "type": "string"
@@ -3306,7 +3306,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "number"
+                    "type": "integer"
                 }
             }
         },
@@ -3326,7 +3326,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "shopassistant_id": {
                     "type": "string"
@@ -3336,25 +3336,22 @@ const docTemplate = `{
         "models.UpdateStaff": {
             "type": "object",
             "properties": {
-                "age": {
-                    "type": "integer"
-                },
                 "balance": {
-                    "type": "string"
-                },
-                "birthdate": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "branch_id": {
                     "type": "string"
                 },
-                "id": {
+                "login": {
                     "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
-                "tarif_id": {
+                "staff_type": {
+                    "type": "string"
+                },
+                "tariff_id": {
                     "type": "string"
                 }
             }
@@ -3408,7 +3405,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "amount": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "description": {
                     "type": "string"
@@ -3434,13 +3431,13 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "product_id": {
                     "type": "string"
                 },
                 "quantity": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "staff_id": {
                     "type": "string"

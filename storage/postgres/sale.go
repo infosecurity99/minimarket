@@ -200,11 +200,12 @@ func (s *saleRepo) DeleteSales(pKey models.PrimaryKey) error {
 	return nil
 }
 
-func (s *saleRepo) UpdatePrice(ctx context.Context, totalSum float64, id string) (string, error) {
-	query := `UPDATE sale SET price = $1, status_type = 'Success' WHERE id = $2`
+func (s *saleRepo) UpdatePrice(ctx context.Context, totalSum uint64, id string) (string, error) {
+	query := `UPDATE sale SET price = $1 WHERE id = $2`
+
 	rowsAffected, err := s.db.Exec(ctx, query, totalSum, id)
 	if err != nil {
-		fmt.Println("error is while updating sale price", err.Error())
+		fmt.Println("error while updating sale price:", err.Error())
 		return "", err
 	}
 
