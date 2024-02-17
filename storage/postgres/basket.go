@@ -4,6 +4,7 @@ import (
 	"connected/api/models"
 	"connected/storage"
 	"context"
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -54,6 +55,8 @@ func (b *basketRepo) CreateBasket(createBasket models.CreateBasket) (string, err
 }
 
 func (b *basketRepo) GetByIdBasket(pKey models.PrimaryKey) (models.Basket, error) {
+	var createdAt, updatedAt = sql.NullTime{}, sql.NullString{}
+
 	basket := models.Basket{}
 
 	query := `
@@ -68,9 +71,17 @@ func (b *basketRepo) GetByIdBasket(pKey models.PrimaryKey) (models.Basket, error
 		&basket.Product_id,
 		&basket.Quantity,
 		&basket.Price,
-		&basket.Create_at,
+		&createdAt,
+		&updatedAt,
 	); err != nil {
 		fmt.Println("error while scanning sale", err.Error())
+	}
+	if createdAt.Valid {
+		basket.CreatedAt = createdAt.Time
+	}
+
+	if updatedAt.Valid {
+		basket.UpdatedAt = updatedAt.String
 	}
 
 	return basket, nil
@@ -83,9 +94,10 @@ func (b *basketRepo) GetListBasket(request models.GetListRequest) (models.Basket
 		page    = request.Page
 		offset  = (page - 1) * request.Limit
 		search  = request.Search
+		createdAt, updatedAt = sql.NullTime{}, sql.NullString{}
 	)
 
-	countQuery := `SELECT COUNT(1) FROM basket`
+	countQuery := `SELECT COUNT(1) FROM basket  where  deleted_at = 0`
 
 	if search != "" {
 		countQuery += fmt.Sprintf(` WHERE sale_id = '%s'`, search)
@@ -96,7 +108,7 @@ func (b *basketRepo) GetListBasket(request models.GetListRequest) (models.Basket
 		return models.BasketResponse{}, err
 	}
 
-	query = `SELECT id, sale_id ,product_id,quantity,price, create_at FROM basket`
+	query = `SELECT id, sale_id ,product_id,quantity,price,  created_at, updated_at FROM basket  where deleted_at = 0`
 
 	if search != "" {
 		query += fmt.Sprintf(` WHERE sale_id = '%s'`, search)
@@ -119,10 +131,18 @@ func (b *basketRepo) GetListBasket(request models.GetListRequest) (models.Basket
 			&basket.Product_id,
 			&basket.Quantity,
 			&basket.Price,
-			&basket.Create_at,
+			&createdAt,
+			&updatedAt,
 		); err != nil {
 			//	fmt.Println("error while scanning row", err.Error())
 			return models.BasketResponse{}, nil
+		}
+		if createdAt.Valid {
+			basket.CreatedAt = createdAt.Time
+		}
+
+		if updatedAt.Valid {
+			basket.UpdatedAt = updatedAt.String
 		}
 
 		baskets = append(baskets, basket)
@@ -137,7 +157,7 @@ func (b *basketRepo) GetListBasket(request models.GetListRequest) (models.Basket
 func (b *basketRepo) UpdateBasket(updateBasket models.UpdateBasket) (string, error) {
 	query := `
 	update basket
-	   set sale_id=$1 ,product_id=$2,quantity=$3,price=$4
+	   set sale_id=$1 ,product_id=$2,quantity=$3,price=$4, updated_at = now()
 		  where id = $5`
 
 	if _, err := b.db.Exec(context.Background(), query,
@@ -155,10 +175,10 @@ func (b *basketRepo) UpdateBasket(updateBasket models.UpdateBasket) (string, err
 }
 
 func (b *basketRepo) DeleteBasket(pKey models.PrimaryKey) error {
-	query := `
-          delete from basket
-             where id = $1
-    `
+
+	query := `update basket set deleted_at = extract(epoch from current_timestamp) where id = $1`
+
+
 	if _, err := b.db.Exec(context.Background(), query, pKey.ID); err != nil {
 		fmt.Println("error while deleting basket  by id", err.Error())
 		return err

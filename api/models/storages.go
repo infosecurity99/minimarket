@@ -7,7 +7,8 @@ type Storage struct {
 	Product_id string    `json:"product_id"`
 	Branch_id  string    `json:"branch_id"`
 	Count      int       `json:"count"`
-	Create_at  time.Time `json:"ctreate_at"`
+	Create_at time.Time `json:"ctreate_at"`
+	UpdatedAt string    `json:"updated_at"`
 }
 
 type CreateStorage struct {

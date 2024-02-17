@@ -58,7 +58,7 @@ func New(ctx context.Context, cfg config.Config) (storage.IStorage, error) {
 			}
 
 			if dirty {
-				version--
+				version++
 				if err = m.Force(int(version)); err != nil {
 					panic(err)
 				}

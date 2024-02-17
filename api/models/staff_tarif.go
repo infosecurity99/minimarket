@@ -8,7 +8,8 @@ type Staff_Tarif struct {
 	Tarif_Type_Enum  string    `json:"tarif_type"`
 	Amount_For_Cashe uint64    `json:"amount_for_cashe"`
 	Amount_For_Card  uint64    `json:"amount_for_card"`
-	Create_at        time.Time `json:"ctreate_at"`
+	Create_at time.Time `json:"ctreate_at"`
+	UpdatedAt string    `json:"updated_at"`
 }
 
 type CreateStaff_Tarif struct {

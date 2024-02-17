@@ -2718,7 +2718,7 @@
         "models.Basket": {
             "type": "object",
             "properties": {
-                "ctreate_at": {
+                "created_at": {
                     "type": "string"
                 },
                 "id": {
@@ -2734,6 +2734,9 @@
                     "type": "integer"
                 },
                 "sale_id": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -2766,6 +2769,9 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
@@ -2796,6 +2802,9 @@
                     "type": "string"
                 },
                 "parent_id": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -3000,7 +3009,7 @@
                 "category_id": {
                     "type": "string"
                 },
-                "create_at": {
+                "ctreate_at": {
                     "type": "string"
                 },
                 "id": {
@@ -3011,6 +3020,9 @@
                 },
                 "price": {
                     "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
@@ -3054,6 +3066,9 @@
                     "type": "string"
                 },
                 "status_type": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -3107,6 +3122,9 @@
                 },
                 "type_stuff": {
                     "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
@@ -3129,6 +3147,9 @@
                     "type": "string"
                 },
                 "tarif_type": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -3173,6 +3194,9 @@
                 },
                 "product_id": {
                     "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
@@ -3202,6 +3226,9 @@
                 },
                 "transaction_type": {
                     "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
@@ -3230,6 +3257,9 @@
                     "type": "string"
                 },
                 "transaction_type": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }

@@ -10,7 +10,8 @@ type TransactionStorage struct {
 	Transaction_type string    `json:"transaction_type"`
 	Price            uint64   `json:"price"`
 	Quantity         uint64   `json:"quantity"`
-	Create_at        time.Time `json:"ctreate_at"`
+	Create_at time.Time `json:"ctreate_at"`
+	UpdatedAt string    `json:"updated_at"`
 }
 
 type CreateTransactionStorage struct {

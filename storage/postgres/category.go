@@ -2,8 +2,8 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
-	"time"
 
 	"connected/api/models"
 	"connected/storage"
@@ -24,7 +24,7 @@ func NewCategoryRepo(db *pgxpool.Pool) storage.ICategory {
 
 func (c *categoryRepo) CreateCategory(createCategory models.CreateCategory) (string, error) {
 	uid := uuid.New()
-	createAt := time.Now()
+
 	if _, err := c.db.Exec(context.Background(), `
         INSERT INTO category 
         VALUES ($1, $2, $3, $4)
@@ -32,7 +32,6 @@ func (c *categoryRepo) CreateCategory(createCategory models.CreateCategory) (str
 		uid,
 		createCategory.Name,
 		createCategory.Parent_id,
-		createAt,
 	); err != nil {
 		fmt.Println("error while inserting data", err.Error())
 		return "", err
@@ -42,22 +41,32 @@ func (c *categoryRepo) CreateCategory(createCategory models.CreateCategory) (str
 }
 
 func (c *categoryRepo) GetByIdCategory(pKey models.PrimaryKey) (models.Category, error) {
+	var createdAt, updatedAt = sql.NullTime{}, sql.NullString{}
 	category := models.Category{}
 
 	query := `
-        SELECT id, name, parent_id, create_at
-        FROM category
-        WHERE id = $1
+        SELECT id, name, parent_id, created_at, updated_at
+        FROM category  
+        WHERE id = $1   and deleted_at = 0
     `
 
 	if err := c.db.QueryRow(context.Background(), query, pKey.ID).Scan(
 		&category.ID,
 		&category.Name,
 		&category.Parent_id,
-		&category.Create_at,
+		&createdAt, //4
+		&updatedAt, //5
 	); err != nil {
 		fmt.Println("error while scanning category", err.Error())
 		return models.Category{}, err
+	}
+
+	if createdAt.Valid {
+		category.Create_at = createdAt.Time
+	}
+
+	if updatedAt.Valid {
+		category.UpdatedAt = updatedAt.String
 	}
 
 	return category, nil
@@ -65,12 +74,13 @@ func (c *categoryRepo) GetByIdCategory(pKey models.PrimaryKey) (models.Category,
 
 func (c *categoryRepo) GetListCategory(request models.GetListRequest) (models.CategoryResponse, error) {
 	var (
-		categories = []models.Category{}
-		count      = 0
-		query      string
-		page       = request.Page
-		offset     = (page - 1) * request.Limit
-		search     = request.Search
+		categories           = []models.Category{}
+		count                = 0
+		query                string
+		page                 = request.Page
+		offset               = (page - 1) * request.Limit
+		search               = request.Search
+		createdAt, updatedAt = sql.NullTime{}, sql.NullString{}
 	)
 
 	countQuery := `
@@ -87,7 +97,7 @@ func (c *categoryRepo) GetListCategory(request models.GetListRequest) (models.Ca
 	}
 
 	query = `
-         SELECT id, name, parent_id, create_at  FROM category
+         SELECT id, name, parent_id, create_at  FROM category and deleted_at = 0 
 `
 
 	if search != "" {
@@ -109,10 +119,18 @@ func (c *categoryRepo) GetListCategory(request models.GetListRequest) (models.Ca
 			&category.ID,
 			&category.Name,
 			&category.Parent_id,
-			&category.Create_at,
+			&createdAt,
+			&updatedAt,
 		); err != nil {
 			fmt.Println("error while scanning row", err.Error())
 			return models.CategoryResponse{}, err
+		}
+		if createdAt.Valid {
+			category.Create_at = createdAt.Time
+		}
+
+		if updatedAt.Valid {
+			category.UpdatedAt = updatedAt.String
 		}
 
 		categories = append(categories, category)
@@ -127,7 +145,7 @@ func (c *categoryRepo) GetListCategory(request models.GetListRequest) (models.Ca
 func (c *categoryRepo) UpdateCategory(request models.UpdateCategory) (string, error) {
 	query := `
         UPDATE category
-        SET name = $1,parent_id=$2
+        SET name = $1,parent_id=$2, updated_at = now()
         WHERE id = $3
     `
 
@@ -144,10 +162,8 @@ func (c *categoryRepo) UpdateCategory(request models.UpdateCategory) (string, er
 }
 
 func (c *categoryRepo) DeleteCategory(request models.PrimaryKey) error {
-	query := `
-       DELETE FROM category
-       WHERE id = $1
-`
+	query := `update category set deleted_at = extract(epoch from current_timestamp) where id = $1`
+
 	if _, err := c.db.Exec(context.Background(), query, request.ID); err != nil {
 		fmt.Println("error while deleting category  by id", err.Error())
 		return err

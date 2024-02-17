@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"log"
 	"time"
@@ -25,7 +26,7 @@ func NewStaffRepo(db *pgxpool.Pool) storage.IStaff {
 
 func (s *staffRepo) CreateStaff(createStaff models.CreateStaff) (string, error) {
 	uid := uuid.New()
-	createAt := time.Now()
+
 	birthDate, err := time.Parse("2006-01-02", createStaff.BirthDate)
 	if err != nil {
 		log.Println("Error parsing birth date:", err)
@@ -34,7 +35,7 @@ func (s *staffRepo) CreateStaff(createStaff models.CreateStaff) (string, error) 
 	age := int(time.Since(birthDate).Hours() / 24 / 365)
 
 	query := `
-		INSERT INTO staff VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+		INSERT INTO staff VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 	`
 
 	if _, err := s.db.Exec(context.Background(), query,
@@ -48,7 +49,6 @@ func (s *staffRepo) CreateStaff(createStaff models.CreateStaff) (string, error) 
 		birthDate,
 		createStaff.Login,
 		createStaff.Password,
-		createAt,
 	); err != nil {
 		return "", err
 	}
@@ -58,11 +58,12 @@ func (s *staffRepo) CreateStaff(createStaff models.CreateStaff) (string, error) 
 
 func (s *staffRepo) GetByIdStaff(pKey models.PrimaryKey) (models.Staff, error) {
 	staff := models.Staff{}
+	var createdAt, updatedAt = sql.NullTime{}, sql.NullString{}
 
 	query := `
-		SELECT id, branch_id, tarif_id, type_stuff, name, balance, age, birthdate, login, password, create_at
+		SELECT id, branch_id, tarif_id, type_stuff, name, balance, age, birthdate, login, password, created_at, updated_at 
 		FROM staff
-		WHERE id = $1
+		WHERE id = $1  and deleted_at = 0
 	`
 
 	if err := s.db.QueryRow(context.Background(), query, pKey.ID).Scan(
@@ -76,7 +77,8 @@ func (s *staffRepo) GetByIdStaff(pKey models.PrimaryKey) (models.Staff, error) {
 		&staff.BirthDate,
 		&staff.Login,
 		&staff.Password,
-		&staff.Create_at,
+		&createdAt, //4
+		&updatedAt, //5
 	); err != nil {
 		fmt.Println("error while scanning user", err.Error())
 		return models.Staff{}, err
@@ -87,16 +89,17 @@ func (s *staffRepo) GetByIdStaff(pKey models.PrimaryKey) (models.Staff, error) {
 
 func (s *staffRepo) GetListStaff(request models.GetListRequest) (models.StaffRepo, error) {
 	var (
-		staffs = []models.Staff{}
-		count  = 0
-		query  string
-		page   = request.Page
-		offset = (page - 1) * request.Limit
-		search = request.Search
+		staffs               = []models.Staff{}
+		count                = 0
+		query                string
+		page                 = request.Page
+		offset               = (page - 1) * request.Limit
+		search               = request.Search
+		createdAt, updatedAt = sql.NullTime{}, sql.NullString{}
 	)
 
 	countQuery := `
-		SELECT COUNT(1) FROM staff
+		SELECT COUNT(1) FROM staff and deleted_at = 0
 	`
 
 	if search != "" {
@@ -109,8 +112,8 @@ func (s *staffRepo) GetListStaff(request models.GetListRequest) (models.StaffRep
 	}
 
 	query = `
-		SELECT id, branch_id, tarif_id, type_stuff,name, balance, age, birthdate, login, password, create_at
-		FROM staff
+		SELECT id, branch_id, tarif_id, type_stuff,name, balance, age, birthdate, login, password, created_at, updated_at
+		FROM staff   where   deleted_at = 0
 	`
 
 	if search != "" {
@@ -139,7 +142,8 @@ func (s *staffRepo) GetListStaff(request models.GetListRequest) (models.StaffRep
 			&staff.BirthDate,
 			&staff.Login,
 			&staff.Password,
-			&staff.Create_at,
+			&createdAt,
+			&updatedAt,
 		); err != nil {
 			fmt.Println("error while scanning row", err.Error())
 			return models.StaffRepo{}, err
@@ -158,7 +162,7 @@ func (s *staffRepo) UpdateStaffs(request models.UpdateStaff) (string, error) {
 	query := `
 		UPDATE staff
 		SET branch_id = $1, tarif_id = $2, type_stuff=$3,
-		  name=$4 ,  balance=$5 , login=$6
+		  name=$4 ,  balance=$5 , login=$6,updated_at = now()
 		WHERE id = $7
 	`
 
@@ -178,10 +182,8 @@ func (s *staffRepo) UpdateStaffs(request models.UpdateStaff) (string, error) {
 }
 
 func (s *staffRepo) DeleteStaff(request models.PrimaryKey) error {
-	query := `
-		DELETE FROM staff
-		WHERE id = $1
-	`
+
+	query := `update staff set deleted_at = extract(epoch from current_timestamp) where id = $1`
 
 	if _, err := s.db.Exec(context.Background(), query, request.ID); err != nil {
 		return err

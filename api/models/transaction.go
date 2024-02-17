@@ -8,25 +8,26 @@ type Transaction struct {
 	Staff_id         string    `json:"staff_id"`
 	Transaction_type string    `json:"transaction_type"`
 	Sourcetype       string    `json:"sourcetype"`
-	Amount           float64    `json:"amount"`
+	Amount           float64   `json:"amount"`
 	Description      string    `json:"description"`
 	Create_at        time.Time `json:"ctreate_at"`
+	UpdatedAt        string    `json:"updated_at"`
 }
 type CreateTransaction struct {
-	Sale_id          string `json:"sale_id"`
-	Staff_id         string `json:"staff_id"`
-	Transaction_type string `json:"transaction_type"`
-	Sourcetype       string `json:"sourcetype"`
+	Sale_id          string  `json:"sale_id"`
+	Staff_id         string  `json:"staff_id"`
+	Transaction_type string  `json:"transaction_type"`
+	Sourcetype       string  `json:"sourcetype"`
 	Amount           float64 `json:"amount"`
-	Description      string `json:"description"`
+	Description      string  `json:"description"`
 }
 
 type UpdateTransaction struct {
-	ID          string `json:"id"`
-	Sale_id     string `json:"sale_id"`
-	Staff_id    string `json:"staff_id"`
+	ID          string  `json:"id"`
+	Sale_id     string  `json:"sale_id"`
+	Staff_id    string  `json:"staff_id"`
 	Amount      float64 `json:"amount"`
-	Description string `json:"description"`
+	Description string  `json:"description"`
 }
 
 type TransactionRepo struct {

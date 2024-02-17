@@ -9,6 +9,8 @@ type Category struct {
 	Name      string    `json:"name"`
 	Parent_id string    `json:"parent_id"`
 	Create_at time.Time `json:"ctreate_at"`
+	UpdatedAt string    `json:"updated_at"`
+	
 }
 
 type CreateCategory struct {

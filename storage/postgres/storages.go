@@ -4,8 +4,8 @@ import (
 	"connected/api/models"
 	"connected/storage"
 	"context"
+	"database/sql"
 	"fmt"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -24,15 +24,14 @@ func NewStorRepo(db *pgxpool.Pool) storage.IStorag {
 // Create storage
 func (s *storageRepo) CreateStorages(request models.CreateStorage) (string, error) {
 	uid := uuid.New()
-	createAt := time.Now()
+
 	if _, err := s.db.Exec(context.Background(), `
-		INSERT INTO storage VALUES ($1, $2, $3, $4 ,$5)
+		INSERT INTO storage VALUES ($1, $2, $3, $4 )
 		`,
 		uid,
 		request.Product_id,
 		request.Branch_id,
 		request.Count,
-		createAt,
 	); err != nil {
 		return "", err
 	}
@@ -43,18 +42,27 @@ func (s *storageRepo) CreateStorages(request models.CreateStorage) (string, erro
 // getbyid storage
 func (s *storageRepo) GetByIdStorages(pKey models.PrimaryKey) (models.Storage, error) {
 	stoges := models.Storage{}
+	var createdAt, updatedAt = sql.NullTime{}, sql.NullString{}
 
 	query := `
-		SELECT id,product_id,branch_id, count,create_at FROM storage WHERE id = $1
+		SELECT id,product_id,branch_id, count,created_at, updated_at  FROM storage WHERE id = $1 and deleted_at = 0
 	`
 	if err := s.db.QueryRow(context.Background(), query, pKey.ID).Scan(
 		&stoges.ID,
 		&stoges.Product_id,
 		&stoges.Branch_id,
 		&stoges.Count,
-		&stoges.Create_at,
+		&createdAt, //4
+		&updatedAt, //5
 	); err != nil {
 		return models.Storage{}, err
+	}
+	if createdAt.Valid {
+		stoges.Create_at = createdAt.Time
+	}
+
+	if updatedAt.Valid {
+		stoges.UpdatedAt = updatedAt.String
 	}
 
 	return stoges, nil
@@ -63,15 +71,16 @@ func (s *storageRepo) GetByIdStorages(pKey models.PrimaryKey) (models.Storage, e
 // getlist storage
 func (s *storageRepo) GetListStorages(reuqest models.GetListRequest) (models.StorageRepos, error) {
 	var (
-		storages []models.Storage
-		count    int
+		storages             []models.Storage
+		count                int
+		createdAt, updatedAt = sql.NullTime{}, sql.NullString{}
 	)
 
 	countQuery := `
-		SELECT COUNT(1) FROM storage`
+		SELECT COUNT(1) FROM storage  and deleted_at = 0`
 
 	query := `
-		SELECT id,product_id,branch_id, count, create_at FROM   storage `
+		SELECT id,product_id,branch_id, count, created_at, updated_at FROM   storage   where   deleted_at = 0`
 
 	addSearchCondition := func(baseQuery string) string {
 		if reuqest.Search != "" {
@@ -102,9 +111,17 @@ func (s *storageRepo) GetListStorages(reuqest models.GetListRequest) (models.Sto
 			&storage.Product_id,
 			&storage.Branch_id,
 			&storage.Count,
-			&storage.Create_at,
+			&createdAt,
+			&updatedAt,
 		); err != nil {
 			return models.StorageRepos{}, err
+		}
+		if createdAt.Valid {
+			storage.Create_at = createdAt.Time
+		}
+
+		if updatedAt.Valid {
+			storage.UpdatedAt = updatedAt.String
 		}
 
 		storages = append(storages, storage)
@@ -120,7 +137,7 @@ func (s *storageRepo) GetListStorages(reuqest models.GetListRequest) (models.Sto
 func (s *storageRepo) UpdateStorages(request models.UpdateStorage) (string, error) {
 	query := `
 	UPDATE storage
-	SET product_id = $1, branch_id = $2 ,count=$3
+	SET product_id = $1, branch_id = $2 ,count=$3,updated_at = now()
 	WHERE id = $4
 `
 
@@ -133,10 +150,9 @@ func (s *storageRepo) UpdateStorages(request models.UpdateStorage) (string, erro
 
 // delete storage
 func (s *storageRepo) DeleteStorages(request models.PrimaryKey) error {
-	query := `
-		DELETE FROM storage 
-		WHERE id = $1
-	`
+
+	query := `update storage set deleted_at = extract(epoch from current_timestamp) where id = $1`
+
 	if _, err := s.db.Exec(context.Background(), query, request.ID); err != nil {
 		return err
 	}

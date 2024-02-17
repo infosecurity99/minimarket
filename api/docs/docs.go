@@ -2729,7 +2729,7 @@ const docTemplate = `{
         "models.Basket": {
             "type": "object",
             "properties": {
-                "ctreate_at": {
+                "created_at": {
                     "type": "string"
                 },
                 "id": {
@@ -2745,6 +2745,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "sale_id": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -2777,6 +2780,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
@@ -2807,6 +2813,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "parent_id": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -3011,7 +3020,7 @@ const docTemplate = `{
                 "category_id": {
                     "type": "string"
                 },
-                "create_at": {
+                "ctreate_at": {
                     "type": "string"
                 },
                 "id": {
@@ -3022,6 +3031,9 @@ const docTemplate = `{
                 },
                 "price": {
                     "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
@@ -3065,6 +3077,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status_type": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -3118,6 +3133,9 @@ const docTemplate = `{
                 },
                 "type_stuff": {
                     "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
@@ -3140,6 +3158,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "tarif_type": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -3184,6 +3205,9 @@ const docTemplate = `{
                 },
                 "product_id": {
                     "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
@@ -3213,6 +3237,9 @@ const docTemplate = `{
                 },
                 "transaction_type": {
                     "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
@@ -3241,6 +3268,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "transaction_type": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }

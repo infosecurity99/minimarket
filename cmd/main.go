@@ -23,7 +23,7 @@ func main() {
 
 	server := api.New(servic, pgStore)
 
-	if err = server.Run("localhost:8080"); err != nil {
+	if err = server.Run("localhost:8088"); err != nil {
 		panic(err)
 	}
 }

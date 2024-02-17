@@ -7,6 +7,7 @@ type Branch struct {
 	Name      string    `json:"name"`
 	Address   string    `json:"address"`
 	Create_at time.Time `json:"ctreate_at"`
+	UpdatedAt string    `json:"updated_at"`
 }
 
 type CreateBranch struct {

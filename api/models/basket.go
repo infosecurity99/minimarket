@@ -10,7 +10,9 @@ type Basket struct {
 	Product_id string    `json:"product_id"`
 	Quantity   uint64   `json:"quantity"`
 	Price      uint64   `json:"price"`
-	Create_at  time.Time `json:"ctreate_at"`
+	
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt string    `json:"updated_at"`
 }
 
 type CreateBasket struct {

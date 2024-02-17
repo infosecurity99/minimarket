@@ -4,9 +4,9 @@ import (
 	"connected/api/models"
 	"connected/storage"
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -26,10 +26,9 @@ func NewSaleRepo(db *pgxpool.Pool) storage.ISaleStorage {
 // create sale for sale
 func (s *saleRepo) CreateSales(createSale models.CreateSale) (string, error) {
 	uid := uuid.New()
-	createAt := time.Now()
 
 	if _, err := s.db.Exec(context.Background(), `
-        INSERT INTO sale (id, branch_id, shopassistant_id, cashier_id, payment_type, price, status_type, clientname, create_at)
+        INSERT INTO sale (id, branch_id, shopassistant_id, cashier_id, payment_type, price, status_type, clientname,)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
     `,
 		uid,
@@ -40,7 +39,6 @@ func (s *saleRepo) CreateSales(createSale models.CreateSale) (string, error) {
 		createSale.Price,
 		createSale.Status_type,
 		createSale.Clientname,
-		createAt,
 	); err != nil {
 		fmt.Println("error while inserting data", err.Error())
 		return "", err
@@ -52,12 +50,13 @@ func (s *saleRepo) CreateSales(createSale models.CreateSale) (string, error) {
 //getby id
 
 func (s *saleRepo) GetByIdSales(pKey models.PrimaryKey) (models.Sale, error) {
+	var createdAt, updatedAt = sql.NullTime{}, sql.NullString{}
 	sale := models.Sale{}
 
 	query := `
-           SELECT id, branch_id, shopassistant_id, cashier_id,payment_type, price,status_type, clientname,create_at
+           SELECT id, branch_id, shopassistant_id, cashier_id,payment_type, price,status_type, clientname,created_at, updated_at 
            FROM sale
-           WHERE id = $1
+           WHERE id = $1 and deleted_at = 0
            `
 
 	if err := s.db.QueryRow(context.Background(), query, pKey.ID).Scan(
@@ -69,9 +68,17 @@ func (s *saleRepo) GetByIdSales(pKey models.PrimaryKey) (models.Sale, error) {
 		&sale.Price,
 		&sale.Status_type,
 		&sale.Clientname,
-		&sale.Create_at,
+		&createdAt, //4
+		&updatedAt, //5
 	); err != nil {
 		fmt.Println("error while scanning sale", err.Error())
+	}
+	if createdAt.Valid {
+		sale.Create_at = createdAt.Time
+	}
+
+	if updatedAt.Valid {
+		sale.UpdatedAt = updatedAt.String
 	}
 
 	return sale, nil
@@ -80,16 +87,17 @@ func (s *saleRepo) GetByIdSales(pKey models.PrimaryKey) (models.Sale, error) {
 // get list
 func (s *saleRepo) GetListSales(request models.GetListRequestSale) (models.SaleRepos, error) {
 	var (
-		sales  = []models.Sale{}
-		count  = 0
-		query  string
-		page   = request.Page
-		offset = (page - 1) * request.Limit
-		search = request.Search
+		sales                = []models.Sale{}
+		count                = 0
+		query                string
+		page                 = request.Page
+		offset               = (page - 1) * request.Limit
+		search               = request.Search
+		createdAt, updatedAt = sql.NullTime{}, sql.NullString{}
 	)
 
 	countQuery := `
-        SELECT COUNT(1) FROM sale
+        SELECT COUNT(1) FROM sale and deleted_at = 0
     `
 
 	if search != "" {
@@ -102,8 +110,8 @@ func (s *saleRepo) GetListSales(request models.GetListRequestSale) (models.SaleR
 	}
 
 	query = `
-	SELECT id, branch_id, shopassistant_id, cashier_id,payment_type, price,status_type, clientname,create_at
-	FROM sale
+	SELECT id, branch_id, shopassistant_id, cashier_id,payment_type, price,status_type, clientname,created_at, updated_at
+	FROM sale  where   deleted_at = 0
     `
 
 	if search != "" {
@@ -147,10 +155,19 @@ func (s *saleRepo) GetListSales(request models.GetListRequestSale) (models.SaleR
 			&sale.Price,
 			&sale.Status_type,
 			&sale.Clientname,
-			&sale.Create_at,
+			&createdAt,
+			&updatedAt,
 		); err != nil {
 			fmt.Println("error while scanning row", err.Error())
 			return models.SaleRepos{}, nil
+		}
+
+		if createdAt.Valid {
+			sale.Create_at = createdAt.Time
+		}
+
+		if updatedAt.Valid {
+			sale.UpdatedAt = updatedAt.String
 		}
 
 		sales = append(sales, sale)
@@ -167,7 +184,7 @@ func (s *saleRepo) GetListSales(request models.GetListRequestSale) (models.SaleR
 func (s *saleRepo) UpdateSales(updates models.UpdateSale) (string, error) {
 	query := `
 	update sale
-	   set branch_id = $1, shopassistant_id = $2, cashier_id = $3, price = $4,clientname=$5
+	   set branch_id = $1, shopassistant_id = $2, cashier_id = $3, price = $4,clientname=$5, updated_at = now()
 		  where id = $6`
 
 	if _, err := s.db.Exec(context.Background(), query,
@@ -188,10 +205,9 @@ func (s *saleRepo) UpdateSales(updates models.UpdateSale) (string, error) {
 //delete for sale
 
 func (s *saleRepo) DeleteSales(pKey models.PrimaryKey) error {
-	query := `
-          delete from sale
-             where id = $1
-    `
+
+	query := `update sale set deleted_at = extract(epoch from current_timestamp) where id = $1`
+
 	if _, err := s.db.Exec(context.Background(), query, pKey.ID); err != nil {
 		fmt.Println("error while deleting slaes  by id", err.Error())
 		return err

@@ -4,12 +4,12 @@ import (
 	"connected/api/models"
 	"connected/storage"
 	"context"
+	"database/sql"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"fmt"
-	"time"
 )
 
 type productRepo struct {
@@ -24,10 +24,9 @@ func NewProductRepo(db *pgxpool.Pool) storage.IProduct {
 
 func (p *productRepo) CreateProduct(createProduct models.CreateProduct) (string, error) {
 	uid := uuid.New()
-	createAt := time.Now()
 
 	query := `
-        insert into product values ($1, $2, $3, $4, $5 , $6)
+        insert into product values ($1, $2, $3, $4, $5 )
         `
 
 	if _, err := p.db.Exec(context.Background(), query,
@@ -36,7 +35,6 @@ func (p *productRepo) CreateProduct(createProduct models.CreateProduct) (string,
 		createProduct.Price,
 		createProduct.Barcode,
 		createProduct.Category_id,
-		createAt,
 	); err != nil {
 		return "", err
 	}
@@ -45,12 +43,13 @@ func (p *productRepo) CreateProduct(createProduct models.CreateProduct) (string,
 }
 
 func (p *productRepo) GetByIdProduct(pKey models.PrimaryKey) (models.Product, error) {
+	var createdAt, updatedAt = sql.NullTime{}, sql.NullString{}
 	product := models.Product{}
 
 	query := `
-           SELECT id, name, price, barcode, category_id, create_at
+           SELECT id, name, price, barcode, category_id, created_at, updated_at 
            FROM product
-           WHERE id = $1
+           WHERE id = $1  and deleted_at = 0
 `
 
 	if err := p.db.QueryRow(context.Background(), query, pKey.ID).Scan(
@@ -59,10 +58,19 @@ func (p *productRepo) GetByIdProduct(pKey models.PrimaryKey) (models.Product, er
 		&product.Price,
 		&product.Barcode,
 		&product.Category_id,
-		&product.Create_at,
+		&createdAt, //4
+		&updatedAt, //5
 	); err != nil {
 		fmt.Println("error while scanning product", err.Error())
 		return models.Product{}, nil
+	}
+
+	if createdAt.Valid {
+		product.Create_at = createdAt.Time
+	}
+
+	if updatedAt.Valid {
+		product.UpdatedAt = updatedAt.String
 	}
 
 	return product, nil
@@ -70,16 +78,17 @@ func (p *productRepo) GetByIdProduct(pKey models.PrimaryKey) (models.Product, er
 
 func (p *productRepo) GetListProduct(request models.GetListRequest) (models.ProductResponse, error) {
 	var (
-		products = []models.Product{}
-		count    = 0
-		query    string
-		page     = request.Page
-		offset   = (page - 1) * request.Limit
-		search   = request.Search
+		products             = []models.Product{}
+		count                = 0
+		query                string
+		page                 = request.Page
+		offset               = (page - 1) * request.Limit
+		search               = request.Search
+		createdAt, updatedAt = sql.NullTime{}, sql.NullString{}
 	)
 
 	countQuery := `
-                SELECT COUNT(1) FROM product
+                SELECT COUNT(1) FROM product and deleted_at = 0
 `
 
 	if search != "" {
@@ -92,8 +101,8 @@ func (p *productRepo) GetListProduct(request models.GetListRequest) (models.Prod
 	}
 
 	query = `
-             SELECT id, name, price, barcode, category_id, create_at
-             FROM product
+             SELECT id, name, price, barcode, category_id, created_at, updated_at
+             FROM product and deleted_at = 0
 	`
 
 	if search != "" {
@@ -117,10 +126,18 @@ func (p *productRepo) GetListProduct(request models.GetListRequest) (models.Prod
 			&product.Price,
 			&product.Barcode,
 			&product.Category_id,
-			&product.Create_at,
+			&createdAt,
+			&updatedAt,
 		); err != nil {
 			fmt.Println("error while scanning row", err.Error())
 			return models.ProductResponse{}, nil
+		}
+		if createdAt.Valid {
+			product.Create_at = createdAt.Time
+		}
+
+		if updatedAt.Valid {
+			product.UpdatedAt = updatedAt.String
 		}
 
 		products = append(products, product)
@@ -135,7 +152,7 @@ func (p *productRepo) GetListProduct(request models.GetListRequest) (models.Prod
 func (p *productRepo) UpdateProduct(updateProduct models.UpdateProduct) (string, error) {
 	query := `
          UPDATE product
-         SET name = $1, price = $2, category_id = $3
+         SET name = $1, price = $2, category_id = $3, updated_at = now()
          WHERE id = $4
 `
 	if _, err := p.db.Exec(context.Background(), query,
@@ -151,11 +168,8 @@ func (p *productRepo) UpdateProduct(updateProduct models.UpdateProduct) (string,
 }
 
 func (p *productRepo) DeleteProduct(id models.PrimaryKey) error {
-	query := `
-         DELETE FROM product
-         WHERE id = $1
-`
 
+	query := `update product set deleted_at = extract(epoch from current_timestamp) where id = $1`
 	if _, err := p.db.Exec(context.Background(), query, id.ID); err != nil {
 		return err
 	}

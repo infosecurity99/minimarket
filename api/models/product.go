@@ -10,7 +10,8 @@ type Product struct {
 	Price       uint64    `json:"price"`
 	Barcode     string    `json:"barcode"`
 	Category_id string    `json:"category_id"`
-	Create_at   time.Time `json:"create_at"`
+	Create_at time.Time `json:"ctreate_at"`
+	UpdatedAt string    `json:"updated_at"`
 }
 
 type CreateProduct struct {

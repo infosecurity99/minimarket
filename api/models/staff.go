@@ -13,7 +13,8 @@ type Staff struct {
 	BirthDate  time.Time `json:"birthdate"`
 	Login      string    `json:"login"`
 	Password   string    `json:"password"`
-	Create_at  time.Time `json:"ctreate_at"`
+	Create_at time.Time `json:"ctreate_at"`
+	UpdatedAt string    `json:"updated_at"`
 }
 
 type CreateStaff struct {
