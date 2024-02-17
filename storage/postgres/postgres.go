@@ -3,11 +3,17 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"connected/config"
 	"connected/storage"
 
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database"          //database is needed for migration
+	_ "github.com/golang-migrate/migrate/v4/database/postgres" //postgres is used for database
+	_ "github.com/golang-migrate/migrate/v4/source/file"       //file is needed for migration url
 	"github.com/jackc/pgx/v5/pgxpool"
+
 	_ "github.com/lib/pq"
 )
 
@@ -16,13 +22,14 @@ type Store struct {
 }
 
 func New(ctx context.Context, cfg config.Config) (storage.IStorage, error) {
-	poolConfig, err := pgxpool.ParseConfig(fmt.Sprintf(
+	url := fmt.Sprintf(
 		`postgres://%s:%s@%s:%s/%s?sslmode=disable`,
 		cfg.PostgresUser,
 		cfg.PostgresPassword,
 		cfg.PostgresHost,
 		cfg.PostgresPort,
-		cfg.PostgresDB))
+		cfg.PostgresDB)
+	poolConfig, err := pgxpool.ParseConfig(url)
 	if err != nil {
 		fmt.Println("error while parsing config", err.Error())
 		return nil, err
@@ -34,6 +41,31 @@ func New(ctx context.Context, cfg config.Config) (storage.IStorage, error) {
 	if err != nil {
 		fmt.Println("error while connecting to db", err.Error())
 		return nil, err
+	}
+
+	//migrations
+	m, err := migrate.New("file:///home/zarif/Desktop/minimarket/migrations/postgres", url)
+	if err != nil {
+		fmt.Println("error creating new migration instance:", err)
+		return nil, err
+	}
+
+	if err = m.Up(); err != nil {
+		if !strings.Contains(err.Error(), "no change") {
+			version, dirty, err := m.Version()
+			if err != nil {
+				panic(err)
+			}
+
+			if dirty {
+				version--
+				if err = m.Force(int(version)); err != nil {
+					panic(err)
+				}
+			}
+
+			panic(err)
+		}
 	}
 
 	return Store{
@@ -73,12 +105,11 @@ func (s Store) Category() storage.ICategory {
 }
 
 func (s Store) Product() storage.IProduct {
-	
+
 	return NewProductRepo(s.Pool)
 }
 
 func (s Store) Basket() storage.IBasket {
-	
 
 	return NewBasketRepo(s.Pool)
 }

@@ -3,6 +3,7 @@ package api
 import (
 	_ "connected/api/docs"
 	"connected/api/handler"
+	"connected/service"
 	"connected/storage"
 
 	"github.com/gin-gonic/gin"
@@ -10,8 +11,8 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func New(store storage.IStorage) *gin.Engine {
-	h := handler.New(store)
+func New(services service.IServiseManger, store storage.IStorage) *gin.Engine {
+	h := handler.New(services, store)
 
 	r := gin.New()
 

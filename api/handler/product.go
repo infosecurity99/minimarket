@@ -196,3 +196,18 @@ func (h Handler) DeleteProduct(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, "data successfully deleted")
 }
 
+// BarcodeQrCode godoc
+// @Router       /basket/{id} [GET]
+// @Summary      Gets basket
+// @Description  get basket by ID
+// @Tags         basket
+// @Accept       json
+// @Produce      json
+// @Param        id path string true "basket"
+// @Success      200  {object}  models.Basket
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
+func (h Handler) BarcodeQrCode(c *gin.Context) {
+       
+}

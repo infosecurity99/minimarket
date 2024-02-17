@@ -2,6 +2,7 @@ package handler
 
 import (
 	"connected/api/models"
+	"connected/service"
 	"connected/storage"
 	"fmt"
 
@@ -9,12 +10,14 @@ import (
 )
 
 type Handler struct {
-	storage storage.IStorage
+   storage  storage.IStorage
+	services service.IServiseManger
 }
 
-func New(store storage.IStorage) Handler {
+func New(services service.IServiseManger, store storage.IStorage) Handler {
 	return Handler{
-		storage: store,
+		storage:  store,
+		services: services,
 	}
 }
 

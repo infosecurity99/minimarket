@@ -48,7 +48,7 @@ func (h Handler) CreateBasket(c *gin.Context) {
 	for _, s := range storages.Storages {
 		if s.Count >= int(createBasket.Quantity) {
 			found = true
-			
+
 			updatedCount := s.Count - int(createBasket.Quantity)
 			s.Count = updatedCount
 			storageToUpdate = s
@@ -61,7 +61,6 @@ func (h Handler) CreateBasket(c *gin.Context) {
 		return
 	}
 
-	
 	if _, err := h.storage.Storag().UpdateStorages(models.UpdateStorage{
 		ID:         storageToUpdate.ID,
 		Product_id: storageToUpdate.Product_id,
@@ -260,3 +259,5 @@ func (h Handler) DeleteBasket(c *gin.Context) {
 
 	handleResponse(c, "", http.StatusOK, "Data deleted successfully")
 }
+
+
